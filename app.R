@@ -1,5 +1,5 @@
 # Project 3 for CS 424 Spring 2018 UIC
-# Authors: 
+# Authors: Vijayraj Mahida, Isabel Lindmae, and Bartosz Kupiec
 
 #before we start anything, we want to make sure our project workspace is nice and clean
 #we will achieve this by removing any lingering packages from past runs 

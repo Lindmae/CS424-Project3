@@ -12,8 +12,8 @@ totalTornadoes <- ({
 
 
 #--------TABLES-----------------------------------------------------------------------
-output$totalTornadoes <- renderDataTable(totalTornadoes, extensions = 'Scroller',
-  rownames = FALSE, options = list(
+output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller', rownames = FALSE, 
+  options = list(
   deferRender = TRUE,
   scrollY = 500,
   scroller = TRUE,
