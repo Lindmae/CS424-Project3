@@ -1,8 +1,11 @@
 server <- function(input, output) {
+  
+#--------DATA---------------------------------------------------------------------------
   #load any data here
   #format:  load("rdata/datatoload.RData") for RData,
   tornadoes <- read.csv(file="data/tornadoes.csv", header=TRUE, sep=",")
   fipsCodes <- read.csv("data/US_FIPS_Codes.csv",header = TRUE, sep =  ",")
+  
 #--------REACTIVE-----------------------------------------------------------------------
 totalTornadoes <- ({
   data <- tornadoes %>% filter(st == "IL")

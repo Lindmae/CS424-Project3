@@ -29,8 +29,6 @@ ui <- dashboardPage(
   dashboardHeader(title = "CS 424 | Project 3"),
   dashboardSidebar(
     sidebarMenu(
-      menuItem("Stuff", icon = icon("plane", lib = "font-awesome"), tabName = "atab"),
-      
       menuItem("Isabel", icon = icon("plane", lib = "font-awesome"), tabName = "isabel"),
 
       menuItem("Bart", icon = icon("plane", lib = "font-awesome"), tabName = "bart"),
@@ -45,9 +43,6 @@ ui <- dashboardPage(
   dashboardBody(
 
     tabItems(
-      tabItem(tabName = "atab",
-              fluidRow( box(title = "Default Title", solidHeader = TRUE, status = "primary", width = 6))
-        ),
       tabItem(tabName = "isabel",
               fluidRow( box(title = "isabel Title", solidHeader = TRUE, status = "primary", width = 6))
       ),
