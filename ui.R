@@ -30,7 +30,14 @@ ui <- dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       menuItem("Stuff", icon = icon("plane", lib = "font-awesome"), tabName = "atab"),
+      
+      menuItem("Isabel", icon = icon("plane", lib = "font-awesome"), tabName = "isabel"),
 
+      menuItem("Bart", icon = icon("plane", lib = "font-awesome"), tabName = "bart"),
+      
+      menuItem("Vijay", icon = icon("plane", lib = "font-awesome"), tabName = "vijay"),
+      
+      
       #info
       menuItem("Info", tabName = "info", icon = icon("th"))
     )
@@ -40,7 +47,16 @@ ui <- dashboardPage(
     tabItems(
       tabItem(tabName = "atab",
               fluidRow( box(title = "Default Title", solidHeader = TRUE, status = "primary", width = 6))
-        )
+        ),
+      tabItem(tabName = "isabel",
+              fluidRow( box(title = "isabel Title", solidHeader = TRUE, status = "primary", width = 6))
+      ),
+      tabItem(tabName = "bart",
+              fluidRow( box(title = "bart Title", solidHeader = TRUE, status = "primary", width = 6))
+      ),
+      tabItem(tabName = "vijay",
+              fluidRow( box(title = "vijay Title", solidHeader = TRUE, status = "primary", width = 6))
+      )
     )
 
   )
