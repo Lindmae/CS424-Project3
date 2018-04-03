@@ -6,6 +6,51 @@ server <- function(input, output) {
   tornadoes <- read.csv(file="data/tornadoes.csv", header=TRUE, sep=",")
   fipsCodes <- read.csv("data/US_FIPS_Codes.csv",header = TRUE, sep =  ",")
   
+  #1
+  yearlyTornadoes <- totalTornadoes %>% group_by(yr, mag) %>% summarise(n())
+  names(yearlyTornadoes) <- c("Year", "Magnitude", "Count")
+  
+  #4
+  #TO DO
+  
+  #5
+  deaths <- totalTornadoes %>% group_by(yr, fat) %>% summarise(n())
+  names(deaths) <- c("Year", "X", "Count")
+  deathCount <- aggregate(deaths$Count * deaths$X, by=list(Category=deaths$Year), FUN=sum)
+  names(deathCount) <- c("Year", "Deaths")
+  
+  injuries <- totalTornadoes %>% group_by(yr, inj) %>% summarise(n())
+  names(injuries) <- c("Year", "X", "Count")
+  injuriesCount <- aggregate(injuries$Count * injuries$X, by=list(Category=injuries$Year), FUN=sum)
+  names(injuriesCount) <- c("Year", "Injuries")
+  
+  loss <- totalTornadoes %>% group_by(yr, loss) %>% summarise(n())
+  names(loss) <- c("Year", "X", "Count")
+  lossCount <- aggregate(loss$Count * loss$X, by=list(Category=loss$Year), FUN=sum)
+  names(lossCount) <- c("Year", "Loss")
+  
+  totalDamages <- merge(deathCount,injuriesCount,by="Year")
+  totalDamages <- merge(totalDamages, lossCount, by="Year")
+  
+  #8
+  county1 <- totalTornadoes %>% group_by(f1) %>% summarise(n())
+  names(county1) <- c("County", "Count1")
+  county2 <- totalTornadoes %>% group_by(f2) %>% summarise(n())
+  names(county2) <- c("County", "Count2")
+  county3 <- totalTornadoes %>% group_by(f3) %>% summarise(n())
+  names(county3) <- c("County", "Count3")
+  county4 <- totalTornadoes %>% group_by(f4) %>% summarise(n())
+  names(county4) <- c("County", "Count4")
+  
+  countyCounts <- merge(county1, county2, by="County", all.x = TRUE, all.y = TRUE)
+  countyCounts <- merge(countyCounts, county3, by="County", all.x = TRUE, all.y = TRUE)
+  countyCounts <- merge(countyCounts, county4, by="County", all.x = TRUE, all.y = TRUE)
+  countyCounts[is.na(countyCounts)] <- 0
+  countyCounts$Final <- rowSums( countyCounts[,2:5] )
+  
+  countyData <- subset(countyCounts, select = c(County,Final))
+  names(countyData) <- c("County", "Total Tornadoes")
+  
 #--------REACTIVE-----------------------------------------------------------------------
 totalTornadoes <- ({
   data <- tornadoes %>% filter(st == "IL")
