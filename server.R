@@ -6,6 +6,9 @@ server <- function(input, output) {
   tornadoes <- read.csv(file="data/tornadoes.csv", header=TRUE, sep=",")
   fipsCodes <- read.csv("data/US_FIPS_Codes.csv",header = TRUE, sep =  ",")
   
+  # filtered to IL data
+  totalTornadoes <- tornadoes %>% filter(st == "IL")
+  
   #1
   yearlyTornadoes <- totalTornadoes %>% group_by(yr, mag) %>% summarise(n())
   names(yearlyTornadoes) <- c("Year", "Magnitude", "Count")
@@ -52,10 +55,11 @@ server <- function(input, output) {
   names(countyData) <- c("County", "Total Tornadoes")
   
 #--------REACTIVE-----------------------------------------------------------------------
-totalTornadoes <- ({
-  data <- tornadoes %>% filter(st == "IL")
-  data
-})
+# example reactive element below
+# totalTornadoes <- ({
+#  data <- tornadoes %>% filter(st == "IL")
+#  data
+#})
 
 
 
