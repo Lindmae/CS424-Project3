@@ -88,6 +88,39 @@ output$hourlyGraph <- renderPlotly({
             barmode = 'group')
  })
 
+  
+  output$injuriesChart <- renderPlotly({
+    
+    plot_ly(totalDamages, x = ~Year, y = ~Injuries, name = 'trace 0', type = 'scatter', mode = 'lines+markers') %>%
+      
+      
+      layout(font = list(size=30), title="Injuries per Year",
+             yaxis = list(title = "# of Injuries", titlefont=list(size=30), tickfont=list(size=20)),
+             margin = list(l = 100, t = 100, b = 100),
+             barmode = 'group')
+  })
+  
+  output$deathsChart <- renderPlotly({
+    
+    plot_ly(totalDamages, x = ~Year, y = ~Deaths, name = 'trace 0', type = 'scatter', mode = 'lines+markers') %>%
+      
+      
+      layout(font = list(size=30), title="Deaths per Year",
+             yaxis = list(title = "# of Deaths", titlefont=list(size=30), tickfont=list(size=20)),
+             margin = list(l = 100, t = 100, b = 100),
+             barmode = 'group')
+  })
+  
+  output$lossChart <- renderPlotly({
+    
+    plot_ly(totalDamages, x = ~Year, y = ~Loss, name = 'trace 0', type = 'scatter', mode = 'lines+markers') %>%
+      
+      
+      layout(font = list(size=30), title="Property Loss per Year",
+             yaxis = list(title = "Property Loss Value", titlefont=list(size=30), tickfont=list(size=20)),
+             margin = list(l = 100, t = 100, b = 100),
+             barmode = 'group')
+  })
 
 #--------MAP-----------------------------------------------------------------------
   

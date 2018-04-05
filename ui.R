@@ -44,7 +44,17 @@ ui <- dashboardPage(
 
     tabItems(
       tabItem(tabName = "isabel",
-              fluidRow( box(title = "isabel Title", solidHeader = TRUE, status = "primary", width = 6))
+              fluidRow( 
+                tabBox(
+                  #title = "First tabBox",
+                  # The id lets us use input$tabset1 on the server to find the current tab
+                  id = "tabset1", height = "450px",
+                  tabPanel("Injuries", plotlyOutput("injuriesChart", height = 450)),
+                  tabPanel("Deaths", plotlyOutput("deathsChart", height = 450)),
+                  tabPanel("Property Loss", plotlyOutput("lossChart", height = 450)),
+                  width = 12
+                )
+                )
       ),
       tabItem(tabName = "bart",
               fluidRow( box(title = "bart Title", solidHeader = TRUE, status = "primary", width = 6))
