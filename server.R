@@ -72,6 +72,15 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
   bFilter=0
   )
 )
+  
+  output$totalDamagesTable <- renderDataTable(totalDamages, extensions = 'Scroller', 
+                                                   rownames = FALSE, options = list(
+                                                     deferRender = TRUE,
+                                                     scrollY = 800,
+                                                     scroller = TRUE,
+                                                     bFilter=0
+                                                   )
+  )
 
 
 #--------CHARTS/GRAPHS-----------------------------------------------------------------------

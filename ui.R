@@ -48,11 +48,14 @@ ui <- dashboardPage(
                 tabBox(
                   #title = "First tabBox",
                   # The id lets us use input$tabset1 on the server to find the current tab
-                  id = "tabset1", height = "450px",
-                  tabPanel("Injuries", plotlyOutput("injuriesChart", height = 450)),
-                  tabPanel("Deaths", plotlyOutput("deathsChart", height = 450)),
-                  tabPanel("Property Loss", plotlyOutput("lossChart", height = 450)),
+                  id = "tabset1", height = "850px",
+                  tabPanel("Injuries", plotlyOutput("injuriesChart", height = 800)),
+                  tabPanel("Deaths", plotlyOutput("deathsChart", height = 800)),
+                  tabPanel("Property Loss", plotlyOutput("lossChart", height = 800)),
                   width = 12
+                ),
+                box(status = "primary", solidHeader = TRUE, width = 12,
+                    div(DT::dataTableOutput("totalDamagesTable", height = 800), style = "font-size: 200%")
                 )
                 )
       ),
