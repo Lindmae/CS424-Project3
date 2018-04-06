@@ -25,7 +25,8 @@ library(gdata) #needed for xls files
 
 # start up the gui
 ui <- dashboardPage(
-  #set title and disable sidebar
+  #ensure that map will be the correct size 
+    #set title and disable sidebar
   dashboardHeader(title = "CS 424 | Project 3"),
   dashboardSidebar(
     sidebarMenu(
@@ -60,7 +61,10 @@ ui <- dashboardPage(
                 )
       ),
       tabItem(tabName = "bart",
-              fluidRow( box(title = "bart Title", solidHeader = TRUE, status = "primary", width = 6))
+              fluidRow( box(title = "Tornado tracks across Illinois", solidHeader = TRUE, status = "primary", width = 6),
+                        box(title = "Map", solidHeader = TRUE, status = "primary", width = 12,
+                            leafletOutput("map")
+                        ))
       ),
       tabItem(tabName = "vijay",
               fluidRow( box(title = "vijay Title", solidHeader = TRUE, status = "primary", width = 6))

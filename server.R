@@ -140,16 +140,20 @@ output$hourlyGraph <- renderPlotly({
     pal <- colorFactor(c("red","blue"), domain = c("well","death"))
     
     #rename for testing
-    colnames(tornadoes)[16] <- "latitude"
-    colnames(tornadoes)[17] <- "longitude"
-    
-    m <-leaflet(tornadoes) %>% addTiles() %>% addCircleMarkers(
-      radius = 5,
-      color = "blue",
-      stroke = FALSE,
-      fillOpacity = 1
+    tornadoesMap <- tornadoes %>% filter(st == "IL")
+    colnames(tornadoesMap)[16] <- "latitude"
+    colnames(tornadoesMap)[17] <- "longitude"
+ 
+
+    m <-leaflet(tornadoesMap) %>% 
+    # enable to set overview of US #setView(-96, 37.8, 4) %>%
+      setView(-87, 41, 8) %>% #set view to chicago 
+      #addLegend(pal = pal, values = ~density, opacity = 0.7, title = NULL,position = "bottomright") %>%
+      addTiles() %>% 
+      addPolylines(data = tornadoesMap, lng = ~longitude, lat = ~latitude)
+      #addCircleMarkers(radius = 1,color = "blue", stroke = FALSE,fillOpacity = 1)
       #label = ~ifelse(type == "death",paste("Deaths:", joined$deaths) , "Well")
-    ) 
+     
     # use the black/white map so it doesn't colide with the data we are displaying 
     m = addProviderTiles(map = m, provider = "CartoDB.Positron")
     #set starting position to one of the locations from the data file 
