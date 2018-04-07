@@ -25,7 +25,8 @@ library(gdata) #needed for xls files
 
 # start up the gui
 ui <- dashboardPage(
-  #set title and disable sidebar
+  #ensure that map will be the correct size 
+    #set title and disable sidebar
   dashboardHeader(title = "CS 424 | Project 3"),
   dashboardSidebar(
     sidebarMenu(
@@ -44,10 +45,26 @@ ui <- dashboardPage(
 
     tabItems(
       tabItem(tabName = "isabel",
-              fluidRow( box(title = "isabel Title", solidHeader = TRUE, status = "primary", width = 6))
+              fluidRow( 
+                tabBox(
+                  #title = "First tabBox",
+                  # The id lets us use input$tabset1 on the server to find the current tab
+                  id = "tabset1", height = "850px",
+                  tabPanel("Injuries", plotlyOutput("injuriesChart", height = 800)),
+                  tabPanel("Deaths", plotlyOutput("deathsChart", height = 800)),
+                  tabPanel("Property Loss", plotlyOutput("lossChart", height = 800)),
+                  width = 12
+                ),
+                box(status = "primary", solidHeader = TRUE, width = 12,
+                    div(DT::dataTableOutput("totalDamagesTable", height = 800), style = "font-size: 200%")
+                )
+                )
       ),
       tabItem(tabName = "bart",
-              fluidRow( box(title = "bart Title", solidHeader = TRUE, status = "primary", width = 6))
+              fluidRow( box(title = "Tornado tracks across Illinois", solidHeader = TRUE, status = "primary", width = 6),
+                        box(title = "Map", solidHeader = TRUE, status = "primary", width = 12,
+                            leafletOutput("map")
+                        ))
       ),
       tabItem(tabName = "vijay",
               fluidRow( box(title = "vijay Title", solidHeader = TRUE, status = "primary", width = 6))

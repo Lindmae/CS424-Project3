@@ -146,6 +146,15 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
   bFilter=0
   )
 )
+  
+  output$totalDamagesTable <- renderDataTable(totalDamages, extensions = 'Scroller', 
+                                                   rownames = FALSE, options = list(
+                                                     deferRender = TRUE,
+                                                     scrollY = 800,
+                                                     scroller = TRUE,
+                                                     bFilter=0
+                                                   )
+  )
 
 
 #--------CHARTS/GRAPHS-----------------------------------------------------------------------
@@ -162,6 +171,39 @@ output$hourlyGraph <- renderPlotly({
             barmode = 'group')
  })
 
+  
+  output$injuriesChart <- renderPlotly({
+    
+    plot_ly(totalDamages, x = ~Year, y = ~Injuries, name = 'trace 0', type = 'scatter', mode = 'lines+markers') %>%
+      
+      
+      layout(font = list(size=30), title="Injuries per Year",
+             yaxis = list(title = "# of Injuries", titlefont=list(size=30), tickfont=list(size=20)),
+             margin = list(l = 100, t = 100, b = 100),
+             barmode = 'group')
+  })
+  
+  output$deathsChart <- renderPlotly({
+    
+    plot_ly(totalDamages, x = ~Year, y = ~Deaths, name = 'trace 0', type = 'scatter', mode = 'lines+markers') %>%
+      
+      
+      layout(font = list(size=30), title="Deaths per Year",
+             yaxis = list(title = "# of Deaths", titlefont=list(size=30), tickfont=list(size=20)),
+             margin = list(l = 100, t = 100, b = 100),
+             barmode = 'group')
+  })
+  
+  output$lossChart <- renderPlotly({
+    
+    plot_ly(totalDamages, x = ~Year, y = ~Loss, name = 'trace 0', type = 'scatter', mode = 'lines+markers') %>%
+      
+      
+      layout(font = list(size=30), title="Property Loss per Year",
+             yaxis = list(title = "Property Loss Value", titlefont=list(size=30), tickfont=list(size=20)),
+             margin = list(l = 100, t = 100, b = 100),
+             barmode = 'group')
+  })
 
 #--------MAP-----------------------------------------------------------------------
   
@@ -172,16 +214,20 @@ output$hourlyGraph <- renderPlotly({
     pal <- colorFactor(c("red","blue"), domain = c("well","death"))
     
     #rename for testing
-    colnames(tornadoes)[16] <- "latitude"
-    colnames(tornadoes)[17] <- "longitude"
-    
-    m <-leaflet(tornadoes) %>% addTiles() %>% addCircleMarkers(
-      radius = 5,
-      color = "blue",
-      stroke = FALSE,
-      fillOpacity = 1
+    tornadoesMap <- tornadoes %>% filter(st == "IL")
+    colnames(tornadoesMap)[16] <- "latitude"
+    colnames(tornadoesMap)[17] <- "longitude"
+ 
+
+    m <-leaflet(tornadoesMap) %>% 
+    # enable to set overview of US #setView(-96, 37.8, 4) %>%
+      setView(-87, 41, 8) %>% #set view to chicago 
+      #addLegend(pal = pal, values = ~density, opacity = 0.7, title = NULL,position = "bottomright") %>%
+      addTiles() %>% 
+      addPolylines(data = tornadoesMap, lng = ~longitude, lat = ~latitude)
+      #addCircleMarkers(radius = 1,color = "blue", stroke = FALSE,fillOpacity = 1)
       #label = ~ifelse(type == "death",paste("Deaths:", joined$deaths) , "Well")
-    ) 
+     
     # use the black/white map so it doesn't colide with the data we are displaying 
     m = addProviderTiles(map = m, provider = "CartoDB.Positron")
     #set starting position to one of the locations from the data file 
