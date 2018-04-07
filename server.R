@@ -13,6 +13,80 @@ server <- function(input, output) {
   yearlyTornadoes <- totalTornadoes %>% group_by(yr, mag) %>% summarise(n())
   names(yearlyTornadoes) <- c("Year", "Magnitude", "Count")
   
+  #2
+  monthsMag <- totalTornadoes %>% group_by(mo, mag) %>% summarise(n())
+  names(monthsMag) <- c("mo", "mag", "total")
+  
+  magTotals <- aggregate(total ~ mag, monthsMag, FUN = sum)
+  test <- aggregate(mag ~ mo, monthsMag, FUN = sum)
+  
+  magTotals$jan <- 0
+  magTotals$feb <- 0
+  magTotals$mar <- 0
+  magTotals$apr <- 0
+  magTotals$may <- 0
+  magTotals$jun <- 0
+  magTotals$jul <- 0
+  magTotals$aug <- 0
+  magTotals$sep <- 0
+  magTotals$oct <- 0
+  magTotals$nov <- 0
+  magTotals$dec <- 0
+  
+  
+  magTotals$janPercent <- 0
+  magTotals$febPercent <- 0
+  magTotals$marPercent <- 0
+  magTotals$aprPercent <- 0
+  magTotals$mayPercent <- 0
+  magTotals$junPercent <- 0
+  magTotals$julPercent <- 0
+  magTotals$augPercent <- 0
+  magTotals$sepPercent <- 0
+  magTotals$octPercent <- 0
+  magTotals$novPercent <- 0
+  magTotals$decPercent <- 0
+  
+  for (i in 1:length(test$mo)){
+    for (j in 1:length(magTotals$mag)){
+      # assumption here that magTotals$mag contains all magnitude ranges (this way we account for cases were a particular
+      # month might not have ANY of a particular magnitude tornado)
+      temp <- monthsMag %>% filter(mo == i) %>% filter(mag == magTotals$mag[j])
+      if (length(temp$mag) == 0){
+        magTotals[[i+2]][j] <- 0
+        magTotals[[i+14]][j] <- 0
+        tGraph <- data.frame(
+          mo = i,
+          mag = magTotals$mag[j],
+          total = 0,
+          magPercent = 0
+        )
+        if (i*j == 1){
+          graphFriendlyMagTotals <- tGraph
+        } else {
+          graphFriendlyMagTotals <- rbind(graphFriendlyMagTotals, tGraph)
+        }
+      } else {
+        magTotals[[i+2]][j] <- temp$total
+        magTotals[[i+14]][j] <- round(temp$total / magTotals[[2]][j], 3)
+        tGraph <- data.frame(
+          mo = i,
+          mag = magTotals$mag[j],
+          total = temp$total,
+          magPercent = magTotals[[i+14]][j]
+        )
+        if (i*j == 1){
+          graphFriendlyMagTotals <- tGraph
+        } else {
+          graphFriendlyMagTotals <- rbind(graphFriendlyMagTotals, tGraph)
+        }
+      }
+    }
+  }
+  
+  #3
+  
+  
   #4
   #TO DO
   
