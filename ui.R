@@ -68,7 +68,7 @@ ui <- dashboardPage(
       ),
       tabItem(tabName = "vijay",
               fluidRow(
-                box(title = "Total Tornadoes by Magnitude - IL - 1950 to 2009", solidHeader = TRUE, status = "primary", width = 12,
+                box(title = "MONTHLY Total Tornadoes by Magnitude - IL - 1950 to 2009", solidHeader = TRUE, status = "primary", width = 12,
                       tabBox(
                         id = "tab_monthyTotalsInILGraphs", height = "850px",
                         tabPanel("Total Numbers Monthly", plotlyOutput("magTotalMonthChart", height = 800)),
@@ -76,11 +76,31 @@ ui <- dashboardPage(
                         width = 12
                       )
                   ),
-                box(title = "Total Tornadoes by Magnitude - IL - 1950 to 2009", status = "primary", solidHeader = TRUE, width = 12,
+                box(title = "MONTHLY Total Tornadoes by Magnitude - IL - 1950 to 2009", status = "primary", solidHeader = TRUE, width = 12,
                     tabBox(
                       id = "tab_monthlyTotalsInILTables", height = "850px",
                       tabPanel("Total Numbers Monthly", div(DT::dataTableOutput("magTotalMonthTable", height = 300), style = "font-size: 200%")),
                       tabPanel("Total Percent Monthly", div(DT::dataTableOutput("magTotalMonthTablePercent", height = 300), style = "font-size: 200%")),
+                      width = 12
+                    )
+                ),
+                box(title = "HOURLY Total Tornadoes by Magnitude - IL - 1950 to 2009", solidHeader = TRUE, status = "primary", width = 12,
+                    tabBox(
+                      id = "tab_monthyTotalsInILGraphs", height = "850px",
+                      tabPanel("Total Numbers Hourly", plotlyOutput("magTotalHourChart", height = 800)),
+                      tabPanel("Total Percent Hourly", plotlyOutput("magTotalHourChartPercent", height = 800)),
+                      width = 12
+                    )
+                ),
+                box(title = "HOURLY Total Tornadoes by Magnitude - IL - 1950 to 2009", status = "primary", solidHeader = TRUE, width = 12,
+                    tabBox(
+                      id = "tab_monthlyTotalsInILTables", height = "850px",
+                      tabPanel("Total Numbers Hourly", 
+                               div(DT::dataTableOutput("magTotalHourTableI", height = 300), style = "font-size: 200%"),
+                               div(DT::dataTableOutput("magTotalHourTableII", height = 300), style = "font-size: 200%")),
+                      tabPanel("Total Percent Hourly",
+                               div(DT::dataTableOutput("magTotalHourTablePercentI", height = 300), style = "font-size: 200%"),
+                               div(DT::dataTableOutput("magTotalHourTablePercentII", height = 300), style = "font-size: 200%")),
                       width = 12
                     )
                 )

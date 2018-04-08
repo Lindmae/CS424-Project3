@@ -17,35 +17,13 @@ server <- function(input, output) {
   monthsMag <- totalTornadoes %>% group_by(mo, mag) %>% summarise(n())
   names(monthsMag) <- c("mo", "mag", "total")
   
-  magTotals <- aggregate(total ~ mag, monthsMag, FUN = sum)
+  magTotals <- data.frame(
+    aggregate(total ~ mag, monthsMag, FUN = sum),
+    jan = 0, feb = 0, mar = 0, apr = 0, may = 0, jun = 0, jul = 0, aug = 0, sep = 0, oct = 0, nov = 0, dec = 0,
+    janPercent = 0, febPercent = 0, marPercent = 0, aprPercent = 0, mayPercent = 0, junPercent = 0, julPercent = 0, augPercent = 0,
+    sepPercent = 0, octPercent = 0, novPercent = 0, decPercent = 0
+  )
   test <- aggregate(mag ~ mo, monthsMag, FUN = sum)
-  
-  magTotals$jan <- 0
-  magTotals$feb <- 0
-  magTotals$mar <- 0
-  magTotals$apr <- 0
-  magTotals$may <- 0
-  magTotals$jun <- 0
-  magTotals$jul <- 0
-  magTotals$aug <- 0
-  magTotals$sep <- 0
-  magTotals$oct <- 0
-  magTotals$nov <- 0
-  magTotals$dec <- 0
-  
-  
-  magTotals$janPercent <- 0
-  magTotals$febPercent <- 0
-  magTotals$marPercent <- 0
-  magTotals$aprPercent <- 0
-  magTotals$mayPercent <- 0
-  magTotals$junPercent <- 0
-  magTotals$julPercent <- 0
-  magTotals$augPercent <- 0
-  magTotals$sepPercent <- 0
-  magTotals$octPercent <- 0
-  magTotals$novPercent <- 0
-  magTotals$decPercent <- 0
   
   for (i in 1:length(test$mo)){
     for (j in 1:length(magTotals$mag)){
@@ -85,6 +63,63 @@ server <- function(input, output) {
   }
   
   #3
+  # similar approach to breaking up hours as here: https://stats.stackexchange.com/questions/147063/r-how-to-separate-date-time-data-types
+  hr <- format(as.POSIXct(strptime(totalTornadoes$time,"%H:%M:%S",tz="")) ,format = "%H")
+  min <- format(as.POSIXct(strptime(totalTornadoes$time,"%H:%M:%S",tz="")) ,format = "%M")
+  expandedTotalTornadoes <- totalTornadoes
+  expandedTotalTornadoes$hr <- hr
+  expandedTotalTornadoes$min <- min
+  
+  hoursMag <- expandedTotalTornadoes %>% group_by(hr, mag) %>% summarise(n())
+  names(hoursMag) <- c("hr", "mag", "total")
+  
+  magTotalsByHour <- data.frame(
+    aggregate(total ~ mag, hoursMag, FUN = sum),
+    hour0 = 0, hour1 = 0, hour2 = 0, hour3 = 0, hour4 = 0, hour5 = 0, hour6 = 0, hour7 = 0, hour8 = 0,
+    hour9 = 0, hour10 = 0, hour11 = 0, hour12 = 0, hour13 = 0, hour14 = 0, hour15 = 0, hour16 = 0, hour17 = 0,
+    hour18 = 0, hour19 = 0, hour20 = 0, hour21 = 0, hour22 = 0, hour23 = 0,
+    prcntHr0 = 0, prcntHr1 = 0, prcntHr2 = 0, prcntHr3 = 0, prcntHr4 = 0, prcntHr5 = 0, prcntHr6 = 0, prcntHr7 = 0, prcntHr8 = 0,
+    prcntHr9 = 0, prcntHr10 = 0, prcntHr11 = 0, prcntHr12 = 0, prcntHr13 = 0, prcntHr14 = 0, prcntHr15 = 0, prcntHr16 = 0, prcntHr17 = 0,
+    prcntHr18 = 0, prcntHr19 = 0, prcntHr20 = 0, prcntHr21 = 0, prcntHr22 = 0, prcntHr23 = 0
+  )
+  testHour <- aggregate(mag ~ hr, hoursMag, FUN = sum)
+  
+  for (i in 1:length(testHour$hr)){
+    for (j in 1:length(magTotalsByHour$mag)){
+      # assumption here that magTotalsByHour$mag contains all magnitude ranges (this way we account for cases were a particular
+      # hour might not have ANY of a particular magnitude tornado)
+      temp <- hoursMag %>% filter(hr == testHour$hr[i]) %>% filter(mag == magTotalsByHour$mag[j])
+      if (length(temp$mag) == 0){
+        magTotalsByHour[[i+2]][j] <- 0
+        magTotalsByHour[[i+26]][j] <- 0
+        tGraph <- data.frame(
+          hr = i-1,
+          mag = magTotalsByHour$mag[j],
+          total = 0,
+          magPercent = 0
+        )
+        if (i*j == 1){
+          graphFriendlymagTotalsByHour <- tGraph
+        } else {
+          graphFriendlymagTotalsByHour <- rbind(graphFriendlymagTotalsByHour, tGraph)
+        }
+      } else {
+        magTotalsByHour[[i+2]][j] <- temp$total
+        magTotalsByHour[[i+26]][j] <- round(temp$total / magTotalsByHour[[2]][j], 3)
+        tGraph <- data.frame(
+          hr = i-1,
+          mag = magTotalsByHour$mag[j],
+          total = temp$total,
+          magPercent = magTotalsByHour[[i+26]][j]
+        )
+        if (i*j == 1){
+          graphFriendlymagTotalsByHour <- tGraph
+        } else {
+          graphFriendlymagTotalsByHour <- rbind(graphFriendlymagTotalsByHour, tGraph)
+        }
+      }
+    }
+  }
   
   
   #4
@@ -173,6 +208,41 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                                  bFilter=0
                                                )
   )
+  
+  output$magTotalHourTableI <- renderDataTable(magTotalsByHour[, 1:14], extensions = 'Scroller', 
+                                                      rownames = FALSE, options = list(
+                                                        deferRender = TRUE,
+                                                        scrollY = 800,
+                                                        scroller = TRUE,
+                                                        bFilter=0
+                                                      )
+  )
+  output$magTotalHourTableII <- renderDataTable(magTotalsByHour[, c(1, 2, 15:26)], extensions = 'Scroller', 
+                                               rownames = FALSE, options = list(
+                                                 deferRender = TRUE,
+                                                 scrollY = 800,
+                                                 scroller = TRUE,
+                                                 bFilter=0
+                                               )
+  )
+  output$magTotalHourTablePercentI <- renderDataTable(magTotalsByHour[, c(1, 27:38)], extensions = 'Scroller', 
+                                               rownames = FALSE, options = list(
+                                                 deferRender = TRUE,
+                                                 scrollY = 800,
+                                                 scroller = TRUE,
+                                                 bFilter=0
+                                               )
+  )
+  output$magTotalHourTablePercentII <- renderDataTable(magTotalsByHour[, c(1, 39:50)], extensions = 'Scroller', 
+                                                rownames = FALSE, options = list(
+                                                  deferRender = TRUE,
+                                                  scrollY = 800,
+                                                  scroller = TRUE,
+                                                  bFilter=0
+                                                )
+  )
+  
+  
 
 
 #--------CHARTS/GRAPHS-----------------------------------------------------------------------
@@ -223,6 +293,7 @@ output$hourlyGraph <- renderPlotly({
              barmode = 'group')
   })
   
+  # get TOTAL TORNADOES (by MAG) per MONTH summed over 1950 - 2009
   output$magTotalMonthChart <- renderPlotly({
     data <- graphFriendlyMagTotals
     textOfMonth <- list("January", "February", "March", "April ", "May", "June", "July", "August", "September", "October", "November", "December")
@@ -234,7 +305,7 @@ output$hourlyGraph <- renderPlotly({
     mag4 <- data %>% filter(mag == 4)
     mag5 <- data %>% filter(mag == 5)
     
-    plot_ly(mag0, x = ~textOfMonth, y = ~mag0$total, type = 'bar', name = 'Mag 0', hoverinfo = 'text', 
+    plot_ly(test, x = ~textOfMonth, y = ~mag0$total, type = 'bar', name = 'Mag 0', hoverinfo = 'text', 
             text = ~paste('</br>Mag:', mag0$mag, '</br>Tornadoes:', mag0$total, '<br>Month:', mag0$mo, '</br>')) %>%
       add_trace(y = ~mag1$total, name = 'Mag 1', hoverinfo = 'text', 
                 text = ~paste('</br>Mag:', mag1$mag, '</br>Tornadoes:', mag1$total, '<br> Month:', mag1$mo, '</br>')) %>% 
@@ -253,6 +324,7 @@ output$hourlyGraph <- renderPlotly({
     
   })
   
+  # get PERCENT TORNADOES (by MAG) per MONTH summed over 1950 - 2009
   output$magTotalMonthChartPercent <- renderPlotly({
     data <- graphFriendlyMagTotals
     textOfMonth <- list("January", "February", "March", "April ", "May", "June", "July", "August", "September", "October", "November", "December")
@@ -282,7 +354,69 @@ output$hourlyGraph <- renderPlotly({
              margin=list(l=100, t=100, b=100))
     
   })
+  
+  # get TOTAL TORNADOES (by MAG) per HOUR summed over 1950 - 2009
+  output$magTotalHourChart <- renderPlotly({
+    data <- graphFriendlymagTotalsByHour
 
+    # takes mag totals across 24 hours (each has a length of 24)
+    mag0 <- data %>% filter(mag == 0)
+    mag1 <- data %>% filter(mag == 1)
+    mag2 <- data %>% filter(mag == 2)
+    mag3 <- data %>% filter(mag == 3)
+    mag4 <- data %>% filter(mag == 4)
+    mag5 <- data %>% filter(mag == 5)
+    
+    plot_ly(testHour, x = ~hr, y = ~mag0$total, type = 'bar', name = 'Mag 0', hoverinfo = 'text', 
+            text = ~paste('</br>Mag:', mag0$mag, '</br>Tornadoes:', mag0$total, '<br>Hour:', mag0$hr, '</br>')) %>%
+      add_trace(y = ~mag1$total, name = 'Mag 1', hoverinfo = 'text', 
+                text = ~paste('</br>Mag:', mag1$mag, '</br>Tornadoes:', mag1$total, '<br> Hour:', mag1$hr, '</br>')) %>% 
+      add_trace(y = ~mag2$total, name = 'Mag 2', hoverinfo = 'text', 
+                text = ~paste('</br>Mag:', mag2$mag, '</br>Tornadoes:', mag2$total, '<br> Hour:', mag2$hr, '</br>')) %>% 
+      add_trace(y = ~mag3$total, name = 'Mag 3', hoverinfo = 'text', 
+                text = ~paste('</br>Mag:', mag3$mag, '</br>Tornadoes:', mag3$total, '<br> Hour:', mag3$hr, '</br>')) %>%
+      add_trace(y = ~mag4$total, name = 'Mag 4', hoverinfo = 'text', 
+                text = ~paste('</br>Mag:', mag4$mag, '</br>Tornadoes:', mag4$total, '<br> Hour:', mag4$hr, '</br>')) %>%
+      add_trace(y = ~mag5$total, name = 'Mag 5', hoverinfo = 'text', 
+                text = ~paste('</br>Mag:', mag5$mag, '</br>Tornadoes:', mag5$total, '<br> Hour:', mag5$hr, '</br>')) %>% 
+      
+      layout(title = "Total Tornadoes by Magnitude in Illinois 1950 - 2009", xaxis = list(title = "Hour", autotick = F, dtick = 1, titlefont=list(size=30), tickfont=list(size=20))) %>%
+      layout(yaxis = list(title = 'Total Tornadoes', titlefont=list(size=30), tickfont=list(size=20)), barmode = 'stack',
+             margin=list(l=100, t=100, b=100))
+    
+  })
+
+  # get PERCENT TORNADOES (by MAG) per HOUR summed over 1950 - 2009
+  output$magTotalHourChartPercent <- renderPlotly({
+    data <- graphFriendlymagTotalsByHour
+    
+    # takes mag totals across 24 hours (each has a length of 24)
+    mag0 <- data %>% filter(mag == 0)
+    mag1 <- data %>% filter(mag == 1)
+    mag2 <- data %>% filter(mag == 2)
+    mag3 <- data %>% filter(mag == 3)
+    mag4 <- data %>% filter(mag == 4)
+    mag5 <- data %>% filter(mag == 5)
+    
+    plot_ly(testHour, x = ~hr, y = ~mag0$magPercent, type = 'bar', name = 'Mag 0', hoverinfo = 'text', 
+            text = ~paste('</br>Mag:', mag0$mag, '</br>% Tornadoes:', mag0$magPercent, '<br>Hour:', mag0$mo, '</br>')) %>%
+      add_trace(y = ~mag1$magPercent, name = 'Mag 1', hoverinfo = 'text', 
+                text = ~paste('</br>Mag:', mag1$mag, '</br>% Tornadoes:', mag1$magPercent, '<br> Hour:', mag1$hr, '</br>')) %>% 
+      add_trace(y = ~mag2$magPercent, name = 'Mag 2', hoverinfo = 'text', 
+                text = ~paste('</br>Mag:', mag2$mag, '</br>% Tornadoes:', mag2$magPercent, '<br> Hour:', mag2$hr, '</br>')) %>% 
+      add_trace(y = ~mag3$magPercent, name = 'Mag 3', hoverinfo = 'text', 
+                text = ~paste('</br>Mag:', mag3$mag, '</br>% Tornadoes:', mag3$magPercent, '<br> Hour:', mag3$hr, '</br>')) %>%
+      add_trace(y = ~mag4$magPercent, name = 'Mag 4', hoverinfo = 'text', 
+                text = ~paste('</br>Mag:', mag4$mag, '</br>% Tornadoes:', mag4$magPercent, '<br> Hour:', mag4$hr, '</br>')) %>%
+      add_trace(y = ~mag5$magPercent, name = 'Mag 5', hoverinfo = 'text', 
+                text = ~paste('</br>Mag:', mag5$mag, '</br>% Tornadoes:', mag5$magPercent, '<br> Hour:', mag5$hr, '</br>')) %>% 
+      
+      layout(title = "Percent of Tornadoes by Magnitude in Illinois 1950 - 2009", xaxis = list(title = "Hour", autotick = F, dtick = 1, titlefont=list(size=30), tickfont=list(size=20))) %>%
+      layout(yaxis = list(title = 'Total Tornadoes', titlefont=list(size=30), tickfont=list(size=20)), barmode = 'stack',
+             margin=list(l=100, t=100, b=100))
+    
+  })
+  
 #--------MAP-----------------------------------------------------------------------
   
   # add a leaflet map and put markers where the deaths occured
