@@ -67,7 +67,24 @@ ui <- dashboardPage(
                         ))
       ),
       tabItem(tabName = "vijay",
-              fluidRow( box(title = "vijay Title", solidHeader = TRUE, status = "primary", width = 6))
+              fluidRow(
+                box(title = "Total Tornadoes by Magnitude - IL - 1950 to 2009", solidHeader = TRUE, status = "primary", width = 12,
+                      tabBox(
+                        id = "tab_monthyTotalsInILGraphs", height = "850px",
+                        tabPanel("Total Numbers Monthly", plotlyOutput("magTotalMonthChart", height = 800)),
+                        tabPanel("Total Percent Monthly", plotlyOutput("magTotalMonthChartPercent", height = 800)),
+                        width = 12
+                      )
+                  ),
+                box(title = "Total Tornadoes by Magnitude - IL - 1950 to 2009", status = "primary", solidHeader = TRUE, width = 12,
+                    tabBox(
+                      id = "tab_monthlyTotalsInILTables", height = "850px",
+                      tabPanel("Total Numbers Monthly", div(DT::dataTableOutput("magTotalMonthTable", height = 300), style = "font-size: 200%")),
+                      tabPanel("Total Percent Monthly", div(DT::dataTableOutput("magTotalMonthTablePercent", height = 300), style = "font-size: 200%")),
+                      width = 12
+                    )
+                )
+                )
       )
     )
 
