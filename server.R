@@ -494,28 +494,25 @@ output$hourlyGraph <- renderPlotly({
   # add a leaflet map and put markers where the deaths occured
   
   output$map <- renderLeaflet({
-    #red is for the deaths, while blue is for the wells 
-    pal <- colorFactor(c("red","blue"), domain = c("well","death"))
     
-    #rename for testing
-    tornadoesMap <- tornadoes %>% filter(st == "IL")
-    colnames(tornadoesMap)[16] <- "latitude"
-    colnames(tornadoesMap)[17] <- "longitude"
- 
-
+    #filter to be only illinois, and make sure they are valid points 
+    tornadoesMap <- tornadoes %>% filter(st == "IL" & slon != 0.00)
+    #for any position that ends at 0.00 lat/lon, we will set it to be the same as the start 
+    tornadoesMap$elat[tornadoesMap$elat == 0.00] <- tornadoesMap$slat 
+    tornadoesMap$elon[tornadoesMap$elon == 0.00] <- tornadoesMap$slon
+    
     m <-leaflet(tornadoesMap) %>% 
-    # enable to set overview of US #setView(-96, 37.8, 4) %>%
-      setView(-87, 41, 8) %>% #set view to chicago 
-      #addLegend(pal = pal, values = ~density, opacity = 0.7, title = NULL,position = "bottomright") %>%
-      addTiles() %>% 
-      addPolylines(data = tornadoesMap, lng = ~longitude, lat = ~latitude)
-      #addCircleMarkers(radius = 1,color = "blue", stroke = FALSE,fillOpacity = 1)
-      #label = ~ifelse(type == "death",paste("Deaths:", joined$deaths) , "Well")
+     setView(-96, 37.8, 4) %>% #to set overview of US 
+      addTiles() 
+    
+    for(i in 1:nrow(tornadoesMap)){
+    m <-  addPolylines(m,data = tornadoesMap,
+         lat = as.numeric(tornadoesMap[i, c('slat','elat' )]), lng = as.numeric(tornadoesMap[i, c('slon', 'elon')])) 
+    }
      
     # use the black/white map so it doesn't colide with the data we are displaying 
     m = addProviderTiles(map = m, provider = "CartoDB.Positron")
-    #set starting position to one of the locations from the data file 
-    #m <- setView(m, lng = -0.136668,lat = 51.513341 , zoom = 16)
+
     m
   })
   
