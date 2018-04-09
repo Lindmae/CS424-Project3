@@ -88,6 +88,34 @@ server <- function(input, output) {
     chosen
   })
   
+  getTimeFrameDamages <- reactive({
+    totalALL <- NA
+    totalALL$hr <- totalDamagesByHour$hr
+    
+    if(!input$time){
+      totalALL$hr <- format(strptime(totalALL$hr, format='%H'), '%r')
+    }
+    
+    chosen <- NA
+    chosen$hr <- unique(totalALL$hr)
+    
+    chosen
+  })
+  
+  getTotalDamagesByHourAMPM<- reactive({
+    totalALL <- NA
+    totalALL$hr <- totalDamagesByHour$hr
+    
+    if(!input$time){
+      totalALL$hr <- format(strptime(totalALL$hr, format='%H'), '%r')
+    }
+    
+    chosen <- totalDamagesByHour
+    chosen$hr <- unique(totalALL$hr)
+    
+    chosen
+  })
+  
   # adjust table interfaces to am/pm
   getMagTotalsByHourAMPM <- reactive({
     chosen <- magTotalsByHour
@@ -132,6 +160,15 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                                 scroller = TRUE,
                                                 bFilter=0
                                               )
+  )
+  
+  output$totalDamagesByHourTable <- renderDataTable(getTotalDamagesByHourAMPM(), extensions = 'Scroller', 
+                                                     rownames = FALSE, options = list(
+                                                       deferRender = TRUE,
+                                                       scrollY = 800,
+                                                       scroller = TRUE,
+                                                       bFilter=0
+                                                     )
   )
   
   output$magTotalMonthTable <- renderDataTable(magTotals[, 1:14], extensions = 'Scroller', 
@@ -399,7 +436,46 @@ output$hourlyGraph <- renderPlotly({
       
       
       layout(title = "Loss by Month in Illinois 1950 - 2009", xaxis = list(title = "Month", autotick = F, dtick = 1, 
-                                                                               titlefont=list(size=30), tickfont=list(size=20))) %>%
+                titlefont=list(size=30), tickfont=list(size=20))) %>%
+      layout(yaxis = list(title = 'Total Loss', titlefont=list(size=30), tickfont=list(size=20)), barmode = 'stack',
+             margin=list(l=100, t=100, b=100))
+  })
+  
+  # vis (FAT, INJ, and LOSS) per HOUR summed over 1950 - 2009
+  output$injuriesChartByHour <- renderPlotly({
+    timeFrame <- getTimeFrameDamages()
+
+    plot_ly(totalDamagesByHour, x = ~timeFrame$hr, y = ~Injuries, name = 'trace 0', type = 'scatter', mode = 'lines+markers',
+            hoverinfo = 'text', text = ~paste('</br>Injuries:', Injuries, '<br>Hour:', timeFrame$hr, '</br>')) %>%
+      
+      layout(title = "Injuries by Hour in Illinois 1950 - 2009", xaxis = list(title = "Hour", autotick = F, dtick = 1, 
+            categoryorder = "array", categoryarray = timeFrame$hr, titlefont=list(size=30), tickfont=list(size=20))) %>%
+      layout(yaxis = list(title = 'Total Injuries', titlefont=list(size=30), tickfont=list(size=20)), barmode = 'stack',
+             margin=list(l=100, t=100, b=100))
+  })
+  
+  output$deathsChartByHour <- renderPlotly({
+    timeFrame <- getTimeFrameDamages()
+    
+    plot_ly(totalDamagesByHour, x = ~timeFrame$hr, y = ~Deaths, name = 'trace 0', type = 'scatter', mode = 'lines+markers',
+            hoverinfo = 'text', text = ~paste('</br>Deaths:', Deaths, '<br>Hour:', timeFrame$hr, '</br>')) %>%
+      
+      
+      layout(title = "Deaths by Hour in Illinois 1950 - 2009", xaxis = list(title = "Hour", autotick = F, dtick = 1, 
+            categoryorder = "array", categoryarray = timeFrame$hr, titlefont=list(size=30), tickfont=list(size=20))) %>%
+      layout(yaxis = list(title = 'Total Deaths', titlefont=list(size=30), tickfont=list(size=20)), barmode = 'stack',
+             margin=list(l=100, t=100, b=100))
+  })
+  
+  output$lossChartByHour <- renderPlotly({
+    timeFrame <- getTimeFrameDamages()
+    
+    plot_ly(totalDamagesByHour, x = ~timeFrame$hr, y = ~Loss, name = 'trace 0', type = 'scatter', mode = 'lines+markers',
+            hoverinfo = 'text', text = ~paste('</br>Loss:', Loss, '<br>Hour:', timeFrame$hr, '</br>')) %>%
+      
+      
+      layout(title = "Loss by Hour in Illinois 1950 - 2009", xaxis = list(title = "Hour", autotick = F, dtick = 1, 
+                  categoryorder = "array", categoryarray = timeFrame$hr, titlefont=list(size=30), tickfont=list(size=20))) %>%
       layout(yaxis = list(title = 'Total Loss', titlefont=list(size=30), tickfont=list(size=20)), barmode = 'stack',
              margin=list(l=100, t=100, b=100))
   })
