@@ -18,6 +18,7 @@ server <- function(input, output) {
   load("rdata/graphFriendlyMagTotals.RData")
   
   #3
+  load("rdata/expandedTotalTornadoes.RData") # this object includes hr and min as seperate columns
   load("rdata/magTotalsByHour.RData")
   load("rdata/graphFriendlymagTotalsByHour.RData")
   
@@ -43,6 +44,12 @@ server <- function(input, output) {
   totalDamages <- merge(deathCount,injuriesCount,by="Year")
   totalDamages <- merge(totalDamages, lossCount, by="Year")
   
+  #6
+  load("rdata/totalDamagesByMonth.RData")
+  
+  #7
+  load("rdata/totalDamagesByHour.RData")
+  
   #8
   county1 <- totalTornadoes %>% group_by(f1) %>% summarise(n())
   names(county1) <- c("County", "Count1")
@@ -66,6 +73,7 @@ server <- function(input, output) {
   countyData <- countyData[order(-countyData$`Total Tornadoes`),] 
   
 #--------REACTIVE-----------------------------------------------------------------------
+  # adjust graphical interfaces to am/pm
   getTimeFrame <- reactive({
     totalALL <- NA
     totalALL$hr <- graphFriendlymagTotalsByHour$hr
@@ -80,6 +88,7 @@ server <- function(input, output) {
     chosen
   })
   
+  # adjust table interfaces to am/pm
   getMagTotalsByHourAMPM <- reactive({
     chosen <- magTotalsByHour
     if(!input$time){
@@ -114,6 +123,15 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                                      scroller = TRUE,
                                                      bFilter=0
                                                    )
+  )
+  
+  output$totalDamagesByMonthTable <- renderDataTable(totalDamagesByMonth, extensions = 'Scroller', 
+                                              rownames = FALSE, options = list(
+                                                deferRender = TRUE,
+                                                scrollY = 800,
+                                                scroller = TRUE,
+                                                bFilter=0
+                                              )
   )
   
   output$magTotalMonthTable <- renderDataTable(magTotals[, 1:14], extensions = 'Scroller', 
@@ -218,7 +236,7 @@ output$hourlyGraph <- renderPlotly({
              barmode = 'group')
   })
   
-  # get TOTAL TORNADOES (by MAG) per MONTH summed over 1950 - 2009
+  # vis TOTAL TORNADOES (by MAG) per MONTH summed over 1950 - 2009
   output$magTotalMonthChart <- renderPlotly({
     data <- graphFriendlyMagTotals
     textOfMonth <- list("January", "February", "March", "April ", "May", "June", "July", "August", "September", "October", "November", "December")
@@ -249,7 +267,7 @@ output$hourlyGraph <- renderPlotly({
     
   })
   
-  # get PERCENT TORNADOES (by MAG) per MONTH summed over 1950 - 2009
+  # vis PERCENT TORNADOES (by MAG) per MONTH summed over 1950 - 2009
   output$magTotalMonthChartPercent <- renderPlotly({
     data <- graphFriendlyMagTotals
     textOfMonth <- list("January", "February", "March", "April ", "May", "June", "July", "August", "September", "October", "November", "December")
@@ -280,7 +298,7 @@ output$hourlyGraph <- renderPlotly({
     
   })
   
-  # get TOTAL TORNADOES (by MAG) per HOUR summed over 1950 - 2009
+  # vis TOTAL TORNADOES (by MAG) per HOUR summed over 1950 - 2009
   output$magTotalHourChart <- renderPlotly({
     data <- graphFriendlymagTotalsByHour
     timeFrame <- getTimeFrame()
@@ -313,7 +331,7 @@ output$hourlyGraph <- renderPlotly({
     
   })
 
-  # get PERCENT TORNADOES (by MAG) per HOUR summed over 1950 - 2009
+  # vis PERCENT TORNADOES (by MAG) per HOUR summed over 1950 - 2009
   output$magTotalHourChartPercent <- renderPlotly({
     data <- graphFriendlymagTotalsByHour
     timeFrame <- getTimeFrame()
@@ -345,6 +363,47 @@ output$hourlyGraph <- renderPlotly({
              margin=list(l=100, t=100, b=100))
     
   })
+  
+  # vis (FAT, INJ, and LOSS) per MONTH summed over 1950 - 2009
+  output$injuriesChartByMonth <- renderPlotly({
+    textOfMonth <- list("January", "February", "March", "April ", "May", "June", "July", "August", "September", "October", "November", "December")
+    
+    plot_ly(totalDamagesByMonth, x = ~textOfMonth, y = ~Injuries, name = 'trace 0', type = 'scatter', mode = 'lines+markers',
+            hoverinfo = 'text', text = ~paste('</br>Injuries:', Injuries, '<br>Month:', mo, '</br>')) %>%
+      
+      
+      layout(title = "Injuries by Month in Illinois 1950 - 2009", xaxis = list(title = "Month", autotick = F, dtick = 1, 
+            titlefont=list(size=30), tickfont=list(size=20))) %>%
+      layout(yaxis = list(title = 'Total Injuries', titlefont=list(size=30), tickfont=list(size=20)), barmode = 'stack',
+             margin=list(l=100, t=100, b=100))
+  })
+  
+  output$deathsChartByMonth <- renderPlotly({
+    textOfMonth <- list("January", "February", "March", "April ", "May", "June", "July", "August", "September", "October", "November", "December")
+    
+    plot_ly(totalDamagesByMonth, x = ~textOfMonth, y = ~Deaths, name = 'trace 0', type = 'scatter', mode = 'lines+markers',
+            hoverinfo = 'text', text = ~paste('</br>Deaths:', Deaths, '<br>Month:', mo, '</br>')) %>%
+      
+      
+      layout(title = "Deaths by Month in Illinois 1950 - 2009", xaxis = list(title = "Month", autotick = F, dtick = 1, 
+                                                                               titlefont=list(size=30), tickfont=list(size=20))) %>%
+      layout(yaxis = list(title = 'Total Deaths', titlefont=list(size=30), tickfont=list(size=20)), barmode = 'stack',
+             margin=list(l=100, t=100, b=100))
+  })
+  
+  output$lossChartByMonth <- renderPlotly({
+    textOfMonth <- list("January", "February", "March", "April ", "May", "June", "July", "August", "September", "October", "November", "December")
+    
+    plot_ly(totalDamagesByMonth, x = ~textOfMonth, y = ~Loss, name = 'trace 0', type = 'scatter', mode = 'lines+markers',
+            hoverinfo = 'text', text = ~paste('</br>Loss:', Loss, '<br>Month:', mo, '</br>')) %>%
+      
+      
+      layout(title = "Loss by Month in Illinois 1950 - 2009", xaxis = list(title = "Month", autotick = F, dtick = 1, 
+                                                                               titlefont=list(size=30), tickfont=list(size=20))) %>%
+      layout(yaxis = list(title = 'Total Loss', titlefont=list(size=30), tickfont=list(size=20)), barmode = 'stack',
+             margin=list(l=100, t=100, b=100))
+  })
+  
   
 #--------MAP-----------------------------------------------------------------------
   
