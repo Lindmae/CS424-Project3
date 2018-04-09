@@ -36,6 +36,11 @@ ui <- dashboardPage(
       
       menuItem("Vijay", icon = icon("plane", lib = "font-awesome"), tabName = "vijay"),
       
+      #change between 12/24 hours time formats
+      materialSwitch(inputId = "time", label = "24 Time Format", status = "primary", right = TRUE, value = TRUE),
+      
+      #change between imperial and metric formats
+      materialSwitch(inputId = "metric", label = "Imperial", status = "primary", right = TRUE, value = TRUE),
       
       #info
       menuItem("Info", tabName = "info", icon = icon("th"))

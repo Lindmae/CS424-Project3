@@ -121,7 +121,6 @@ server <- function(input, output) {
     }
   }
   
-  
   #4
   #TO DO
   
@@ -164,11 +163,19 @@ server <- function(input, output) {
   names(countyData) <- c("County", "Total Tornadoes")
   
 #--------REACTIVE-----------------------------------------------------------------------
-# example reactive element below
-# totalTornadoes <- ({
-#  data <- tornadoes %>% filter(st == "IL")
-#  data
-#})
+  getTimeFrame <- reactive({
+    totalALL <- NA
+    totalALL$hr <- graphFriendlymagTotalsByHour$hr
+    
+    if(!input$time){
+      totalALL$hr <- format(strptime(totalALL$hr, format='%H'), '%r')
+    }
+    
+    chosen <- NA
+    chosen$hr <- unique(totalALL$hr)
+    
+    chosen
+  })
 
 
 
@@ -358,6 +365,7 @@ output$hourlyGraph <- renderPlotly({
   # get TOTAL TORNADOES (by MAG) per HOUR summed over 1950 - 2009
   output$magTotalHourChart <- renderPlotly({
     data <- graphFriendlymagTotalsByHour
+    timeFrame <- getTimeFrame()
 
     # takes mag totals across 24 hours (each has a length of 24)
     mag0 <- data %>% filter(mag == 0)
@@ -367,20 +375,21 @@ output$hourlyGraph <- renderPlotly({
     mag4 <- data %>% filter(mag == 4)
     mag5 <- data %>% filter(mag == 5)
     
-    plot_ly(testHour, x = ~hr, y = ~mag0$total, type = 'bar', name = 'Mag 0', hoverinfo = 'text', 
-            text = ~paste('</br>Mag:', mag0$mag, '</br>Tornadoes:', mag0$total, '<br>Hour:', mag0$hr, '</br>')) %>%
+    plot_ly(data, x = ~timeFrame$hr, y = ~mag0$total, type = 'bar', name = 'Mag 0', hoverinfo = 'text', 
+            text = ~paste('</br>Mag:', mag0$mag, '</br>Tornadoes:', mag0$total, '<br>Hour:', timeFrame$hr, '</br>')) %>%
       add_trace(y = ~mag1$total, name = 'Mag 1', hoverinfo = 'text', 
-                text = ~paste('</br>Mag:', mag1$mag, '</br>Tornadoes:', mag1$total, '<br> Hour:', mag1$hr, '</br>')) %>% 
+                text = ~paste('</br>Mag:', mag1$mag, '</br>Tornadoes:', mag1$total, '<br> Hour:', timeFrame$hr, '</br>')) %>% 
       add_trace(y = ~mag2$total, name = 'Mag 2', hoverinfo = 'text', 
-                text = ~paste('</br>Mag:', mag2$mag, '</br>Tornadoes:', mag2$total, '<br> Hour:', mag2$hr, '</br>')) %>% 
+                text = ~paste('</br>Mag:', mag2$mag, '</br>Tornadoes:', mag2$total, '<br> Hour:', timeFrame$hr, '</br>')) %>% 
       add_trace(y = ~mag3$total, name = 'Mag 3', hoverinfo = 'text', 
-                text = ~paste('</br>Mag:', mag3$mag, '</br>Tornadoes:', mag3$total, '<br> Hour:', mag3$hr, '</br>')) %>%
+                text = ~paste('</br>Mag:', mag3$mag, '</br>Tornadoes:', mag3$total, '<br> Hour:', timeFrame$hr, '</br>')) %>%
       add_trace(y = ~mag4$total, name = 'Mag 4', hoverinfo = 'text', 
-                text = ~paste('</br>Mag:', mag4$mag, '</br>Tornadoes:', mag4$total, '<br> Hour:', mag4$hr, '</br>')) %>%
+                text = ~paste('</br>Mag:', mag4$mag, '</br>Tornadoes:', mag4$total, '<br> Hour:', timeFrame$hr, '</br>')) %>%
       add_trace(y = ~mag5$total, name = 'Mag 5', hoverinfo = 'text', 
-                text = ~paste('</br>Mag:', mag5$mag, '</br>Tornadoes:', mag5$total, '<br> Hour:', mag5$hr, '</br>')) %>% 
+                text = ~paste('</br>Mag:', mag5$mag, '</br>Tornadoes:', mag5$total, '<br> Hour:', timeFrame$hr, '</br>')) %>% 
       
-      layout(title = "Total Tornadoes by Magnitude in Illinois 1950 - 2009", xaxis = list(title = "Hour", autotick = F, dtick = 1, titlefont=list(size=30), tickfont=list(size=20))) %>%
+      layout(title = "Total Tornadoes by Magnitude in Illinois 1950 - 2009", xaxis = list(title = "Hour", autotick = F, dtick = 1, 
+            categoryorder = "array", categoryarray = timeFrame$hr, titlefont=list(size=30), tickfont=list(size=20))) %>%
       layout(yaxis = list(title = 'Total Tornadoes', titlefont=list(size=30), tickfont=list(size=20)), barmode = 'stack',
              margin=list(l=100, t=100, b=100))
     
@@ -389,6 +398,7 @@ output$hourlyGraph <- renderPlotly({
   # get PERCENT TORNADOES (by MAG) per HOUR summed over 1950 - 2009
   output$magTotalHourChartPercent <- renderPlotly({
     data <- graphFriendlymagTotalsByHour
+    timeFrame <- getTimeFrame()
     
     # takes mag totals across 24 hours (each has a length of 24)
     mag0 <- data %>% filter(mag == 0)
@@ -398,20 +408,21 @@ output$hourlyGraph <- renderPlotly({
     mag4 <- data %>% filter(mag == 4)
     mag5 <- data %>% filter(mag == 5)
     
-    plot_ly(testHour, x = ~hr, y = ~mag0$magPercent, type = 'bar', name = 'Mag 0', hoverinfo = 'text', 
+    plot_ly(data, x = ~timeFrame$hr, y = ~mag0$magPercent, type = 'bar', name = 'Mag 0', hoverinfo = 'text', 
             text = ~paste('</br>Mag:', mag0$mag, '</br>% Tornadoes:', mag0$magPercent, '<br>Hour:', mag0$mo, '</br>')) %>%
       add_trace(y = ~mag1$magPercent, name = 'Mag 1', hoverinfo = 'text', 
-                text = ~paste('</br>Mag:', mag1$mag, '</br>% Tornadoes:', mag1$magPercent, '<br> Hour:', mag1$hr, '</br>')) %>% 
+                text = ~paste('</br>Mag:', mag1$mag, '</br>% Tornadoes:', mag1$magPercent, '<br> Hour:', timeFrame$hr, '</br>')) %>% 
       add_trace(y = ~mag2$magPercent, name = 'Mag 2', hoverinfo = 'text', 
-                text = ~paste('</br>Mag:', mag2$mag, '</br>% Tornadoes:', mag2$magPercent, '<br> Hour:', mag2$hr, '</br>')) %>% 
+                text = ~paste('</br>Mag:', mag2$mag, '</br>% Tornadoes:', mag2$magPercent, '<br> Hour:', timeFrame$hr, '</br>')) %>% 
       add_trace(y = ~mag3$magPercent, name = 'Mag 3', hoverinfo = 'text', 
-                text = ~paste('</br>Mag:', mag3$mag, '</br>% Tornadoes:', mag3$magPercent, '<br> Hour:', mag3$hr, '</br>')) %>%
+                text = ~paste('</br>Mag:', mag3$mag, '</br>% Tornadoes:', mag3$magPercent, '<br> Hour:', timeFrame$hr, '</br>')) %>%
       add_trace(y = ~mag4$magPercent, name = 'Mag 4', hoverinfo = 'text', 
-                text = ~paste('</br>Mag:', mag4$mag, '</br>% Tornadoes:', mag4$magPercent, '<br> Hour:', mag4$hr, '</br>')) %>%
+                text = ~paste('</br>Mag:', mag4$mag, '</br>% Tornadoes:', mag4$magPercent, '<br> Hour:', timeFrame$hr, '</br>')) %>%
       add_trace(y = ~mag5$magPercent, name = 'Mag 5', hoverinfo = 'text', 
-                text = ~paste('</br>Mag:', mag5$mag, '</br>% Tornadoes:', mag5$magPercent, '<br> Hour:', mag5$hr, '</br>')) %>% 
+                text = ~paste('</br>Mag:', mag5$mag, '</br>% Tornadoes:', mag5$magPercent, '<br> Hour:', timeFrame$hr, '</br>')) %>% 
       
-      layout(title = "Percent of Tornadoes by Magnitude in Illinois 1950 - 2009", xaxis = list(title = "Hour", autotick = F, dtick = 1, titlefont=list(size=30), tickfont=list(size=20))) %>%
+      layout(title = "Percent of Tornadoes by Magnitude in Illinois 1950 - 2009", xaxis = list(title = "Hour", autotick = F, dtick = 1, 
+            categoryorder = "array", categoryarray = timeFrame$hr,titlefont=list(size=30), tickfont=list(size=20))) %>%
       layout(yaxis = list(title = 'Total Tornadoes', titlefont=list(size=30), tickfont=list(size=20)), barmode = 'stack',
              margin=list(l=100, t=100, b=100))
     
