@@ -14,112 +14,12 @@ server <- function(input, output) {
   names(yearlyTornadoes) <- c("Year", "Magnitude", "Count")
   
   #2
-  monthsMag <- totalTornadoes %>% group_by(mo, mag) %>% summarise(n())
-  names(monthsMag) <- c("mo", "mag", "total")
-  
-  magTotals <- data.frame(
-    aggregate(total ~ mag, monthsMag, FUN = sum),
-    jan = 0, feb = 0, mar = 0, apr = 0, may = 0, jun = 0, jul = 0, aug = 0, sep = 0, oct = 0, nov = 0, dec = 0,
-    janPercent = 0, febPercent = 0, marPercent = 0, aprPercent = 0, mayPercent = 0, junPercent = 0, julPercent = 0, augPercent = 0,
-    sepPercent = 0, octPercent = 0, novPercent = 0, decPercent = 0
-  )
-  test <- aggregate(mag ~ mo, monthsMag, FUN = sum)
-  
-  for (i in 1:length(test$mo)){
-    for (j in 1:length(magTotals$mag)){
-      # assumption here that magTotals$mag contains all magnitude ranges (this way we account for cases were a particular
-      # month might not have ANY of a particular magnitude tornado)
-      temp <- monthsMag %>% filter(mo == i) %>% filter(mag == magTotals$mag[j])
-      if (length(temp$mag) == 0){
-        magTotals[[i+2]][j] <- 0
-        magTotals[[i+14]][j] <- 0
-        tGraph <- data.frame(
-          mo = i,
-          mag = magTotals$mag[j],
-          total = 0,
-          magPercent = 0
-        )
-        if (i*j == 1){
-          graphFriendlyMagTotals <- tGraph
-        } else {
-          graphFriendlyMagTotals <- rbind(graphFriendlyMagTotals, tGraph)
-        }
-      } else {
-        magTotals[[i+2]][j] <- temp$total
-        magTotals[[i+14]][j] <- round(temp$total / magTotals[[2]][j], 3)
-        tGraph <- data.frame(
-          mo = i,
-          mag = magTotals$mag[j],
-          total = temp$total,
-          magPercent = magTotals[[i+14]][j]
-        )
-        if (i*j == 1){
-          graphFriendlyMagTotals <- tGraph
-        } else {
-          graphFriendlyMagTotals <- rbind(graphFriendlyMagTotals, tGraph)
-        }
-      }
-    }
-  }
+  load("rdata/magTotals.RData")
+  load("rdata/graphFriendlyMagTotals.RData")
   
   #3
-  # similar approach to breaking up hours as here: https://stats.stackexchange.com/questions/147063/r-how-to-separate-date-time-data-types
-  hr <- format(as.POSIXct(strptime(totalTornadoes$time,"%H:%M:%S",tz="")) ,format = "%H")
-  min <- format(as.POSIXct(strptime(totalTornadoes$time,"%H:%M:%S",tz="")) ,format = "%M")
-  expandedTotalTornadoes <- totalTornadoes
-  expandedTotalTornadoes$hr <- hr
-  expandedTotalTornadoes$min <- min
-  
-  hoursMag <- expandedTotalTornadoes %>% group_by(hr, mag) %>% summarise(n())
-  names(hoursMag) <- c("hr", "mag", "total")
-  
-  magTotalsByHour <- data.frame(
-    aggregate(total ~ mag, hoursMag, FUN = sum),
-    hour0 = 0, hour1 = 0, hour2 = 0, hour3 = 0, hour4 = 0, hour5 = 0, hour6 = 0, hour7 = 0, hour8 = 0,
-    hour9 = 0, hour10 = 0, hour11 = 0, hour12 = 0, hour13 = 0, hour14 = 0, hour15 = 0, hour16 = 0, hour17 = 0,
-    hour18 = 0, hour19 = 0, hour20 = 0, hour21 = 0, hour22 = 0, hour23 = 0,
-    prcntHr0 = 0, prcntHr1 = 0, prcntHr2 = 0, prcntHr3 = 0, prcntHr4 = 0, prcntHr5 = 0, prcntHr6 = 0, prcntHr7 = 0, prcntHr8 = 0,
-    prcntHr9 = 0, prcntHr10 = 0, prcntHr11 = 0, prcntHr12 = 0, prcntHr13 = 0, prcntHr14 = 0, prcntHr15 = 0, prcntHr16 = 0, prcntHr17 = 0,
-    prcntHr18 = 0, prcntHr19 = 0, prcntHr20 = 0, prcntHr21 = 0, prcntHr22 = 0, prcntHr23 = 0
-  )
-  testHour <- aggregate(mag ~ hr, hoursMag, FUN = sum)
-  
-  for (i in 1:length(testHour$hr)){
-    for (j in 1:length(magTotalsByHour$mag)){
-      # assumption here that magTotalsByHour$mag contains all magnitude ranges (this way we account for cases were a particular
-      # hour might not have ANY of a particular magnitude tornado)
-      temp <- hoursMag %>% filter(hr == testHour$hr[i]) %>% filter(mag == magTotalsByHour$mag[j])
-      if (length(temp$mag) == 0){
-        magTotalsByHour[[i+2]][j] <- 0
-        magTotalsByHour[[i+26]][j] <- 0
-        tGraph <- data.frame(
-          hr = i-1,
-          mag = magTotalsByHour$mag[j],
-          total = 0,
-          magPercent = 0
-        )
-        if (i*j == 1){
-          graphFriendlymagTotalsByHour <- tGraph
-        } else {
-          graphFriendlymagTotalsByHour <- rbind(graphFriendlymagTotalsByHour, tGraph)
-        }
-      } else {
-        magTotalsByHour[[i+2]][j] <- temp$total
-        magTotalsByHour[[i+26]][j] <- round(temp$total / magTotalsByHour[[2]][j], 3)
-        tGraph <- data.frame(
-          hr = i-1,
-          mag = magTotalsByHour$mag[j],
-          total = temp$total,
-          magPercent = magTotalsByHour[[i+26]][j]
-        )
-        if (i*j == 1){
-          graphFriendlymagTotalsByHour <- tGraph
-        } else {
-          graphFriendlymagTotalsByHour <- rbind(graphFriendlymagTotalsByHour, tGraph)
-        }
-      }
-    }
-  }
+  load("rdata/magTotalsByHour.RData")
+  load("rdata/graphFriendlymagTotalsByHour.RData")
   
   #4
   #TO DO
@@ -330,7 +230,7 @@ output$hourlyGraph <- renderPlotly({
     mag4 <- data %>% filter(mag == 4)
     mag5 <- data %>% filter(mag == 5)
     
-    plot_ly(test, x = ~textOfMonth, y = ~mag0$total, type = 'bar', name = 'Mag 0', hoverinfo = 'text', 
+    plot_ly(mag0, x = ~textOfMonth, y = ~mag0$total, type = 'bar', name = 'Mag 0', hoverinfo = 'text', 
             text = ~paste('</br>Mag:', mag0$mag, '</br>Tornadoes:', mag0$total, '<br>Month:', mag0$mo, '</br>')) %>%
       add_trace(y = ~mag1$total, name = 'Mag 1', hoverinfo = 'text', 
                 text = ~paste('</br>Mag:', mag1$mag, '</br>Tornadoes:', mag1$total, '<br> Month:', mag1$mo, '</br>')) %>% 
