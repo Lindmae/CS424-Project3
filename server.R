@@ -176,6 +176,21 @@ server <- function(input, output) {
     
     chosen
   })
+  
+  getMagTotalsByHourAMPM <- reactive({
+    chosen <- magTotalsByHour
+    if(!input$time){
+      chosen <- rename(chosen,
+        hour12am = hour0, hour1am = hour1, hour2am = hour2, hour3am = hour3, hour4am = hour4, hour5am = hour5, hour6am = hour6, hour7am = hour7, hour8am = hour8,
+        hour9am = hour9, hour10am = hour10, hour11am = hour11, hour12pm = hour12, hour1pm = hour13, hour2pm = hour14, hour3pm = hour15, hour4pm = hour16, hour5pm = hour17,
+        hour6pm = hour18, hour7pm = hour19, hour8pm = hour20, hour9pm = hour21, hour10pm = hour22, hour11pm = hour23,
+        prcHr12am = prcntHr0, prcHr1am = prcntHr1, prcHr2am = prcntHr2, prcHr3am = prcntHr3, prcHr4am = prcntHr4, prcHr5am = prcntHr5, prcHr6am = prcntHr6, prcHr7am = prcntHr7, prcHr8am = prcntHr8,
+        prcHr9am = prcntHr9, prcHr10am = prcntHr10, prcHr11am = prcntHr11, prcHr12pm = prcntHr12, prcHr1pm = prcntHr13, prcHr2pm = prcntHr14, prcHr3pm = prcntHr15, prcHr4pm = prcntHr16, prcHr5pm = prcntHr17,
+        prcHr6pm = prcntHr18, prcHr7pm = prcntHr19, prcHr8pm = prcntHr20, prcHr9pm = prcntHr21, prcHr10pm = prcntHr22, prcHr11pm = prcntHr23
+      )
+    }
+    chosen
+  })
 
 
 
@@ -216,7 +231,7 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                                )
   )
   
-  output$magTotalHourTableI <- renderDataTable(magTotalsByHour[, 1:14], extensions = 'Scroller', 
+  output$magTotalHourTableI <- renderDataTable(getMagTotalsByHourAMPM()[, 1:14], extensions = 'Scroller', 
                                                       rownames = FALSE, options = list(
                                                         deferRender = TRUE,
                                                         scrollY = 800,
@@ -224,7 +239,7 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                                         bFilter=0
                                                       )
   )
-  output$magTotalHourTableII <- renderDataTable(magTotalsByHour[, c(1, 2, 15:26)], extensions = 'Scroller', 
+  output$magTotalHourTableII <- renderDataTable(getMagTotalsByHourAMPM()[, c(1, 2, 15:26)], extensions = 'Scroller', 
                                                rownames = FALSE, options = list(
                                                  deferRender = TRUE,
                                                  scrollY = 800,
@@ -232,7 +247,7 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                                  bFilter=0
                                                )
   )
-  output$magTotalHourTablePercentI <- renderDataTable(magTotalsByHour[, c(1, 27:38)], extensions = 'Scroller', 
+  output$magTotalHourTablePercentI <- renderDataTable(getMagTotalsByHourAMPM()[, c(1, 27:38)], extensions = 'Scroller', 
                                                rownames = FALSE, options = list(
                                                  deferRender = TRUE,
                                                  scrollY = 800,
@@ -240,7 +255,7 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                                  bFilter=0
                                                )
   )
-  output$magTotalHourTablePercentII <- renderDataTable(magTotalsByHour[, c(1, 39:50)], extensions = 'Scroller', 
+  output$magTotalHourTablePercentII <- renderDataTable(getMagTotalsByHourAMPM()[, c(1, 39:50)], extensions = 'Scroller', 
                                                 rownames = FALSE, options = list(
                                                   deferRender = TRUE,
                                                   scrollY = 800,
