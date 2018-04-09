@@ -10,8 +10,9 @@ server <- function(input, output) {
   totalTornadoes <- tornadoes %>% filter(st == "IL")
   
   #1
-  yearlyTornadoes <- totalTornadoes %>% group_by(yr, mag) %>% summarise(n())
-  names(yearlyTornadoes) <- c("Year", "Magnitude", "Count")
+  yearlyTornadoes <- totalTornadoes %>% group_by(Year = totalTornadoes$yr, Magnitude = totalTornadoes$mag) %>% summarise(Count = n())
+  #names(yearlyTornadoes) <- c("Year", "Magnitude", "Count")
+  yearlyTornadoes$Magnitude <- factor(yearlyTornadoes$Magnitude)
   
   #2
   load("rdata/magTotals.RData")
@@ -238,7 +239,14 @@ output$hourlyGraph <- renderPlotly({
             margin = list(l = 100, t = 100, b = 100),
             barmode = 'group')
  })
-
+  
+  output$yearlyGraph <- renderPlotly({
+    
+    ggplot(yearlyTornadoes, aes(x = Year, y = Count ,fill = Magnitude)) + 
+      ggtitle("Yearly Tornado Count by Magnitude") + geom_bar(stat = "identity", position = "stack")
+    
+  })
+  
   
   output$injuriesChart <- renderPlotly({
     
@@ -512,5 +520,4 @@ output$hourlyGraph <- renderPlotly({
   })
   
   
-
 }
