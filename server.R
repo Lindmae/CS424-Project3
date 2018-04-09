@@ -54,6 +54,9 @@ server <- function(input, output) {
   countyData <- subset(countyCounts, select = c(County,Final))
   names(countyData) <- c("County", "Total Tornadoes")
   
+  #order by total tornadoes
+  countyData <- countyData[order(-countyData$`Total Tornadoes`),] 
+  
 #--------REACTIVE-----------------------------------------------------------------------
 # example reactive element below
 # totalTornadoes <- ({
