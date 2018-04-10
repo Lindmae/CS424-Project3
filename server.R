@@ -509,7 +509,12 @@ output$hourlyGraph <- renderPlotly({
     m <-  addPolylines(m,data = tornadoesMap,
          lat = as.numeric(tornadoesMap[i, c('slat','elat' )]), lng = as.numeric(tornadoesMap[i, c('slon', 'elon')])) 
     }
-     
+  
+  #adding circles to denote start and end of all the tornadoes 
+  m <- addCircleMarkers(m, lng = tornadoesMap$slon , lat = tornadoesMap$slat , radius = 1, color = "green", fillColor = "red")
+  m <- addCircleMarkers(m, lng = tornadoesMap$elon , lat = tornadoesMap$elat , radius = 1, color = "red", fillColor = "red")
+    
+    
     # use the black/white map so it doesn't colide with the data we are displaying 
     m = addProviderTiles(map = m, provider = "CartoDB.Positron")
 
