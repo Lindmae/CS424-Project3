@@ -134,6 +134,19 @@ server <- function(input, output) {
   })
 
 
+  reactiveMap <- reactive({
+    
+    #filter to be only illinois, and make sure they are valid points 
+    tornadoesMap <- tornadoes %>% filter(st == input$selectState & slon != 0.00)
+    #for any position that ends at 0.00 lat/lon, we will set it to be the same as the start 
+    tornadoesMap$elat[tornadoesMap$elat == 0.00] <- tornadoesMap$slat 
+    tornadoesMap$elon[tornadoesMap$elon == 0.00] <- tornadoesMap$slon
+    #only render magnitudes that have been selected 
+    tornadoesMap <- tornadoesMap %>% filter(mag == input$magnitudes)
+    #return the data frame 
+    tornadoesMap
+    
+  })
 
 #--------TABLES-----------------------------------------------------------------------
 output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller', rownames = FALSE, 
@@ -495,24 +508,19 @@ output$hourlyGraph <- renderPlotly({
   
   output$map <- renderLeaflet({
     
-    #filter to be only illinois, and make sure they are valid points 
-    tornadoesMap <- tornadoes %>% filter(st == "IL" & slon != 0.00)
-    #for any position that ends at 0.00 lat/lon, we will set it to be the same as the start 
-    tornadoesMap$elat[tornadoesMap$elat == 0.00] <- tornadoesMap$slat 
-    tornadoesMap$elon[tornadoesMap$elon == 0.00] <- tornadoesMap$slon
-    
+    tornadoesMap <- reactiveMap()
     m <-leaflet(tornadoesMap) %>% 
      setView(-96, 37.8, 4) %>% #to set overview of US 
       addTiles() 
     
     for(i in 1:nrow(tornadoesMap)){
-    m <-  addPolylines(m,data = tornadoesMap,
+    m <-  addPolylines(m,data = tornadoesMap, weight = 1, color = "blue",
          lat = as.numeric(tornadoesMap[i, c('slat','elat' )]), lng = as.numeric(tornadoesMap[i, c('slon', 'elon')])) 
     }
   
   #adding circles to denote start and end of all the tornadoes 
-  m <- addCircleMarkers(m, lng = tornadoesMap$slon , lat = tornadoesMap$slat , radius = 1, color = "green", fillColor = "red")
-  m <- addCircleMarkers(m, lng = tornadoesMap$elon , lat = tornadoesMap$elat , radius = 1, color = "red", fillColor = "red")
+  m <- addCircleMarkers(m, lng = tornadoesMap$slon , lat = tornadoesMap$slat , radius = 2, color = "green", fillColor = "red")
+  m <- addCircleMarkers(m, lng = tornadoesMap$elon , lat = tornadoesMap$elat , radius = 2, color = "red", fillColor = "red")
     
     
     # use the black/white map so it doesn't colide with the data we are displaying 

@@ -69,10 +69,16 @@ ui <- dashboardPage(
                 )
       ),
       tabItem(tabName = "bart",
-              fluidRow( box(title = "Tornado tracks across Illinois", solidHeader = TRUE, status = "primary", width = 6),
+              fluidRow( box(title = "Tornado tracks across Illinois", solidHeader = TRUE, status = "primary", width = 6,
+                        checkboxGroupInput("magnitudes", "Magnitudes to show:",
+                                           choices=1:8, inline = TRUE,selected = 1),
+                        radioButtons("mapTrack","Tornado tracks with color/width based on :",
+                                           choices=c("magnitude", "length", "width", "loss", "injuries", "fatalities"), inline = TRUE,selected = "magnitude"),
+                        selectInput("selectState", "State selection", state.abb, selected = "IL", multiple = TRUE,
+                                    selectize = TRUE, width = NULL, size = NULL),
                         box(title = "Map", solidHeader = TRUE, status = "primary", width = 12,
                             leafletOutput("map")
-                        ))
+                        )))
       ),
       tabItem(tabName = "vijay",
               fluidRow(
