@@ -147,6 +147,15 @@ server <- function(input, output) {
     tornadoesMap
     
   })
+  
+  reactiveMapColor <- reactive({
+    selected <- input$mapColor
+  })
+  
+  reactiveMapWidth <- reactive({
+    selected <- input$mapWidth
+  })
+  
 
 #--------TABLES-----------------------------------------------------------------------
 output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller', rownames = FALSE, 
@@ -509,12 +518,13 @@ output$hourlyGraph <- renderPlotly({
   output$map <- renderLeaflet({
     
     tornadoesMap <- reactiveMap()
-    m <-leaflet(tornadoesMap) %>% 
-     setView(-96, 37.8, 4) %>% #to set overview of US 
-      addTiles() 
+    selectedWidth <- reactiveMapWidth()
+    selectedColor <- reactiveMapColor()
+    
+    m <-leaflet(tornadoesMap) %>%  addTiles() 
     
     for(i in 1:nrow(tornadoesMap)){
-    m <-  addPolylines(m,data = tornadoesMap, weight = 1, color = "blue",
+    m <-  addPolylines(m,data = tornadoesMap, weight = as.numeric(tornadoesMap[i,selectedWidth]), color = "blue",
          lat = as.numeric(tornadoesMap[i, c('slat','elat' )]), lng = as.numeric(tornadoesMap[i, c('slon', 'elon')])) 
     }
   
@@ -528,6 +538,8 @@ output$hourlyGraph <- renderPlotly({
 
     m
   })
+  
+ 
   
   
 }
