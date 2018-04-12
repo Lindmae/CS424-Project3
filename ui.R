@@ -71,17 +71,31 @@ ui <- dashboardPage(
       tabItem(tabName = "bart",
               fluidRow( box(title = "Tornado tracks across Illinois", solidHeader = TRUE, status = "primary", width = 6,
                         checkboxGroupInput("magnitudes", "Magnitudes to show:",
-                                           choices=0:5, inline = TRUE,selected = 1),
+                                           choices=c(0,1,2,3,4,5,"unknown" = -9), inline = TRUE,selected = 1),
                         radioButtons("mapWidth","Tornado tracks with color based on :",
-                                     choices=c("magnitude" = "mag", "length" = "len", "width" = "wid", "loss" = "loss", "injuries" = "inj", "fatalities" = "fat"), inline = TRUE,selected = "mag"),
+                                     choices=c("magnitude" = "mag", "length" = "len", "width" = "wid",
+                                               "loss" = "loss", "injuries" = "inj", "fatalities" = "fat"),
+                                     inline = TRUE,selected = "mag"),
                         radioButtons("mapColor","Tornado tracks with width based on :",
-                                     choices=c("magnitude" = "mag", "length" = "len", "width" = "wid", "loss" = "loss", "injuries" = "inj", "fatalities" = "fat"), inline = TRUE,selected = "mag"),
+                                     choices=c("magnitude" = "mag", "length" = "len", "width" = "wid", 
+                                               "loss" = "loss", "injuries" = "inj", "fatalities" = "fat"), 
+                                     inline = TRUE,selected = "mag"),
                         
+                        sliderInput("mapLenSlider", label = "Length Range", min = 0, 
+                                    max = 240, value = c(0, 240)),
+                        sliderInput("mapWidthSlider", label = "Width Range", min = 0, 
+                                    max = 4600, value = c(0, 4600)),
+                        sliderInput("mapLossSlider", label = "Loss($) Range", min = 0, 
+                                    max = 22000000, value = c(0, 22000000)),
+                        sliderInput("mapInjurySlider", label = "Injury Range", min = 0, 
+                                    max = 1750, value = c(0, 1750)),
+                        sliderInput("mapFatSlider", label = "Fatality Range", min = 0, 
+                                    max = 160, value = c(0, 160)),
                         selectInput("selectState", "State selection", state.abb, selected = "IL", multiple = TRUE,
-                                    selectize = TRUE, width = NULL, size = NULL),
+                                    selectize = TRUE, width = NULL, size = NULL)
+                        ),
                         box(title = "Map", solidHeader = TRUE, status = "primary", width = 12,
-                            leafletOutput("map")
-                        )))
+                            leafletOutput("map")))
       ),
       tabItem(tabName = "vijay",
               fluidRow(
