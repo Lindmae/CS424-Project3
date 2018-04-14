@@ -311,7 +311,7 @@ output$hourlyGraph <- renderPlotly({
              barmode = 'group')
   })
   
-  # vis TOTAL TORNADOES (by MAG) per MONTH summed over 1950 - 2009
+  # vis TOTAL TORNADOES (by MAG) per MONTH summed over 1950 - 2016
   output$magTotalMonthChart <- renderPlotly({
     data <- graphFriendlyMagTotals
     textOfMonth <- list("January", "February", "March", "April ", "May", "June", "July", "August", "September", "October", "November", "December")
@@ -336,13 +336,13 @@ output$hourlyGraph <- renderPlotly({
       add_trace(y = ~mag5$total, name = 'Mag 5', hoverinfo = 'text', 
                 text = ~paste('</br>Mag:', mag5$mag, '</br>Tornadoes:', mag5$total, '<br> Month:', mag5$mo, '</br>')) %>% 
 
-      layout(title = "Total Tornadoes by Magnitude in Illinois 1950 - 2009", xaxis = list(title = "Month", autotick = F, dtick = 1, titlefont=list(size=30), tickfont=list(size=20))) %>%
+      layout(title = "Total Tornadoes by Magnitude in Illinois 1950 - 2016", xaxis = list(title = "Month", autotick = F, dtick = 1, titlefont=list(size=30), tickfont=list(size=20))) %>%
       layout(yaxis = list(title = 'Total Tornadoes', titlefont=list(size=30), tickfont=list(size=20)), barmode = 'stack',
              margin=list(l=100, t=100, b=100))
     
   })
   
-  # vis PERCENT TORNADOES (by MAG) per MONTH summed over 1950 - 2009
+  # vis PERCENT TORNADOES (by MAG) per MONTH summed over 1950 - 2016
   output$magTotalMonthChartPercent <- renderPlotly({
     data <- graphFriendlyMagTotals
     textOfMonth <- list("January", "February", "March", "April ", "May", "June", "July", "August", "September", "October", "November", "December")
@@ -367,13 +367,13 @@ output$hourlyGraph <- renderPlotly({
       add_trace(y = ~mag5$magPercent, name = 'Mag 5', hoverinfo = 'text', 
                 text = ~paste('</br>Mag:', mag5$mag, '</br>% Tornadoes:', mag5$magPercent, '<br> Month:', mag5$mo, '</br>')) %>% 
       
-      layout(title = "Percent of Tornadoes by Magnitude in Illinois 1950 - 2009", xaxis = list(title = "Month", autotick = F, dtick = 1, titlefont=list(size=30), tickfont=list(size=20))) %>%
+      layout(title = "Percent of Tornadoes by Magnitude in Illinois 1950 - 2016", xaxis = list(title = "Month", autotick = F, dtick = 1, titlefont=list(size=30), tickfont=list(size=20))) %>%
       layout(yaxis = list(title = 'Total Tornadoes', titlefont=list(size=30), tickfont=list(size=20)), barmode = 'stack',
              margin=list(l=100, t=100, b=100))
     
   })
   
-  # vis TOTAL TORNADOES (by MAG) per HOUR summed over 1950 - 2009
+  # vis TOTAL TORNADOES (by MAG) per HOUR summed over 1950 - 2016
   output$magTotalHourChart <- renderPlotly({
     data <- graphFriendlymagTotalsByHour
     timeFrame <- getTimeFrame()
@@ -399,14 +399,14 @@ output$hourlyGraph <- renderPlotly({
       add_trace(y = ~mag5$total, name = 'Mag 5', hoverinfo = 'text', 
                 text = ~paste('</br>Mag:', mag5$mag, '</br>Tornadoes:', mag5$total, '<br> Hour:', timeFrame$hr, '</br>')) %>% 
       
-      layout(title = "Total Tornadoes by Magnitude in Illinois 1950 - 2009", xaxis = list(title = "Hour", autotick = F, dtick = 1, 
+      layout(title = "Total Tornadoes by Magnitude in Illinois 1950 - 2016", xaxis = list(title = "Hour", autotick = F, dtick = 1, 
             categoryorder = "array", categoryarray = timeFrame$hr, titlefont=list(size=30), tickfont=list(size=20))) %>%
       layout(yaxis = list(title = 'Total Tornadoes', titlefont=list(size=30), tickfont=list(size=20)), barmode = 'stack',
              margin=list(l=100, t=100, b=100))
     
   })
 
-  # vis PERCENT TORNADOES (by MAG) per HOUR summed over 1950 - 2009
+  # vis PERCENT TORNADOES (by MAG) per HOUR summed over 1950 - 2016
   output$magTotalHourChartPercent <- renderPlotly({
     data <- graphFriendlymagTotalsByHour
     timeFrame <- getTimeFrame()
@@ -432,14 +432,14 @@ output$hourlyGraph <- renderPlotly({
       add_trace(y = ~mag5$magPercent, name = 'Mag 5', hoverinfo = 'text', 
                 text = ~paste('</br>Mag:', mag5$mag, '</br>% Tornadoes:', mag5$magPercent, '<br> Hour:', timeFrame$hr, '</br>')) %>% 
       
-      layout(title = "Percent of Tornadoes by Magnitude in Illinois 1950 - 2009", xaxis = list(title = "Hour", autotick = F, dtick = 1, 
+      layout(title = "Percent of Tornadoes by Magnitude in Illinois 1950 - 2016", xaxis = list(title = "Hour", autotick = F, dtick = 1, 
             categoryorder = "array", categoryarray = timeFrame$hr,titlefont=list(size=30), tickfont=list(size=20))) %>%
       layout(yaxis = list(title = 'Total Tornadoes', titlefont=list(size=30), tickfont=list(size=20)), barmode = 'stack',
              margin=list(l=100, t=100, b=100))
     
   })
   
-  # vis (FAT, INJ, and LOSS) per MONTH summed over 1950 - 2009
+  # vis (FAT, INJ, and LOSS) per MONTH summed over 1950 - 2016
   output$injuriesChartByMonth <- renderPlotly({
     textOfMonth <- list("January", "February", "March", "April ", "May", "June", "July", "August", "September", "October", "November", "December")
     
@@ -447,7 +447,7 @@ output$hourlyGraph <- renderPlotly({
             hoverinfo = 'text', text = ~paste('</br>Injuries:', Injuries, '<br>Month:', mo, '</br>')) %>%
       
       
-      layout(title = "Injuries by Month in Illinois 1950 - 2009", xaxis = list(title = "Month", autotick = F, dtick = 1, 
+      layout(title = "Injuries by Month in Illinois 1950 - 2016", xaxis = list(title = "Month", autotick = F, dtick = 1, 
             titlefont=list(size=30), tickfont=list(size=20))) %>%
       layout(yaxis = list(title = 'Total Injuries', titlefont=list(size=30), tickfont=list(size=20)), barmode = 'stack',
              margin=list(l=100, t=100, b=100))
@@ -460,7 +460,7 @@ output$hourlyGraph <- renderPlotly({
             hoverinfo = 'text', text = ~paste('</br>Deaths:', Deaths, '<br>Month:', mo, '</br>')) %>%
       
       
-      layout(title = "Deaths by Month in Illinois 1950 - 2009", xaxis = list(title = "Month", autotick = F, dtick = 1, 
+      layout(title = "Deaths by Month in Illinois 1950 - 2016", xaxis = list(title = "Month", autotick = F, dtick = 1, 
                                                                                titlefont=list(size=30), tickfont=list(size=20))) %>%
       layout(yaxis = list(title = 'Total Deaths', titlefont=list(size=30), tickfont=list(size=20)), barmode = 'stack',
              margin=list(l=100, t=100, b=100))
@@ -473,20 +473,20 @@ output$hourlyGraph <- renderPlotly({
             hoverinfo = 'text', text = ~paste('</br>Loss:', Loss, '<br>Month:', mo, '</br>')) %>%
       
       
-      layout(title = "Loss by Month in Illinois 1950 - 2009", xaxis = list(title = "Month", autotick = F, dtick = 1, 
+      layout(title = "Loss by Month in Illinois 1950 - 2016", xaxis = list(title = "Month", autotick = F, dtick = 1, 
                 titlefont=list(size=30), tickfont=list(size=20))) %>%
       layout(yaxis = list(title = 'Total Loss', titlefont=list(size=30), tickfont=list(size=20)), barmode = 'stack',
              margin=list(l=100, t=100, b=100))
   })
   
-  # vis (FAT, INJ, and LOSS) per HOUR summed over 1950 - 2009
+  # vis (FAT, INJ, and LOSS) per HOUR summed over 1950 - 2016
   output$injuriesChartByHour <- renderPlotly({
     timeFrame <- getTimeFrameDamages()
 
     plot_ly(totalDamagesByHour, x = ~timeFrame$hr, y = ~Injuries, name = 'trace 0', type = 'scatter', mode = 'lines+markers',
             hoverinfo = 'text', text = ~paste('</br>Injuries:', Injuries, '<br>Hour:', timeFrame$hr, '</br>')) %>%
       
-      layout(title = "Injuries by Hour in Illinois 1950 - 2009", xaxis = list(title = "Hour", autotick = F, dtick = 1, 
+      layout(title = "Injuries by Hour in Illinois 1950 - 2016", xaxis = list(title = "Hour", autotick = F, dtick = 1, 
             categoryorder = "array", categoryarray = timeFrame$hr, titlefont=list(size=30), tickfont=list(size=20))) %>%
       layout(yaxis = list(title = 'Total Injuries', titlefont=list(size=30), tickfont=list(size=20)), barmode = 'stack',
              margin=list(l=100, t=100, b=100))
@@ -499,7 +499,7 @@ output$hourlyGraph <- renderPlotly({
             hoverinfo = 'text', text = ~paste('</br>Deaths:', Deaths, '<br>Hour:', timeFrame$hr, '</br>')) %>%
       
       
-      layout(title = "Deaths by Hour in Illinois 1950 - 2009", xaxis = list(title = "Hour", autotick = F, dtick = 1, 
+      layout(title = "Deaths by Hour in Illinois 1950 - 2016", xaxis = list(title = "Hour", autotick = F, dtick = 1, 
             categoryorder = "array", categoryarray = timeFrame$hr, titlefont=list(size=30), tickfont=list(size=20))) %>%
       layout(yaxis = list(title = 'Total Deaths', titlefont=list(size=30), tickfont=list(size=20)), barmode = 'stack',
              margin=list(l=100, t=100, b=100))
@@ -512,7 +512,7 @@ output$hourlyGraph <- renderPlotly({
             hoverinfo = 'text', text = ~paste('</br>Loss:', Loss, '<br>Hour:', timeFrame$hr, '</br>')) %>%
       
       
-      layout(title = "Loss by Hour in Illinois 1950 - 2009", xaxis = list(title = "Hour", autotick = F, dtick = 1, 
+      layout(title = "Loss by Hour in Illinois 1950 - 2016", xaxis = list(title = "Hour", autotick = F, dtick = 1, 
                   categoryorder = "array", categoryarray = timeFrame$hr, titlefont=list(size=30), tickfont=list(size=20))) %>%
       layout(yaxis = list(title = 'Total Loss', titlefont=list(size=30), tickfont=list(size=20)), barmode = 'stack',
              margin=list(l=100, t=100, b=100))
