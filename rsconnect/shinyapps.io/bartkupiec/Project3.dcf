@@ -1,0 +1,12 @@
+name: Project3
+title: Project3
+username:
+account: bartkupiec
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 322904
+bundleId: 1319685
+url: https://bartkupiec.shinyapps.io/Project3/
+when: 1523814539.45079
+asMultiple: FALSE
+asStatic: FALSE
