@@ -25,6 +25,7 @@ library(gdata) #needed for xls files
 
 # start up the gui
 ui <- dashboardPage(
+  
   #ensure that map will be the correct size 
     #set title and disable sidebar
   dashboardHeader(title = "CS 424 | Project 3"),
@@ -47,7 +48,7 @@ ui <- dashboardPage(
     )
   ),
   dashboardBody(
-
+    tags$style(type = "text/css", "#map {height: calc(100vh - 240px) !important;}"),
     tabItems(
       tabItem(tabName = "isabel",
               fluidRow( 
@@ -69,7 +70,7 @@ ui <- dashboardPage(
                 )
       ),
       tabItem(tabName = "bart",
-              fluidRow( box(title = "Tornado tracks across Illinois", solidHeader = TRUE, status = "primary", width = 6,
+              fluidRow(div(column(4,box(title = "Tornado tracks across Illinois", solidHeader = TRUE, status = "primary",
                         checkboxGroupInput("magnitudes", "Magnitudes to show:",
                                            choices=c(0,1,2,3,4,5,"unknown" = -9), inline = TRUE,selected = 1),
                         radioButtons("mapWidth","Tornado tracks with color based on :",
@@ -93,9 +94,9 @@ ui <- dashboardPage(
                                     max = 160, value = c(0, 160)),
                         selectInput("selectState", "State selection", state.abb, selected = "IL", multiple = TRUE,
                                     selectize = TRUE, width = NULL, size = NULL)
-                        ),
-                        box(title = "Map", solidHeader = TRUE, status = "primary", width = 12,
-                            leafletOutput("map")))
+                        )),
+                        column(8, box(title = "Map", solidHeader = TRUE, status = "primary", width = 24,
+                            leafletOutput("map")))), style = "font-size: 200%")
       ),
       tabItem(tabName = "vijay",
               tabsetPanel(
