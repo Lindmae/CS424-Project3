@@ -13,6 +13,7 @@ server <- function(input, output) {
   # 1996 - 2015 each number is in millions, and post 2016 is actual dollar amount)
   # CORRECTS LOSS SECTION OF totalTornadoes
   load("rdata/adjTotalTornadoesIL.RData")
+  totalTornadoes <- adjTotalTornadoesIL
   
   #1
   yearlyTornadoes <- totalTornadoes %>% group_by(Year = totalTornadoes$yr, Magnitude = totalTornadoes$mag) %>% summarise(Count = n())
@@ -27,6 +28,8 @@ server <- function(input, output) {
   load("rdata/expandedTotalTornadoes.RData") # this object includes hr and min as seperate columns
   load("rdata/magTotalsByHour.RData")
   load("rdata/graphFriendlymagTotalsByHour.RData")
+  totalTornadoes$hr <- expandedTotalTornadoes$hr
+  totalTornadoes$min <- expandedTotalTornadoes$min
   
   #4
   #TO DO
@@ -51,10 +54,44 @@ server <- function(input, output) {
   totalDamages <- merge(totalDamages, lossCount, by="Year")
   
   #6 
-  load("rdata/totalDamagesByMonth.RData")
+  deaths <- totalTornadoes %>% group_by(mo, fat) %>% summarise(n())
+  names(deaths) <- c("mo", "X", "Count")
+  deathCount <- aggregate(deaths$Count * deaths$X, by=list(Category=deaths$mo), FUN=sum)
+  names(deathCount) <- c("mo", "Deaths")
+  
+  injuries <- totalTornadoes %>% group_by(mo, inj) %>% summarise(n())
+  names(injuries) <- c("mo", "X", "Count")
+  injuriesCount <- aggregate(injuries$Count * injuries$X, by=list(Category=injuries$mo), FUN=sum)
+  names(injuriesCount) <- c("mo", "Injuries")
+  
+  loss <- totalTornadoes %>% group_by(mo, loss) %>% summarise(n())
+  names(loss) <- c("mo", "X", "Count")
+  lossCount <- aggregate(loss$Count * loss$X, by=list(Category=loss$mo), FUN=sum)
+  names(lossCount) <- c("mo", "Loss")
+  
+  totalDamagesByMonth <- merge(deathCount,injuriesCount,by="mo")
+  totalDamagesByMonth <- merge(totalDamagesByMonth, lossCount, by="mo")
+  #load("rdata/totalDamagesByMonth.RData")
   
   #7
-  load("rdata/totalDamagesByHour.RData")
+  deaths <- totalTornadoes %>% group_by(hr, fat) %>% summarise(n())
+  names(deaths) <- c("hr", "X", "Count")
+  deathCount <- aggregate(deaths$Count * deaths$X, by=list(Category=deaths$hr), FUN=sum)
+  names(deathCount) <- c("hr", "Deaths")
+  
+  injuries <- totalTornadoes %>% group_by(hr, inj) %>% summarise(n())
+  names(injuries) <- c("hr", "X", "Count")
+  injuriesCount <- aggregate(injuries$Count * injuries$X, by=list(Category=injuries$hr), FUN=sum)
+  names(injuriesCount) <- c("hr", "Injuries")
+  
+  loss <- totalTornadoes %>% group_by(hr, loss) %>% summarise(n())
+  names(loss) <- c("hr", "X", "Count")
+  lossCount <- aggregate(loss$Count * loss$X, by=list(Category=loss$hr), FUN=sum)
+  names(lossCount) <- c("hr", "Loss")
+  
+  totalDamagesByHour <- merge(deathCount,injuriesCount,by="hr")
+  totalDamagesByHour <- merge(totalDamagesByHour, lossCount, by="hr")
+  #load("rdata/totalDamagesByHour.RData")
   
   #8
   county1 <- totalTornadoes %>% group_by(f1) %>% summarise(n())
