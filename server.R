@@ -45,7 +45,29 @@ server <- function(input, output) {
   totalDamages <- merge(deathCount,injuriesCount,by="Year")
   totalDamages <- merge(totalDamages, lossCount, by="Year")
   
-  #6
+  #6 =================================================================================================
+  # NEED TO ACCOUNT FOR CHANGES IN HOW WE LOOK AT LOSSES. SEE TASKS AND DEADLINES DOC...
+  # HERE I AM TRYING TO PUT ACTUAL DOLLAR AMOUNT OF LOSSES IN THE COLUMN
+  totalTornadoesPre1996 <- totalTornadoes %>% filter(yr <= 1995)
+  valueOfLoss <- list(50, 500, 5000, 50000, 500000, 5000000, 50000000, 500000000, 5000000000)
+  for(i in 1:length(totalTornadoesPre1996$loss)){
+    if(totalTornadoesPre1996$loss[i] != 0){
+      totalTornadoesPre1996$loss[i] <- valueOfLoss[[totalTornadoesPre1996$loss[i]]]
+    }
+  }
+  
+  totalTornadoesPre2015 <- totalTornadoes %>% filter(yr >= 1996 & yr <= 2015)
+  for(i in 1:length(totalTornadoesPre2015$loss)){
+    if(totalTornadoesPre2015$loss[i] != 0){
+      totalTornadoesPre2015$loss[i] <- totalTornadoesPre2015$loss[i] * 1000000
+    }
+  }
+  
+  totalTornadoesModern <- totalTornadoes %>% filter(yr == 2016)
+  
+  adjTotalTornadoesIL <- rbind(totalTornadoesPre1996, totalTornadoesPre2015)
+  adjTotalTornadoesIL <- rbind(adjTotalTornadoesIL, totalTornadoesModern)
+  
   load("rdata/totalDamagesByMonth.RData")
   
   #7
