@@ -9,6 +9,11 @@ server <- function(input, output) {
   # filtered to IL data
   totalTornadoes <- tornadoes %>% filter(st == "IL")
   
+  # filter to IL data AND column LOSS represents total dollar amount lost (from 1950 - 1995 I consider top of range,
+  # 1996 - 2015 each number is in millions, and post 2016 is actual dollar amount)
+  # CORRECTS LOSS SECTION OF totalTornadoes
+  load("rdata/adjTotalTornadoesIL.RData")
+  
   #1
   yearlyTornadoes <- totalTornadoes %>% group_by(Year = totalTornadoes$yr, Magnitude = totalTornadoes$mag) %>% summarise(Count = n())
   #names(yearlyTornadoes) <- c("Year", "Magnitude", "Count")
@@ -45,29 +50,7 @@ server <- function(input, output) {
   totalDamages <- merge(deathCount,injuriesCount,by="Year")
   totalDamages <- merge(totalDamages, lossCount, by="Year")
   
-  #6 =================================================================================================
-  # NEED TO ACCOUNT FOR CHANGES IN HOW WE LOOK AT LOSSES. SEE TASKS AND DEADLINES DOC...
-  # HERE I AM TRYING TO PUT ACTUAL DOLLAR AMOUNT OF LOSSES IN THE COLUMN
-  totalTornadoesPre1996 <- totalTornadoes %>% filter(yr <= 1995)
-  valueOfLoss <- list(50, 500, 5000, 50000, 500000, 5000000, 50000000, 500000000, 5000000000)
-  for(i in 1:length(totalTornadoesPre1996$loss)){
-    if(totalTornadoesPre1996$loss[i] != 0){
-      totalTornadoesPre1996$loss[i] <- valueOfLoss[[totalTornadoesPre1996$loss[i]]]
-    }
-  }
-  
-  totalTornadoesPre2015 <- totalTornadoes %>% filter(yr >= 1996 & yr <= 2015)
-  for(i in 1:length(totalTornadoesPre2015$loss)){
-    if(totalTornadoesPre2015$loss[i] != 0){
-      totalTornadoesPre2015$loss[i] <- totalTornadoesPre2015$loss[i] * 1000000
-    }
-  }
-  
-  totalTornadoesModern <- totalTornadoes %>% filter(yr == 2016)
-  
-  adjTotalTornadoesIL <- rbind(totalTornadoesPre1996, totalTornadoesPre2015)
-  adjTotalTornadoesIL <- rbind(adjTotalTornadoesIL, totalTornadoesModern)
-  
+  #6 
   load("rdata/totalDamagesByMonth.RData")
   
   #7
