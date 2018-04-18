@@ -70,7 +70,7 @@ ui <- dashboardPage(
                 )
       ),
       tabItem(tabName = "bart",
-              fluidRow(div(column(4,box(title = "Tornado tracks across Illinois", solidHeader = TRUE, status = "primary",
+              fluidRow(div(column(4,box(title = "Tornado tracks across Illinois", solidHeader = TRUE, status = "primary",width = 15,
                         checkboxGroupInput("magnitudes", "Magnitudes to show:",
                                            choices=c(0,1,2,3,4,5,"unknown" = -9), inline = TRUE,selected = 1),
                         radioButtons("mapWidth","Tornado tracks with color based on :",
@@ -96,7 +96,7 @@ ui <- dashboardPage(
                                     selectize = TRUE, width = NULL, size = NULL)
                         )),
                         column(8, box(title = "Map", solidHeader = TRUE, status = "primary", width = 24,
-                            leafletOutput("map")))), style = "font-size: 200%")
+                            leafletOutput("map")))), style = "font-size: 300%")
       ),
       tabItem(tabName = "vijay",
               tabsetPanel(
