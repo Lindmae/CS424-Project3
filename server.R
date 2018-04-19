@@ -71,8 +71,7 @@ server <- function(input, output) {
   
   totalDamagesByMonth <- merge(deathCount,injuriesCount,by="mo")
   totalDamagesByMonth <- merge(totalDamagesByMonth, lossCount, by="mo")
-  #load("rdata/totalDamagesByMonth.RData")
-  
+
   #7
   deaths <- totalTornadoes %>% group_by(hr, fat) %>% summarise(n())
   names(deaths) <- c("hr", "X", "Count")
@@ -91,8 +90,7 @@ server <- function(input, output) {
   
   totalDamagesByHour <- merge(deathCount,injuriesCount,by="hr")
   totalDamagesByHour <- merge(totalDamagesByHour, lossCount, by="hr")
-  #load("rdata/totalDamagesByHour.RData")
-  
+
   #8
   county1 <- totalTornadoes %>% group_by(f1) %>% summarise(n())
   names(county1) <- c("County", "Count1")
