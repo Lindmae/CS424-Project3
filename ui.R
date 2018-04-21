@@ -2,7 +2,7 @@
 #libraries to include
 #comment in as needed, to find which ones are not needed
 library(shiny)
-#library(shinyjs)
+library(shinyjs)
 library(shinydashboard)
 #library(data.table)
 library(ggplot2)
@@ -18,6 +18,7 @@ library(plotly)
 library(shinyWidgets)
 library(shinycssloaders) #needed for loading bars
 library(gdata) #needed for xls files 
+library(RColorBrewer)
 
 # load any processed data here
 #format: load("rdata/datafile.RData")
@@ -48,7 +49,28 @@ ui <- dashboardPage(
     )
   ),
   dashboardBody(
-    tags$style(type = "text/css", "#map {height: calc(100vh - 240px) !important;}"),
+    #below is all the styling for the map and it's controls 
+    tags$style(type = "text/css", "#map {/* make map taller */  height: calc(100vh - 240px) !important;}
+      .irs-grid-text {font-size: 100%;color:black;}
+      .irs-grid-pol {display: none;}
+       .checkbox { /* checkbox is a div class*/
+        line-height: 30px;
+        margin-bottom: 40px; /*set the margin, so boxes don't overlap*/
+      }
+      input[type='checkbox']{ /* style for checkboxes */
+        width: 30px; /*Desired width*/
+        height: 30px; /*Desired height*/
+        line-height: 30px; 
+      }
+      input[type='radio']{ /* style for radio buttons */
+        width: 30px; /*Desired width*/
+        height: 30px; /*Desired height*/
+        line-height: 30px; 
+      }
+      span { 
+          margin-left: 15px;  /*set the margin, so boxes don't overlap labels*/
+          line-height: 30px; 
+      }"),
     tabItems(
       tabItem(tabName = "isabel",
               fluidRow( 
@@ -70,7 +92,7 @@ ui <- dashboardPage(
                 )
       ),
       tabItem(tabName = "bart",
-              fluidRow(div(column(4,box(title = "Tornado tracks across Illinois", solidHeader = TRUE, status = "primary",width = 15,
+              fluidRow(div(column(4,box(title = "Tornado tracks across Illinois", solidHeader = TRUE, status = "primary",width = 12,
                         checkboxGroupInput("magnitudes", "Magnitudes to show:",
                                            choices=c(0,1,2,3,4,5,"unknown" = -9), inline = TRUE,selected = 1),
                         radioButtons("mapWidth","Tornado tracks with color based on :",
@@ -81,19 +103,35 @@ ui <- dashboardPage(
                                      choices=c("magnitude" = "mag", "length" = "len", "width" = "wid", 
                                                "loss" = "loss", "injuries" = "inj", "fatalities" = "fat"), 
                                      inline = TRUE,selected = "mag"),
-                        
+                        # Sliders for all the different values
+                        #val = Length 
                         sliderInput("mapLenSlider", label = "Length Range", min = 0, 
                                     max = 240, value = c(0, 240)),
+                        #val = Width 
                         sliderInput("mapWidthSlider", label = "Width Range", min = 0, 
                                     max = 4600, value = c(0, 4600)),
-                        sliderInput("mapLossSlider", label = "Loss($) Range", min = 0, 
+                         #val = Loss
+                         sliderInput("mapLossSlider", label = "Loss($) Range", min = 0, 
                                     max = 22000000, value = c(0, 22000000)),
+                        #val = injury
                         sliderInput("mapInjurySlider", label = "Injury Range", min = 0, 
                                     max = 1750, value = c(0, 1750)),
+                        #val = fatalities 
                         sliderInput("mapFatSlider", label = "Fatality Range", min = 0, 
                                     max = 160, value = c(0, 160)),
+                        #val = year 
+                        checkboxInput("yearChoice", "Specific year", FALSE),
+                        sliderInput("mapYearSlider", label = "Year Range", min = 1950, 
+                                    max = 2016, value = c(1950, 2016),sep="",step = 1,animate = TRUE),
+                        #val = state
                         selectInput("selectState", "State selection", state.abb, selected = "IL", multiple = TRUE,
-                                    selectize = TRUE, width = NULL, size = NULL)
+                                    selectize = TRUE, width = NULL, size = NULL),
+                        #below here is formatting for the map / colors 
+                        checkboxInput("legend", "Show legend", TRUE),
+                        #val = theme 
+                        selectInput("colors", "Color Scheme",
+                                    rownames(subset(brewer.pal.info, category %in% c("seq", "div")))
+                        )
                         )),
                         column(8, box(title = "Map", solidHeader = TRUE, status = "primary", width = 24,
                             leafletOutput("map")))), style = "font-size: 300%")
