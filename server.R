@@ -64,6 +64,10 @@ server <- function(input, output) {
   yearlyTornadoes <- totalTornadoes %>% group_by(Year = totalTornadoes$yr, Magnitude = totalTornadoes$mag) %>% summarise(Count = n())
   #names(yearlyTornadoes) <- c("Year", "Magnitude", "Count")
   yearlyTornadoes$Magnitude <- factor(yearlyTornadoes$Magnitude)
+  yearlyTornadoesPercent <- totalTornadoes %>% group_by(yr) %>% summarise(n())
+  names(yearlyTornadoesPercent) <- c("Year", "Total")
+  yearlyTornadoesPercent <- merge(yearlyTornadoes,yearlyTornadoesPercent,by="Year")
+  
   
   #2
   load("rdata/magTotals.RData")
@@ -115,8 +119,19 @@ server <- function(input, output) {
   # A -- requirement 1
   ordCountyData <- countyData[order(countyData$County),]
   
+
   #test <- getDamageDataByCounty("fat")
   #print(test)
+
+  #Make data set without 0 counties
+  ordCountyDataWithout <- ordCountyData[-1,]
+  
+  #Top destructive
+  topTornadoes <- subset(totalTornadoes, select = c("date", "time", "inj", "fat"))
+  topTornadoes$Score <- topTornadoes$fat + topTornadoes$inj
+  topTornadoes$WeightScore <- (topTornadoes$fat)*10 + topTornadoes$inj
+  topTornadoes <- topTornadoes[order(-topTornadoes$Score),] 
+
   
 #--------REACTIVE-----------------------------------------------------------------------
   # adjust graphical interfaces to am/pm
@@ -230,6 +245,16 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                                    )
   )
   
+  output$yearlyTornadoTable <- renderDataTable(yearlyTornadoesPercent, extensions = 'Scroller', 
+                                              rownames = FALSE, options = list(
+                                                deferRender = TRUE,
+                                                scrollY = 800,
+                                                scroller = TRUE,
+                                                bFilter=0
+                                              )
+  )
+  
+  
   output$totalDamagesByMonthTable <- renderDataTable(totalDamagesByMonth, extensions = 'Scroller', 
                                               rownames = FALSE, options = list(
                                                 deferRender = TRUE,
@@ -323,6 +348,41 @@ output$hourlyGraph <- renderPlotly({
     
   })
   
+  output$yearlyGraphPer <- renderPlotly({
+    
+    ggplot(yearlyTornadoesPercent, aes(x = Year, y = ((Count/Total) *100) ,fill = Magnitude)) + 
+      ggtitle("Yearly Tornado Count by Magnitude") + geom_bar(stat = "identity", position = "stack")
+    
+  })
+  
+  output$countyGraphWithout <- renderPlotly({
+    
+    plot_ly(
+      x = ordCountyDataWithout$County,
+      y = ordCountyDataWithout$`Total Tornadoes`,
+      type = "bar"
+    ) %>%
+      layout(font = list(size=30), xaxis = list(title = "County Code", autotick = T, tickangle = 0, dtick = 1, titlefont=list(size=25), tickfont=list(size=20)),
+             yaxis = list(title = "# of Tornadoes", titlefont=list(size=30), tickfont=list(size=20)),
+             margin = list(l = 100, b = 100),
+             barmode = 'group')
+    
+    
+  })
+  
+  output$countyGraph <- renderPlotly({
+    
+    plot_ly(
+      x = ordCountyData$County,
+      y = ordCountyData$`Total Tornadoes`,
+      type = "bar"
+    ) %>%
+      layout(font = list(size=30), xaxis = list(title = "County Code", autotick = T, tickangle = 0, dtick = 1, titlefont=list(size=25), tickfont=list(size=20)),
+             yaxis = list(title = "# of Tornadoes", titlefont=list(size=30), tickfont=list(size=20)),
+             margin = list(l = 100, b = 100),
+             barmode = 'group')
+    
+  })
   
   output$injuriesChart <- renderPlotly({
     
