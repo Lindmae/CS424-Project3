@@ -25,14 +25,11 @@ server <- function(input, output) {
     totalDamagesByType <- merge(totalDamagesByType, lossCount, by=columnType)
   }
   
-  getDamageDataByCounty <- function(damageType){
-    county1 <- getDamageData("f1", "fat")
-    county2 <- totalTornadoes %>% group_by_(f2, damageType) %>% summarise(n())
-    names(county2) <- c("County", "Count2")
-    county3 <- totalTornadoes %>% group_by_(f3, damageType) %>% summarise(n())
-    names(county3) <- c("County", "Count3")
-    county4 <- totalTornadoes %>% group_by_(f4, damageType) %>% summarise(n())
-    names(county4) <- c("County", "Count4")
+  getFullDamageDataByCounty <- function(){
+    county1 <- getFullDamageData("f1")
+    county2 <- getFullDamageData("f2")
+    county3 <- getFullDamageData("f3")
+    county4 <- getFullDamageData("f4")
     
     countyCounts <- merge(county1, county2, by="County", all.x = TRUE, all.y = TRUE)
     countyCounts <- merge(countyCounts, county3, by="County", all.x = TRUE, all.y = TRUE)
@@ -114,7 +111,10 @@ server <- function(input, output) {
   names(countyData) <- c("County", "Total Tornadoes")
   
   #order by total tornadoes
-  countyData <- countyData[order(-countyData$`Total Tornadoes`),] 
+  countyData <- countyData[order(-countyData$`Total Tornadoes`),]
+  
+  #order ascending
+  ordCountyData <- countyData[order(countyData$County),]
 
   #Make data set without 0 counties
   ordCountyDataWithout <- ordCountyData[-1,]
@@ -138,8 +138,7 @@ server <- function(input, output) {
   # A -- requirement 1 (DO NOT MOVE...)
   ordCountyData <- countyData[order(countyData$County),]
   
-  
-  #test <- getDamageDataByCounty("fat")
+  #test <- getFullDamageDataByCounty()
   #print(test)
 
   
