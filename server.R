@@ -115,13 +115,6 @@ server <- function(input, output) {
   
   #order by total tornadoes
   countyData <- countyData[order(-countyData$`Total Tornadoes`),] 
-  
-  # A -- requirement 1
-  ordCountyData <- countyData[order(countyData$County),]
-  
-
-  #test <- getDamageDataByCounty("fat")
-  #print(test)
 
   #Make data set without 0 counties
   ordCountyDataWithout <- ordCountyData[-1,]
@@ -131,6 +124,23 @@ server <- function(input, output) {
   topTornadoes$Score <- topTornadoes$fat + topTornadoes$inj
   topTornadoes$WeightScore <- (topTornadoes$fat)*10 + topTornadoes$inj
   topTornadoes <- topTornadoes[order(-topTornadoes$Score),] 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  # A -- requirement 1 (DO NOT MOVE...)
+  ordCountyData <- countyData[order(countyData$County),]
+  
+  
+  #test <- getDamageDataByCounty("fat")
+  #print(test)
 
   
 #--------REACTIVE-----------------------------------------------------------------------
