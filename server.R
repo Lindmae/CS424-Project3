@@ -205,6 +205,7 @@ server <- function(input, output) {
                                             wid >= input$mapWidthSlider[1] & wid <= input$mapWidthSlider[2] &
                                             loss >= input$mapLossSlider[1] & loss <= input$mapLossSlider[2] &
                                             inj >= input$mapInjurySlider[1] & inj <= input$mapInjurySlider[2] &
+                                            yr >= input$mapYearSlider[1] & yr <= input$mapYearSlider[2] &
                                             fat >= input$mapFatSlider[1] & fat <= input$mapFatSlider[2] 
                                             )
 
@@ -588,6 +589,7 @@ output$hourlyGraph <- renderPlotly({
     
     m <-leaflet(tornadoesMap) %>%  addTiles() 
     
+    #adding all the different lines 
     for(i in 1:nrow(tornadoesMap)){
     m <-  addPolylines(m,data = tornadoesMap, weight = as.numeric(tornadoesMap[i,selectedWidth]), color = "blue",
          lat = as.numeric(tornadoesMap[i, c('slat','elat' )]), lng = as.numeric(tornadoesMap[i, c('slon', 'elon')])) 
@@ -604,7 +606,10 @@ output$hourlyGraph <- renderPlotly({
     m
   })
   
- 
+  observeEvent(input$yearChoice, {
+    shinyjs::disable("legend")
+  })
+  
   
   
 }
