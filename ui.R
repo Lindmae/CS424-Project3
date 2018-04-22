@@ -28,7 +28,7 @@ library(RColorBrewer)
 ui <- dashboardPage(
   
   #ensure that map will be the correct size 
-    #set title and disable sidebar
+  #set title and disable sidebar
   dashboardHeader(title = "CS 424 | Project 3"),
   dashboardSidebar(
     sidebarMenu(
@@ -68,7 +68,7 @@ ui <- dashboardPage(
         line-height: 30px; 
       }
       span { 
-          margin-left: 15px;  /*set the margin, so boxes don't overlap labels*/
+          margin-left: 15px;  /*set the margin, so boxes don't overlap labels... BUT IT MISALIGNS OUR SIDEBAR -- VIJAY*/
           line-height: 30px; 
       }"),
     tabItems(

@@ -1,4 +1,49 @@
 server <- function(input, output) {
+
+#--------FUNCTIONS----------------------------------------------------------------------
+  # columnType = any column from totalTornadoes; damageType = fat, inj, loss
+  # Note: group_by_ has been used, more on it here: https://stackoverflow.com/questions/47721747/error-in-grouped-df-impldata-unnamevars-drop
+  getDamageData <- function(columnType, damageType){
+    damage <- totalTornadoes %>% group_by_(columnType, damageType) %>% summarise(n())
+    names(damage) <- c(columnType, "X", "Count")
+    damageCount <- aggregate(damage$Count * damage$X, by=list(Category=damage[[1]]), FUN=sum)
+    names(damageCount) <- c(columnType, damageType)
+    
+    return(damageCount)
+  }
+  
+  getFullDamageData <- function(columnType){
+    deathCount <- getDamageData(columnType, "fat")
+    injuriesCount <- getDamageData(columnType, "inj")
+    lossCount <- getDamageData(columnType, "loss")
+    
+    names(deathCount) <- c(columnType, "Deaths")
+    names(injuriesCount) <- c(columnType, "Injuries")
+    names(lossCount) <- c(columnType, "Loss")
+    
+    totalDamagesByType <- merge(deathCount,injuriesCount,by=columnType)
+    totalDamagesByType <- merge(totalDamagesByType, lossCount, by=columnType)
+  }
+  
+  getDamageDataByCounty <- function(damageType){
+    county1 <- getDamageData("f1", "fat")
+    county2 <- totalTornadoes %>% group_by_(f2, damageType) %>% summarise(n())
+    names(county2) <- c("County", "Count2")
+    county3 <- totalTornadoes %>% group_by_(f3, damageType) %>% summarise(n())
+    names(county3) <- c("County", "Count3")
+    county4 <- totalTornadoes %>% group_by_(f4, damageType) %>% summarise(n())
+    names(county4) <- c("County", "Count4")
+    
+    countyCounts <- merge(county1, county2, by="County", all.x = TRUE, all.y = TRUE)
+    countyCounts <- merge(countyCounts, county3, by="County", all.x = TRUE, all.y = TRUE)
+    countyCounts <- merge(countyCounts, county4, by="County", all.x = TRUE, all.y = TRUE)
+    countyCounts[is.na(countyCounts)] <- 0
+    countyCounts$Final <- rowSums( countyCounts[,2:5] )
+    
+    countyData <- subset(countyCounts, select = c(County,Final))
+    names(countyData) <- c("County", damageType)
+    return(countyData)
+  }
   
 #--------DATA---------------------------------------------------------------------------
   #load any data here
@@ -35,61 +80,15 @@ server <- function(input, output) {
   #TO DO
   
   #5
-  deaths <- totalTornadoes %>% group_by(yr, fat) %>% summarise(n())
-  names(deaths) <- c("Year", "X", "Count")
-  deathCount <- aggregate(deaths$Count * deaths$X, by=list(Category=deaths$Year), FUN=sum)
-  names(deathCount) <- c("Year", "Deaths")
-  
-  injuries <- totalTornadoes %>% group_by(yr, inj) %>% summarise(n())
-  names(injuries) <- c("Year", "X", "Count")
-  injuriesCount <- aggregate(injuries$Count * injuries$X, by=list(Category=injuries$Year), FUN=sum)
-  names(injuriesCount) <- c("Year", "Injuries")
-  
-  loss <- totalTornadoes %>% group_by(yr, loss) %>% summarise(n())
-  names(loss) <- c("Year", "X", "Count")
-  lossCount <- aggregate(loss$Count * loss$X, by=list(Category=loss$Year), FUN=sum)
-  names(lossCount) <- c("Year", "Loss")
-  
-  totalDamages <- merge(deathCount,injuriesCount,by="Year")
-  totalDamages <- merge(totalDamages, lossCount, by="Year")
+  totalDamages <- getFullDamageData("yr")
+  # we followed slightly different naming conventions in our graphs so I'll keep it the same for your data -- Vijay
+  names(totalDamages) <- c("Year", "Deaths", "Injuries", "Loss")
   
   #6 
-  deaths <- totalTornadoes %>% group_by(mo, fat) %>% summarise(n())
-  names(deaths) <- c("mo", "X", "Count")
-  deathCount <- aggregate(deaths$Count * deaths$X, by=list(Category=deaths$mo), FUN=sum)
-  names(deathCount) <- c("mo", "Deaths")
-  
-  injuries <- totalTornadoes %>% group_by(mo, inj) %>% summarise(n())
-  names(injuries) <- c("mo", "X", "Count")
-  injuriesCount <- aggregate(injuries$Count * injuries$X, by=list(Category=injuries$mo), FUN=sum)
-  names(injuriesCount) <- c("mo", "Injuries")
-  
-  loss <- totalTornadoes %>% group_by(mo, loss) %>% summarise(n())
-  names(loss) <- c("mo", "X", "Count")
-  lossCount <- aggregate(loss$Count * loss$X, by=list(Category=loss$mo), FUN=sum)
-  names(lossCount) <- c("mo", "Loss")
-  
-  totalDamagesByMonth <- merge(deathCount,injuriesCount,by="mo")
-  totalDamagesByMonth <- merge(totalDamagesByMonth, lossCount, by="mo")
+  totalDamagesByMonth <- getFullDamageData("mo")
 
   #7
-  deaths <- totalTornadoes %>% group_by(hr, fat) %>% summarise(n())
-  names(deaths) <- c("hr", "X", "Count")
-  deathCount <- aggregate(deaths$Count * deaths$X, by=list(Category=deaths$hr), FUN=sum)
-  names(deathCount) <- c("hr", "Deaths")
-  
-  injuries <- totalTornadoes %>% group_by(hr, inj) %>% summarise(n())
-  names(injuries) <- c("hr", "X", "Count")
-  injuriesCount <- aggregate(injuries$Count * injuries$X, by=list(Category=injuries$hr), FUN=sum)
-  names(injuriesCount) <- c("hr", "Injuries")
-  
-  loss <- totalTornadoes %>% group_by(hr, loss) %>% summarise(n())
-  names(loss) <- c("hr", "X", "Count")
-  lossCount <- aggregate(loss$Count * loss$X, by=list(Category=loss$hr), FUN=sum)
-  names(lossCount) <- c("hr", "Loss")
-  
-  totalDamagesByHour <- merge(deathCount,injuriesCount,by="hr")
-  totalDamagesByHour <- merge(totalDamagesByHour, lossCount, by="hr")
+  totalDamagesByHour <- getFullDamageData("hr")
 
   #8
   county1 <- totalTornadoes %>% group_by(f1) %>% summarise(n())
@@ -115,6 +114,9 @@ server <- function(input, output) {
   
   # A -- requirement 1
   ordCountyData <- countyData[order(countyData$County),]
+  
+  #test <- getDamageDataByCounty("fat")
+  #print(test)
   
 #--------REACTIVE-----------------------------------------------------------------------
   # adjust graphical interfaces to am/pm
