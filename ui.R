@@ -87,7 +87,8 @@ ui <- dashboardPage(
                     div(DT::dataTableOutput("totalDamagesTable", height = 800), style = "font-size: 200%")
                 ),
                 box(status = "primary", solidHeader = TRUE, width = 12,
-                    div(plotlyOutput("yearlyGraph", height = 800), style = "font-size: 200%")
+                    div(plotlyOutput("yearlyGraph", height = 800), style = "font-size: 200%"),
+                    div(plotlyOutput("yearlyGraphPer", height = 800), style = "font-size: 200%")
                 ),
                 box(status = "primary", solidHeader = TRUE, width = 3,
                     div(DT::dataTableOutput("yearlyTornadoTable", height = 800), style = "font-size: 200%")

@@ -19,6 +19,10 @@ server <- function(input, output) {
   yearlyTornadoes <- totalTornadoes %>% group_by(Year = totalTornadoes$yr, Magnitude = totalTornadoes$mag) %>% summarise(Count = n())
   #names(yearlyTornadoes) <- c("Year", "Magnitude", "Count")
   yearlyTornadoes$Magnitude <- factor(yearlyTornadoes$Magnitude)
+  yearlyTornadoesPercent <- totalTornadoes %>% group_by(yr) %>% summarise(n())
+  names(yearlyTornadoesPercent) <- c("Year", "Total")
+  yearlyTornadoesPercent <- merge(yearlyTornadoes,yearlyTornadoesPercent,by="Year")
+  
   
   #2
   load("rdata/magTotals.RData")
@@ -228,7 +232,7 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                                    )
   )
   
-  output$yearlyTornadoTable <- renderDataTable(yearlyTornadoes, extensions = 'Scroller', 
+  output$yearlyTornadoTable <- renderDataTable(yearlyTornadoesPercent, extensions = 'Scroller', 
                                               rownames = FALSE, options = list(
                                                 deferRender = TRUE,
                                                 scrollY = 800,
@@ -327,6 +331,13 @@ output$hourlyGraph <- renderPlotly({
   output$yearlyGraph <- renderPlotly({
     
     ggplot(yearlyTornadoes, aes(x = Year, y = Count ,fill = Magnitude)) + 
+      ggtitle("Yearly Tornado Count by Magnitude") + geom_bar(stat = "identity", position = "stack")
+    
+  })
+  
+  output$yearlyGraphPer <- renderPlotly({
+    
+    ggplot(yearlyTornadoesPercent, aes(x = Year, y = ((Count/Total) *100) ,fill = Magnitude)) + 
       ggtitle("Yearly Tornado Count by Magnitude") + geom_bar(stat = "identity", position = "stack")
     
   })
