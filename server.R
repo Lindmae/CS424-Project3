@@ -228,6 +228,16 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                                    )
   )
   
+  output$yearlyTornadoTable <- renderDataTable(yearlyTornadoes, extensions = 'Scroller', 
+                                              rownames = FALSE, options = list(
+                                                deferRender = TRUE,
+                                                scrollY = 800,
+                                                scroller = TRUE,
+                                                bFilter=0
+                                              )
+  )
+  
+  
   output$totalDamagesByMonthTable <- renderDataTable(totalDamagesByMonth, extensions = 'Scroller', 
                                               rownames = FALSE, options = list(
                                                 deferRender = TRUE,
