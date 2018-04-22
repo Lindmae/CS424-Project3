@@ -120,6 +120,9 @@ server <- function(input, output) {
   # A -- requirement 1
   ordCountyData <- countyData[order(countyData$County),]
   
+  #Make data set without 0 counties
+  ordCountyDataWithout <- ordCountyData[-1,]
+  
 #--------REACTIVE-----------------------------------------------------------------------
   # adjust graphical interfaces to am/pm
   getTimeFrame <- reactive({
@@ -342,6 +345,34 @@ output$hourlyGraph <- renderPlotly({
     
   })
   
+  output$countyGraphWithout <- renderPlotly({
+    
+    plot_ly(
+      x = ordCountyDataWithout$County,
+      y = ordCountyDataWithout$`Total Tornadoes`,
+      type = "bar"
+    ) %>%
+      layout(font = list(size=30), xaxis = list(title = "County Code", autotick = T, tickangle = 0, dtick = 1, titlefont=list(size=25), tickfont=list(size=20)),
+             yaxis = list(title = "# of Tornadoes", titlefont=list(size=30), tickfont=list(size=20)),
+             margin = list(l = 100, b = 100),
+             barmode = 'group')
+    
+    
+  })
+  
+  output$countyGraph <- renderPlotly({
+    
+    plot_ly(
+      x = ordCountyData$County,
+      y = ordCountyData$`Total Tornadoes`,
+      type = "bar"
+    ) %>%
+      layout(font = list(size=30), xaxis = list(title = "County Code", autotick = T, tickangle = 0, dtick = 1, titlefont=list(size=25), tickfont=list(size=20)),
+             yaxis = list(title = "# of Tornadoes", titlefont=list(size=30), tickfont=list(size=20)),
+             margin = list(l = 100, b = 100),
+             barmode = 'group')
+    
+  })
   
   output$injuriesChart <- renderPlotly({
     

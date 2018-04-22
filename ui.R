@@ -86,6 +86,14 @@ ui <- dashboardPage(
                 box(status = "primary", solidHeader = TRUE, width = 12,
                     div(DT::dataTableOutput("totalDamagesTable", height = 800), style = "font-size: 200%")
                 ),
+                tabBox(
+                  #title = "First tabBox",
+                  # The id lets us use input$tabset1 on the server to find the current tab
+                  id = "tabset9", height = "850px",
+                  tabPanel("Without", plotlyOutput("countyGraphWithout", height = 800)),
+                  tabPanel("With", plotlyOutput("countyGraph", height = 800)),
+                  width = 12
+                ),
                 box(status = "primary", solidHeader = TRUE, width = 12,
                     div(plotlyOutput("yearlyGraph", height = 800), style = "font-size: 200%"),
                     div(plotlyOutput("yearlyGraphPer", height = 800), style = "font-size: 200%")
