@@ -113,6 +113,23 @@ server <- function(input, output) {
   #order by total tornadoes
   countyData <- countyData[order(-countyData$`Total Tornadoes`),] 
   
+  # A -- requirement 1
+  ordCountyData <- countyData[order(countyData$County),]
+  
+  output <- data.frame(
+    countyData[order(countyData$County),],
+    mag0 = 0,
+    mag1 = 0,
+    mag2 = 0,
+    mag3 = 0,
+    mag4 = 0,
+    mag5 = 0,
+    magUnkonwn= 0
+  )
+  
+  magF1 <- totalTornadoes %>% group_by(f1, mag) %>% summarise(n())
+  test <- aggregate(mag ~ f1, magF1, FUN = sum)
+  
 #--------REACTIVE-----------------------------------------------------------------------
   # adjust graphical interfaces to am/pm
   getTimeFrame <- reactive({
