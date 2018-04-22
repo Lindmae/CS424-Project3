@@ -123,6 +123,12 @@ server <- function(input, output) {
   #Make data set without 0 counties
   ordCountyDataWithout <- ordCountyData[-1,]
   
+  #Top destructive
+  topTornadoes <- subset(totalTornadoes, select = c("date", "time", "inj", "fat"))
+  topTornadoes$Score <- topTornadoes$fat + topTornadoes$inj
+  topTornadoes$WeightScore <- (topTornadoes$fat)*10 + topTornadoes$inj
+  topTornadoes <- topTornadoes[order(-topTornadoes$Score),] 
+  
 #--------REACTIVE-----------------------------------------------------------------------
   # adjust graphical interfaces to am/pm
   getTimeFrame <- reactive({
