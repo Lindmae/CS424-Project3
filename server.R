@@ -205,6 +205,11 @@ server <- function(input, output) {
     selected <- input$mapWidth
   })
   
+  colorpal <- reactive({
+    selectedColor <- reactiveMapColor()
+    tornadoesMap <- reactiveMap()
+    colorNumeric(input$colors, as.numeric(tornadoesMap[,selectedColor]))
+  })
 
 #--------TABLES-----------------------------------------------------------------------
 output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller', rownames = FALSE, 
@@ -569,17 +574,18 @@ output$hourlyGraph <- renderPlotly({
     tornadoesMap <- reactiveMap()
     selectedWidth <- reactiveMapWidth()
     selectedColor <- reactiveMapColor()
+    pal <- colorpal()
     
     m <-leaflet(tornadoesMap) %>%  addTiles() 
     
     #adding all the different lines 
     for(i in 1:nrow(tornadoesMap)){
-    m <-  addPolylines(m,data = tornadoesMap, weight = as.numeric(tornadoesMap[i,selectedWidth]), color = "blue",
+    m <-  addPolylines(m,data = tornadoesMap, weight = as.numeric(tornadoesMap[i,selectedWidth]), color = "black", #popup = ~paste(tornadoesMap$yr),
          lat = as.numeric(tornadoesMap[i, c('slat','elat' )]), lng = as.numeric(tornadoesMap[i, c('slon', 'elon')])) 
     }
   
   #adding circles to denote start and end of all the tornadoes 
-  m <- addCircleMarkers(m, lng = tornadoesMap$slon , lat = tornadoesMap$slat , radius = 2, color = "green", fillColor = "red")
+  m <- addCircleMarkers(m, lng = tornadoesMap$slon , lat = tornadoesMap$slat , radius = 2, color = "green", fillColor = "green")
   m <- addCircleMarkers(m, lng = tornadoesMap$elon , lat = tornadoesMap$elat , radius = 2, color = "red", fillColor = "red")
     
     
@@ -588,11 +594,7 @@ output$hourlyGraph <- renderPlotly({
 
     m
   })
-  
-  observeEvent(input$yearChoice, {
-    shinyjs::disable("legend")
-  })
-  
+
   
   
 }
