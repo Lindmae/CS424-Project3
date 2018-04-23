@@ -271,7 +271,7 @@ server <- function(input, output) {
   reactiveMap <- reactive({
     
     #filter to be only illinois, and make sure they are valid points 
-    tornadoesMap < totalTornadoes %>% filter(st == "IL" & slon != 0.00)
+    tornadoesMap <- totalTornadoes %>% filter(st == "IL" & slon != 0.00)
     #for any position that ends at 0.00 lat/lon, we will set it to be the same as the start 
     tornadoesMap$elat[tornadoesMap$elat == 0.00] <- tornadoesMap$slat 
     tornadoesMap$elon[tornadoesMap$elon == 0.00] <- tornadoesMap$slon
