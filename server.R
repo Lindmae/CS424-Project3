@@ -188,24 +188,9 @@ server <- function(input, output) {
   # total deaths, injuries, and loss caused by a tornado that started at the county OR passed by the county
   # also includes tornado by magnitude that started at the county OR passed by the county
   # put in function below because I want to expand it for ANY STATE and ANY COUNTY (you know go above and beyond reqs)
-  countyDataIL <- data.frame(
-    getFullDamageDataByCounty(),
-    mag0 = 0, mag1 = 0, mag2 = 0, mag3 = 0, mag4 = 0, mag5 = 0, magUnknown = 0
-  )
-  countyMagInfoIL <- getMagInfoByCounty()
+  load("rdata/countyDataIL.RData")
   allMags <- c(0, 1, 2, 3, 4, 5, -9)
   
-  # fill in magnitude info in seprate columns (mag0 - mag5 and magUnknown)
-  for(i in 1:length(countyDataIL$County)){
-    for(j in 1:length(allMags)){
-      temp <- countyMagInfoIL %>% filter(County == countyDataIL$County[i]) %>% filter(Magnitude == allMags[[j]])
-      if(length(temp$Magnitude) == 0){
-        countyDataIL[[j + 5]][i] <- 0
-      } else {
-        countyDataIL[[j + 5]][i] <- temp$TornadoCount
-      }
-    }
-  }
   
 #--------REACTIVE-----------------------------------------------------------------------
   # adjust graphical interfaces to am/pm
