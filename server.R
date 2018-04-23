@@ -175,16 +175,30 @@ server <- function(input, output) {
   topTornadoes <- topTornadoes[order(-topTornadoes$Score),] 
   
   
+  #chicago lat: 41.8781 N
+  #chicago lng: -87.6298 W
+  # need lat, lng, and magnitude. Add magnitude percentage. Add distance.
+  #ranges? X or less? X or more? X + 100 ? 
+  #start or end? or both?
+  
+  distTornadoes <- subset(totalTornadoes, select = c("elat", "elon","slat", "slon", "mag"))
+  
+  #get distance from chicago in miles
+  distTornadoes <- distTornadoes %>% rowwise() %>% 
+    mutate(eDistance = distm(c(elon, elat), c(-87.6298, 41.8781), fun = distHaversine)[,1] / 1609)
+  
+  distTornadoes <- distTornadoes %>% rowwise() %>% 
+    mutate(sDistance = distm(c(slon, slat), c(-87.6298, 41.8781), fun = distHaversine)[,1] / 1609)
+  
+
+  eDistance<-melt(table(cut(distTornadoes$eDistance,breaks=c(0,10,20,30,60,120,240,480,960)))) 
+  eDistanceData<-data.frame(sapply(a1,function(x) gsub("\\(|\\]","",gsub("\\,","-",x)))) 
+  colnames(eDistanceData)<-c("Miles Away","Count") 
   
   
   
   
-  
-  
-  
-  
-  
-  # A -- requirement 1 (DO NOT MOVE...): 
+  # A -- requirement 1 (DO NOT MOVE... .............K ): 
   # total deaths, injuries, and loss caused by a tornado that started at the county OR passed by the county
   # also includes tornado by magnitude that started at the county OR passed by the county
   # put in function below because I want to expand it for ANY STATE and ANY COUNTY (you know go above and beyond reqs)
@@ -316,6 +330,15 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                                 scroller = TRUE,
                                                 bFilter=0
                                               )
+  )
+  
+  output$eDistanceTable<- renderDataTable(eDistanceData, extensions = 'Scroller', 
+                                               rownames = FALSE, options = list(
+                                                 deferRender = TRUE,
+                                                 scrollY = 800,
+                                                 scroller = TRUE,
+                                                 bFilter=0
+                                               )
   )
   
   

@@ -11,7 +11,7 @@ library(DT)
 #library(jpeg)
 library(grid)
 library(leaflet)
-#library(reshape2)
+library(reshape2)
 #library(scales)
 library(dplyr)
 library(plotly)
@@ -20,6 +20,7 @@ library(shinycssloaders) #needed for loading bars
 library(gdata) #needed for xls files 
 library(RColorBrewer)
 library(geojsonio)
+library(geosphere)
 
 # load any processed data here
 #format: load("rdata/datafile.RData")
@@ -101,6 +102,9 @@ ui <- dashboardPage(
                 ),
                 box(status = "primary", solidHeader = TRUE, width = 3,
                     div(DT::dataTableOutput("yearlyTornadoTable", height = 800), style = "font-size: 200%")
+                ),
+                box(status = "primary", solidHeader = TRUE, width = 12,
+                    div(DT::dataTableOutput("eDistanceTable", height = 800), style = "font-size: 200%")
                 )
                 )
       ),
