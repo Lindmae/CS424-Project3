@@ -140,9 +140,6 @@ ui <- dashboardPage(
                         checkboxInput("yearChoice", "Specific year", FALSE),
                         sliderInput("mapYearSlider", label = "Year Range", min = 1950, 
                                     max = 2016, value = c(1950, 2016),sep="",step = 1,animate = TRUE),
-                        #val = state
-                        selectInput("selectState", "State selection", state.abb, selected = "IL", multiple = TRUE,
-                                    selectize = TRUE, width = NULL, size = NULL),
                         #below here is formatting for the map / colors 
                         checkboxInput("legend", "Show legend", TRUE),
                         #val = theme 
