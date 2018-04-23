@@ -19,6 +19,7 @@ library(shinyWidgets)
 library(shinycssloaders) #needed for loading bars
 library(gdata) #needed for xls files 
 library(RColorBrewer)
+library(geosphere)
 
 # load any processed data here
 #format: load("rdata/datafile.RData")

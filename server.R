@@ -136,6 +136,21 @@ server <- function(input, output) {
   topTornadoes <- topTornadoes[order(-topTornadoes$Score),] 
   
   
+  #chicago lat: 41.8781 N
+  #chicago lng: -87.6298 W
+  # need lat, lng, and magnitude. Add magnitude percentage. Add distance.
+  #ranges? X or less? X or more? X + 100 ? 
+  #start or end? or both?
+  
+  distTornadoes <- subset(totalTornadoes, select = c("elat", "elon","slat", "slon", "mag"))
+  #distTornadoes$eDistance <- distm(c(distTornadoes$elon, distTornadoes$elat), c(-87.6298, 41.8781), fun = distHaversine)[,1] / 1609
+  distTornadoes <- distTornadoes %>% rowwise() %>% 
+    mutate(eDistance = distm(c(elon, elat), c(-87.6298, 41.8781), fun = distHaversine)[,1] / 1609)
+  
+  distTornadoes <- distTornadoes %>% rowwise() %>% 
+    mutate(sDistance = distm(c(slon, slat), c(-87.6298, 41.8781), fun = distHaversine)[,1] / 1609)
+  
+  #distm(c(40.777250, -73.872610), c(40.6895, -74.1745), fun = distHaversine)[,1] / 1609
   
   
   
@@ -143,9 +158,7 @@ server <- function(input, output) {
   
   
   
-  
-  
-  # A -- requirement 1 (DO NOT MOVE...): 
+  # A -- requirement 1 (DO NOT MOVE... .............K ): 
   # total deaths, injuries, and loss caused by a tornado that started at the county OR passed by the county
   # also includes tornado by magnitude that started at the county OR passed by the county
   # put in function below because I want to expand it for ANY STATE and ANY COUNTY (you know go above and beyond reqs)
