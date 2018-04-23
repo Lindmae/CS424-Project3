@@ -69,10 +69,14 @@ ui <- dashboardPage(
         height: 30px; /*Desired height*/
         line-height: 30px; 
       }
-      span { 
+      .checkbox-inline, .radio-inline span { 
           margin-left: 15px;  /*set the margin, so boxes don't overlap labels... BUT IT MISALIGNS OUR SIDEBAR -- VIJAY*/
           line-height: 30px; 
-      }"),
+      }
+       .checkbox-inline span { 
+          margin-left: 15px;  /*set the margin, so boxes don't overlap labels... BUT IT MISALIGNS OUR SIDEBAR -- VIJAY*/
+          line-height: 30px; 
+      }         "),
     tabItems(
       tabItem(tabName = "isabel",
               fluidRow( 
@@ -128,8 +132,8 @@ ui <- dashboardPage(
                         sliderInput("mapWidthSlider", label = "Width Range", min = 0, 
                                     max = 4600, value = c(0, 4600)),
                          #val = Loss
-                         sliderInput("mapLossSlider", label = "Loss($) Range", min = 0, 
-                                    max = 22000000, value = c(0, 22000000)),
+                         sliderInput("mapLossSlider", label = "Loss($ in million/s) Range", min = 0, 
+                                    max = 22, value = c(0, 22),step = .01),
                         #val = injury
                         sliderInput("mapInjurySlider", label = "Injury Range", min = 0, 
                                     max = 1750, value = c(0, 1750)),

@@ -280,7 +280,7 @@ server <- function(input, output) {
     #check for all the range sliders 
     tornadoesMap <- tornadoesMap %>% filter(len >= input$mapLenSlider[1] & len <= input$mapLenSlider[2] &
                                             wid >= input$mapWidthSlider[1] & wid <= input$mapWidthSlider[2] &
-                                            loss >= input$mapLossSlider[1] & loss <= input$mapLossSlider[2] &
+                                            loss >= ( input$mapLossSlider[1] * 1000000) & loss <= (input$mapLossSlider[2] * 1000000)  &
                                             inj >= input$mapInjurySlider[1] & inj <= input$mapInjurySlider[2] &
                                             yr >= input$mapYearSlider[1] & yr <= input$mapYearSlider[2] &
                                             fat >= input$mapFatSlider[1] & fat <= input$mapFatSlider[2] 
