@@ -207,8 +207,6 @@ server <- function(input, output) {
     }
   }
   
-
-  
 #--------REACTIVE-----------------------------------------------------------------------
   # adjust graphical interfaces to am/pm
   getTimeFrame <- reactive({
@@ -743,6 +741,21 @@ output$hourlyGraph <- renderPlotly({
     m = addProviderTiles(map = m, provider = "CartoDB.Positron")
 
     m
+  })
+  
+  # similar approach as found here: https://rstudio.github.io/leaflet/json.html
+  output$countyMap <- renderLeaflet({
+    usCounties <- geojsonio::geojson_read("data/gz_2010_us_050_00_20m.json", what = "sp")
+    
+    pal <- colorNumeric("viridis", NULL)
+    
+    leaflet(usCounties) %>% setView(lng = -98.583, lat = 39.833, zoom = 4) %>%
+      addTiles() %>%
+      addPolygons(stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
+                  fillColor = ~pal(countyDataIL$TotalTornadoes),
+                  label = ~paste0(countyDataIL$County, ": ", formatC(countyDataIL$TotalTornadoes, big.mark = ","))) %>%
+      addLegend(pal = pal, values = ~countyDataIL$TotalTornadoes, opacity = 1.0,
+                labFormat = labelFormat(transform = function(x) round(10^x)))
   })
 
   

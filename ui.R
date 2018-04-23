@@ -19,6 +19,7 @@ library(shinyWidgets)
 library(shinycssloaders) #needed for loading bars
 library(gdata) #needed for xls files 
 library(RColorBrewer)
+library(geojsonio)
 
 # load any processed data here
 #format: load("rdata/datafile.RData")
@@ -231,7 +232,7 @@ ui <- dashboardPage(
                          box(title = "COUNTY Deaths, Injuries, and Losses - IL - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 12,
                              tabBox(
                                id = "damagesByCounty", height = "850px",
-                               tabPanel("County Map", h4("maybe tabs, maybe not...")),
+                               tabPanel("County Map", leafletOutput("countyMap")),
                                width = 12
                              ),
                              box(status = "primary", solidHeader = TRUE, width = 12,
