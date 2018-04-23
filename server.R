@@ -182,17 +182,18 @@ server <- function(input, output) {
   #start or end? or both?
   
   distTornadoes <- subset(totalTornadoes, select = c("elat", "elon","slat", "slon", "mag"))
-  #distTornadoes$eDistance <- distm(c(distTornadoes$elon, distTornadoes$elat), c(-87.6298, 41.8781), fun = distHaversine)[,1] / 1609
+  
+  #get distance from chicago in miles
   distTornadoes <- distTornadoes %>% rowwise() %>% 
     mutate(eDistance = distm(c(elon, elat), c(-87.6298, 41.8781), fun = distHaversine)[,1] / 1609)
   
   distTornadoes <- distTornadoes %>% rowwise() %>% 
     mutate(sDistance = distm(c(slon, slat), c(-87.6298, 41.8781), fun = distHaversine)[,1] / 1609)
   
-  #distm(c(40.777250, -73.872610), c(40.6895, -74.1745), fun = distHaversine)[,1] / 1609
-  
-  
-  
+
+  a1<-melt(table(cut(distTornadoes$eDistance,breaks=c(0,10,20,30,60,120,240,480,960)))) 
+  a2<-data.frame(sapply(a1,function(x) gsub("\\(|\\]","",gsub("\\,","-",x)))) 
+  colnames(a2)<-c("Miles Away","Count") 
   
   
   
