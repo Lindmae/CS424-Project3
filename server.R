@@ -27,6 +27,7 @@ server <- function(input, output) {
   }
   
   getFullDamageDataByCounty <- function(){
+    # get injuries, deaths, and losses on a per county basis
     county1 <- getFullDamageData("f1")
     county2 <- getFullDamageData("f2")
     county3 <- getFullDamageData("f3")
@@ -48,6 +49,44 @@ server <- function(input, output) {
     countyCounts$TotalTornadoes <- ordCountyData[[2]]
     
     overallCountyData <- subset(countyCounts, select = c(County,TotalTornadoes, TotalDeathsByTornado,TotalInjuriesByTornado,TotalLossByTornado))
+    
+    return(overallCountyData)
+  }
+  
+  getMagInfo <- function(columnType, mag = "mag"){
+    magInfo <- totalTornadoes %>% group_by_(columnType, mag) %>% summarise(Count = n())
+    names(magInfo) <- c(columnType, "Magnitude", "Count")
+    
+    magInfo$Magnitude <- factor(magInfo$Magnitude)
+    magInfoTotals <- totalTornadoes %>% group_by_(columnType) %>% summarise(n())
+    names(magInfoTotals) <- c(columnType, "Total")
+    
+    magInfoTotals <- merge(magInfo,magInfoTotals,by=columnType)
+    # take note this data frame has the counts and totals of a specific tornado... not actual percantage
+    
+    return(magInfoTotals)
+  }
+  
+  getMagInfoByCounty <- function(){
+    county1 <- getMagInfo("f1")
+    county2 <- getMagInfo("f2")
+    county3 <- getMagInfo("f3")
+    county4 <- getMagInfo("f4")
+    
+    names(county1) <- c("County", "Magnitude", "Count1", "Total1")
+    names(county2) <- c("County", "Magnitude", "Count2", "Total2")
+    names(county3) <- c("County", "Magnitude", "Count3", "Total3")
+    names(county4) <- c("County", "Magnitude", "Count4", "Total4")
+    
+    countyCounts <- merge(county1, county2, by=c("County", "Magnitude"), all.x = TRUE, all.y = TRUE)
+    countyCounts <- merge(countyCounts, county3, by=c("County", "Magnitude"), all.x = TRUE, all.y = TRUE)
+    countyCounts <- merge(countyCounts, county4, by=c("County", "Magnitude"), all.x = TRUE, all.y = TRUE)
+    countyCounts[is.na(countyCounts)] <- 0
+    
+    countyCounts$TornadoCount <- rowSums(countyCounts[, c(3, 5, 7, 9)])
+    countyCounts$TotalTornado <- rowSums(countyCounts[, c(4, 6, 8, 10)])
+    
+    overallCountyData <- subset(countyCounts, select = c(County, Magnitude, TornadoCount, TotalTornado))
     
     return(overallCountyData)
   }
@@ -149,7 +188,25 @@ server <- function(input, output) {
   # total deaths, injuries, and loss caused by a tornado that started at the county OR passed by the county
   # also includes tornado by magnitude that started at the county OR passed by the county
   # put in function below because I want to expand it for ANY STATE and ANY COUNTY (you know go above and beyond reqs)
-  countyDataIL <- getFullDamageDataByCounty()
+  countyDataIL <- data.frame(
+    getFullDamageDataByCounty(),
+    mag0 = 0, mag1 = 0, mag2 = 0, mag3 = 0, mag4 = 0, mag5 = 0, magUnknown = 0
+  )
+  countyMagInfoIL <- getMagInfoByCounty()
+  allMags <- c(0, 1, 2, 3, 4, 5, -9)
+  
+  # fill in magnitude info in seprate columns (mag0 - mag5 and magUnknown)
+  for(i in 1:length(countyDataIL$County)){
+    for(j in 1:length(allMags)){
+      temp <- countyMagInfoIL %>% filter(County == countyDataIL$County[i]) %>% filter(Magnitude == allMags[[j]])
+      if(length(temp$Magnitude) == 0){
+        countyDataIL[[j + 5]][i] <- 0
+      } else {
+        countyDataIL[[j + 5]][i] <- temp$TornadoCount
+      }
+    }
+  }
+  
 
   
 #--------REACTIVE-----------------------------------------------------------------------
