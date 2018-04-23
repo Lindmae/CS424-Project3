@@ -225,7 +225,21 @@ ui <- dashboardPage(
                       )   
                   )
                   )
-                )
+                ),
+              tabPanel("Damages by County",
+                       fluidRow(
+                         box(title = "COUNTY Deaths, Injuries, and Losses - IL - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 12,
+                             tabBox(
+                               id = "damagesByCounty", height = "850px",
+                               tabPanel("County Map", h4("maybe tabs, maybe not...")),
+                               width = 12
+                             ),
+                             box(status = "primary", solidHeader = TRUE, width = 12,
+                                 div(DT::dataTableOutput("countyDataILTable", height = 800), style = "font-size: 200%")
+                             )   
+                         )
+                       )
+              )
               )
         )
     )

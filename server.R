@@ -3,6 +3,7 @@ server <- function(input, output) {
 #--------FUNCTIONS----------------------------------------------------------------------
   # columnType = any column from totalTornadoes; damageType = fat, inj, loss
   # Note: group_by_ has been used, more on it here: https://stackoverflow.com/questions/47721747/error-in-grouped-df-impldata-unnamevars-drop
+  # TODO: perhaps make it general enough for any state AND county (part A requirements 1 & 2)
   getDamageData <- function(columnType, damageType){
     damage <- totalTornadoes %>% group_by_(columnType, damageType) %>% summarise(n())
     names(damage) <- c(columnType, "X", "Count")
@@ -31,15 +32,24 @@ server <- function(input, output) {
     county3 <- getFullDamageData("f3")
     county4 <- getFullDamageData("f4")
     
+    names(county1) <- c("County", "Deaths1", "Injuries1", "Loss1")
+    names(county2) <- c("County", "Deaths2", "Injuries2", "Loss2")
+    names(county3) <- c("County", "Deaths3", "Injuries3", "Loss3")
+    names(county4) <- c("County", "Deaths4", "Injuries4", "Loss4")
+    
     countyCounts <- merge(county1, county2, by="County", all.x = TRUE, all.y = TRUE)
     countyCounts <- merge(countyCounts, county3, by="County", all.x = TRUE, all.y = TRUE)
     countyCounts <- merge(countyCounts, county4, by="County", all.x = TRUE, all.y = TRUE)
     countyCounts[is.na(countyCounts)] <- 0
-    countyCounts$Final <- rowSums( countyCounts[,2:5] )
     
-    countyData <- subset(countyCounts, select = c(County,Final))
-    names(countyData) <- c("County", damageType)
-    return(countyData)
+    countyCounts$TotalDeathsByTornado <- rowSums(countyCounts[, c(2, 5, 8, 11)])
+    countyCounts$TotalInjuriesByTornado <- rowSums(countyCounts[, c(3, 6, 9, 12)])
+    countyCounts$TotalLossByTornado <- rowSums(countyCounts[, c(4, 7, 10, 13)])
+    countyCounts$TotalTornadoes <- ordCountyData[[2]]
+    
+    overallCountyData <- subset(countyCounts, select = c(County,TotalTornadoes, TotalDeathsByTornado,TotalInjuriesByTornado,TotalLossByTornado))
+    
+    return(overallCountyData)
   }
   
 #--------DATA---------------------------------------------------------------------------
@@ -135,11 +145,11 @@ server <- function(input, output) {
   
   
   
-  # A -- requirement 1 (DO NOT MOVE...)
-  ordCountyData <- countyData[order(countyData$County),]
-  
-  #test <- getFullDamageDataByCounty()
-  #print(test)
+  # A -- requirement 1 (DO NOT MOVE...): 
+  # total deaths, injuries, and loss caused by a tornado that started at the county OR passed by the county
+  # also includes tornado by magnitude that started at the county OR passed by the county
+  # put in function below because I want to expand it for ANY STATE and ANY COUNTY (you know go above and beyond reqs)
+  countyDataIL <- getFullDamageDataByCounty()
 
   
 #--------REACTIVE-----------------------------------------------------------------------
@@ -331,6 +341,15 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                                   scroller = TRUE,
                                                   bFilter=0
                                                 )
+  )
+  
+  output$countyDataILTable <- renderDataTable(countyDataIL, extensions = 'Scroller', 
+                                                     rownames = FALSE, options = list(
+                                                       deferRender = TRUE,
+                                                       scrollY = 800,
+                                                       scroller = TRUE,
+                                                       bFilter=0
+                                                     )
   )
   
   
