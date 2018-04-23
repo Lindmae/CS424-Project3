@@ -189,8 +189,9 @@ server <- function(input, output) {
   
   distTornadoes <- distTornadoes %>% rowwise() %>% 
     mutate(sDistance = distm(c(slon, slat), c(-87.6298, 41.8781), fun = distHaversine)[,1] / 1609)
+    
+  a1<-melt(table(cut(distTornadoes$eDistance,breaks=c(0,10,20,30,60,120,240,480,960)))) 
   
-
   eDistance<-melt(table(cut(distTornadoes$eDistance,breaks=c(0,10,20,30,60,120,240,480,960)))) 
   eDistanceData<-data.frame(sapply(a1,function(x) gsub("\\(|\\]","",gsub("\\,","-",x)))) 
   colnames(eDistanceData)<-c("Miles Away","Count") 
