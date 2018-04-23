@@ -1,4 +1,56 @@
 server <- function(input, output) {
+
+#--------FUNCTIONS----------------------------------------------------------------------
+  # columnType = any column from totalTornadoes; damageType = fat, inj, loss
+  # Note: group_by_ has been used, more on it here: https://stackoverflow.com/questions/47721747/error-in-grouped-df-impldata-unnamevars-drop
+  # TODO: perhaps make it general enough for any state AND county (part A requirements 1 & 2)
+  getDamageData <- function(columnType, damageType){
+    damage <- totalTornadoes %>% group_by_(columnType, damageType) %>% summarise(n())
+    names(damage) <- c(columnType, "X", "Count")
+    damageCount <- aggregate(damage$Count * damage$X, by=list(Category=damage[[1]]), FUN=sum)
+    names(damageCount) <- c(columnType, damageType)
+    
+    return(damageCount)
+  }
+  
+  getFullDamageData <- function(columnType){
+    deathCount <- getDamageData(columnType, "fat")
+    injuriesCount <- getDamageData(columnType, "inj")
+    lossCount <- getDamageData(columnType, "loss")
+    
+    names(deathCount) <- c(columnType, "Deaths")
+    names(injuriesCount) <- c(columnType, "Injuries")
+    names(lossCount) <- c(columnType, "Loss")
+    
+    totalDamagesByType <- merge(deathCount,injuriesCount,by=columnType)
+    totalDamagesByType <- merge(totalDamagesByType, lossCount, by=columnType)
+  }
+  
+  getFullDamageDataByCounty <- function(){
+    county1 <- getFullDamageData("f1")
+    county2 <- getFullDamageData("f2")
+    county3 <- getFullDamageData("f3")
+    county4 <- getFullDamageData("f4")
+    
+    names(county1) <- c("County", "Deaths1", "Injuries1", "Loss1")
+    names(county2) <- c("County", "Deaths2", "Injuries2", "Loss2")
+    names(county3) <- c("County", "Deaths3", "Injuries3", "Loss3")
+    names(county4) <- c("County", "Deaths4", "Injuries4", "Loss4")
+    
+    countyCounts <- merge(county1, county2, by="County", all.x = TRUE, all.y = TRUE)
+    countyCounts <- merge(countyCounts, county3, by="County", all.x = TRUE, all.y = TRUE)
+    countyCounts <- merge(countyCounts, county4, by="County", all.x = TRUE, all.y = TRUE)
+    countyCounts[is.na(countyCounts)] <- 0
+    
+    countyCounts$TotalDeathsByTornado <- rowSums(countyCounts[, c(2, 5, 8, 11)])
+    countyCounts$TotalInjuriesByTornado <- rowSums(countyCounts[, c(3, 6, 9, 12)])
+    countyCounts$TotalLossByTornado <- rowSums(countyCounts[, c(4, 7, 10, 13)])
+    countyCounts$TotalTornadoes <- ordCountyData[[2]]
+    
+    overallCountyData <- subset(countyCounts, select = c(County,TotalTornadoes, TotalDeathsByTornado,TotalInjuriesByTornado,TotalLossByTornado))
+    
+    return(overallCountyData)
+  }
   
 #--------DATA---------------------------------------------------------------------------
   #load any data here
@@ -19,6 +71,10 @@ server <- function(input, output) {
   yearlyTornadoes <- totalTornadoes %>% group_by(Year = totalTornadoes$yr, Magnitude = totalTornadoes$mag) %>% summarise(Count = n())
   #names(yearlyTornadoes) <- c("Year", "Magnitude", "Count")
   yearlyTornadoes$Magnitude <- factor(yearlyTornadoes$Magnitude)
+  yearlyTornadoesPercent <- totalTornadoes %>% group_by(yr) %>% summarise(n())
+  names(yearlyTornadoesPercent) <- c("Year", "Total")
+  yearlyTornadoesPercent <- merge(yearlyTornadoes,yearlyTornadoesPercent,by="Year")
+  
   
   #2
   load("rdata/magTotals.RData")
@@ -35,61 +91,15 @@ server <- function(input, output) {
   #TO DO
   
   #5
-  deaths <- totalTornadoes %>% group_by(yr, fat) %>% summarise(n())
-  names(deaths) <- c("Year", "X", "Count")
-  deathCount <- aggregate(deaths$Count * deaths$X, by=list(Category=deaths$Year), FUN=sum)
-  names(deathCount) <- c("Year", "Deaths")
-  
-  injuries <- totalTornadoes %>% group_by(yr, inj) %>% summarise(n())
-  names(injuries) <- c("Year", "X", "Count")
-  injuriesCount <- aggregate(injuries$Count * injuries$X, by=list(Category=injuries$Year), FUN=sum)
-  names(injuriesCount) <- c("Year", "Injuries")
-  
-  loss <- totalTornadoes %>% group_by(yr, loss) %>% summarise(n())
-  names(loss) <- c("Year", "X", "Count")
-  lossCount <- aggregate(loss$Count * loss$X, by=list(Category=loss$Year), FUN=sum)
-  names(lossCount) <- c("Year", "Loss")
-  
-  totalDamages <- merge(deathCount,injuriesCount,by="Year")
-  totalDamages <- merge(totalDamages, lossCount, by="Year")
+  totalDamages <- getFullDamageData("yr")
+  # we followed slightly different naming conventions in our graphs so I'll keep it the same for your data -- Vijay
+  names(totalDamages) <- c("Year", "Deaths", "Injuries", "Loss")
   
   #6 
-  deaths <- totalTornadoes %>% group_by(mo, fat) %>% summarise(n())
-  names(deaths) <- c("mo", "X", "Count")
-  deathCount <- aggregate(deaths$Count * deaths$X, by=list(Category=deaths$mo), FUN=sum)
-  names(deathCount) <- c("mo", "Deaths")
-  
-  injuries <- totalTornadoes %>% group_by(mo, inj) %>% summarise(n())
-  names(injuries) <- c("mo", "X", "Count")
-  injuriesCount <- aggregate(injuries$Count * injuries$X, by=list(Category=injuries$mo), FUN=sum)
-  names(injuriesCount) <- c("mo", "Injuries")
-  
-  loss <- totalTornadoes %>% group_by(mo, loss) %>% summarise(n())
-  names(loss) <- c("mo", "X", "Count")
-  lossCount <- aggregate(loss$Count * loss$X, by=list(Category=loss$mo), FUN=sum)
-  names(lossCount) <- c("mo", "Loss")
-  
-  totalDamagesByMonth <- merge(deathCount,injuriesCount,by="mo")
-  totalDamagesByMonth <- merge(totalDamagesByMonth, lossCount, by="mo")
+  totalDamagesByMonth <- getFullDamageData("mo")
 
   #7
-  deaths <- totalTornadoes %>% group_by(hr, fat) %>% summarise(n())
-  names(deaths) <- c("hr", "X", "Count")
-  deathCount <- aggregate(deaths$Count * deaths$X, by=list(Category=deaths$hr), FUN=sum)
-  names(deathCount) <- c("hr", "Deaths")
-  
-  injuries <- totalTornadoes %>% group_by(hr, inj) %>% summarise(n())
-  names(injuries) <- c("hr", "X", "Count")
-  injuriesCount <- aggregate(injuries$Count * injuries$X, by=list(Category=injuries$hr), FUN=sum)
-  names(injuriesCount) <- c("hr", "Injuries")
-  
-  loss <- totalTornadoes %>% group_by(hr, loss) %>% summarise(n())
-  names(loss) <- c("hr", "X", "Count")
-  lossCount <- aggregate(loss$Count * loss$X, by=list(Category=loss$hr), FUN=sum)
-  names(lossCount) <- c("hr", "Loss")
-  
-  totalDamagesByHour <- merge(deathCount,injuriesCount,by="hr")
-  totalDamagesByHour <- merge(totalDamagesByHour, lossCount, by="hr")
+  totalDamagesByHour <- getFullDamageData("hr")
 
   #8
   county1 <- totalTornadoes %>% group_by(f1) %>% summarise(n())
@@ -111,7 +121,36 @@ server <- function(input, output) {
   names(countyData) <- c("County", "Total Tornadoes")
   
   #order by total tornadoes
-  countyData <- countyData[order(-countyData$`Total Tornadoes`),] 
+  countyData <- countyData[order(-countyData$`Total Tornadoes`),]
+  
+  #order ascending
+  ordCountyData <- countyData[order(countyData$County),]
+
+  #Make data set without 0 counties
+  ordCountyDataWithout <- ordCountyData[-1,]
+  
+  #Top destructive
+  topTornadoes <- subset(totalTornadoes, select = c("date", "time", "inj", "fat"))
+  topTornadoes$Score <- topTornadoes$fat + topTornadoes$inj
+  topTornadoes$WeightScore <- (topTornadoes$fat)*10 + topTornadoes$inj
+  topTornadoes <- topTornadoes[order(-topTornadoes$Score),] 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  # A -- requirement 1 (DO NOT MOVE...): 
+  # total deaths, injuries, and loss caused by a tornado that started at the county OR passed by the county
+  # also includes tornado by magnitude that started at the county OR passed by the county
+  # put in function below because I want to expand it for ANY STATE and ANY COUNTY (you know go above and beyond reqs)
+  countyDataIL <- getFullDamageDataByCounty()
+
   
 #--------REACTIVE-----------------------------------------------------------------------
   # adjust graphical interfaces to am/pm
@@ -230,6 +269,16 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                                    )
   )
   
+  output$yearlyTornadoTable <- renderDataTable(yearlyTornadoesPercent, extensions = 'Scroller', 
+                                              rownames = FALSE, options = list(
+                                                deferRender = TRUE,
+                                                scrollY = 800,
+                                                scroller = TRUE,
+                                                bFilter=0
+                                              )
+  )
+  
+  
   output$totalDamagesByMonthTable <- renderDataTable(totalDamagesByMonth, extensions = 'Scroller', 
                                               rownames = FALSE, options = list(
                                                 deferRender = TRUE,
@@ -299,6 +348,15 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                                 )
   )
   
+  output$countyDataILTable <- renderDataTable(countyDataIL, extensions = 'Scroller', 
+                                                     rownames = FALSE, options = list(
+                                                       deferRender = TRUE,
+                                                       scrollY = 800,
+                                                       scroller = TRUE,
+                                                       bFilter=0
+                                                     )
+  )
+  
   
 
 
@@ -323,6 +381,41 @@ output$hourlyGraph <- renderPlotly({
     
   })
   
+  output$yearlyGraphPer <- renderPlotly({
+    
+    ggplot(yearlyTornadoesPercent, aes(x = Year, y = ((Count/Total) *100) ,fill = Magnitude)) + 
+      ggtitle("Yearly Tornado Count by Magnitude") + geom_bar(stat = "identity", position = "stack")
+    
+  })
+  
+  output$countyGraphWithout <- renderPlotly({
+    
+    plot_ly(
+      x = ordCountyDataWithout$County,
+      y = ordCountyDataWithout$`Total Tornadoes`,
+      type = "bar"
+    ) %>%
+      layout(font = list(size=30), xaxis = list(title = "County Code", autotick = T, tickangle = 0, dtick = 1, titlefont=list(size=25), tickfont=list(size=20)),
+             yaxis = list(title = "# of Tornadoes", titlefont=list(size=30), tickfont=list(size=20)),
+             margin = list(l = 100, b = 100),
+             barmode = 'group')
+    
+    
+  })
+  
+  output$countyGraph <- renderPlotly({
+    
+    plot_ly(
+      x = ordCountyData$County,
+      y = ordCountyData$`Total Tornadoes`,
+      type = "bar"
+    ) %>%
+      layout(font = list(size=30), xaxis = list(title = "County Code", autotick = T, tickangle = 0, dtick = 1, titlefont=list(size=25), tickfont=list(size=20)),
+             yaxis = list(title = "# of Tornadoes", titlefont=list(size=30), tickfont=list(size=20)),
+             margin = list(l = 100, b = 100),
+             barmode = 'group')
+    
+  })
   
   output$injuriesChart <- renderPlotly({
     

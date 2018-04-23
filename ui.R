@@ -28,7 +28,7 @@ library(RColorBrewer)
 ui <- dashboardPage(
   
   #ensure that map will be the correct size 
-    #set title and disable sidebar
+  #set title and disable sidebar
   dashboardHeader(title = "CS 424 | Project 3"),
   dashboardSidebar(
     sidebarMenu(
@@ -68,7 +68,7 @@ ui <- dashboardPage(
         line-height: 30px; 
       }
       span { 
-          margin-left: 15px;  /*set the margin, so boxes don't overlap labels*/
+          margin-left: 15px;  /*set the margin, so boxes don't overlap labels... BUT IT MISALIGNS OUR SIDEBAR -- VIJAY*/
           line-height: 30px; 
       }"),
     tabItems(
@@ -86,8 +86,20 @@ ui <- dashboardPage(
                 box(status = "primary", solidHeader = TRUE, width = 12,
                     div(DT::dataTableOutput("totalDamagesTable", height = 800), style = "font-size: 200%")
                 ),
+                tabBox(
+                  #title = "First tabBox",
+                  # The id lets us use input$tabset1 on the server to find the current tab
+                  id = "tabset9", height = "850px",
+                  tabPanel("Without", plotlyOutput("countyGraphWithout", height = 800)),
+                  tabPanel("With", plotlyOutput("countyGraph", height = 800)),
+                  width = 12
+                ),
                 box(status = "primary", solidHeader = TRUE, width = 12,
-                    div(plotlyOutput("yearlyGraph", height = 800), style = "font-size: 200%")
+                    div(plotlyOutput("yearlyGraph", height = 800), style = "font-size: 200%"),
+                    div(plotlyOutput("yearlyGraphPer", height = 800), style = "font-size: 200%")
+                ),
+                box(status = "primary", solidHeader = TRUE, width = 3,
+                    div(DT::dataTableOutput("yearlyTornadoTable", height = 800), style = "font-size: 200%")
                 )
                 )
       ),
@@ -213,7 +225,21 @@ ui <- dashboardPage(
                       )   
                   )
                   )
-                )
+                ),
+              tabPanel("Damages by County",
+                       fluidRow(
+                         box(title = "COUNTY Deaths, Injuries, and Losses - IL - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 12,
+                             tabBox(
+                               id = "damagesByCounty", height = "850px",
+                               tabPanel("County Map", h4("maybe tabs, maybe not...")),
+                               width = 12
+                             ),
+                             box(status = "primary", solidHeader = TRUE, width = 12,
+                                 div(DT::dataTableOutput("countyDataILTable", height = 800), style = "font-size: 200%")
+                             )   
+                         )
+                       )
+              )
               )
         )
     )
