@@ -19,7 +19,7 @@ library(shinyWidgets)
 library(shinycssloaders) #needed for loading bars
 library(gdata) #needed for xls files 
 library(RColorBrewer)
-library(geojsonio)
+#library(geojsonio)
 library(geosphere)
 
 # load any processed data here
@@ -180,9 +180,8 @@ ui <- dashboardPage(
                            sliderInput("mapFatSlider", label = "Fatality Range", min = 0, 
                                        max = 160, value = c(0, 160)),
                            #val = year 
-                           checkboxInput("yearChoice", "Specific year", FALSE),
-                           sliderInput("mapYearSlider", label = "Year Range", min = 1950, 
-                                       max = 2016, value = c(1950, 2016),sep="",step = 1,animate = TRUE),
+                           sliderInput("mapYearSlider", label = "Year Select", min = 1950, 
+                                       max = 2016, value = 1977,sep="",step = 1,animate = TRUE),
                            #below here is formatting for the map / colors 
                            checkboxInput("legend", "Show legend", TRUE),
                            #val = theme 
