@@ -303,7 +303,7 @@ server <- function(input, output) {
                                             wid >= input$mapWidthSlider[1] & wid <= input$mapWidthSlider[2] &
                                             loss >= ( input$mapLossSlider[1] * 1000000) & loss <= (input$mapLossSlider[2] * 1000000)  &
                                             inj >= input$mapInjurySlider[1] & inj <= input$mapInjurySlider[2] &
-                                            yr >= input$mapYearSlider[1] & yr <= input$mapYearSlider[2] &
+                                            yr == input$mapYearSlider&
                                             fat >= input$mapFatSlider[1] & fat <= input$mapFatSlider[2] 
                                             )
     #based off the width and color selection, make sure that the values are normalized 
@@ -805,11 +805,14 @@ output$hourlyGraph <- renderPlotly({
   m <- addCircleMarkers(m, lng = tornadoesMap$elon , lat = tornadoesMap$elat , radius = 2, color = "red", fillColor = "red")
     
     
-    # use the black/white map so it doesn't colide with the data we are displaying 
+    # change the theme to what ever is selected
     m = addProviderTiles(map = m, provider = reactiveMapProvider())
-
     m
   })
+  
+  
+  
+  
   
   # similar approach as found here: https://rstudio.github.io/leaflet/json.html
   output$countyMap <- renderLeaflet({
