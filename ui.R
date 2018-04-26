@@ -185,7 +185,10 @@ ui <- dashboardPage(
                         #val = theme 
                         selectInput("colors", "Color Scheme",
                                     rownames(subset(brewer.pal.info, category %in% c("seq", "div")))
-                        )
+                        ),
+                        selectInput("topTornado", label = h3("Choose a tornado.."), 
+                                    choices = list("Choice 1" = 1, "Choice 2" = 2, "Choice 3" = 3))
+                        
                         )),
                         column(8, box(title = "Map", solidHeader = TRUE, status = "primary", width = 24,
                             leafletOutput("map")))), style = "font-size: 300%")

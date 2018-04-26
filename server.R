@@ -127,7 +127,47 @@ server <- function(input, output) {
   totalTornadoes$min <- expandedTotalTornadoes$min
   
   #4
-  #TO DO
+  #chicago lat: 41.8781 N
+  #chicago lng: -87.6298 W
+  # need lat, lng, and magnitude. Add magnitude percentage. Add distance.
+  #ranges? X or less? X or more? X + 100 ? 
+  #start or end? or both?
+  
+  distTornadoes <- subset(totalTornadoes, select = c("elat", "elon","slat", "slon", "mag"))
+  
+  #get distance from chicago in miles
+  distTornadoes <- distTornadoes %>% rowwise() %>% 
+    mutate(eDistance = distm(c(elon, elat), c(-87.6298, 41.8781), fun = distHaversine)[,1] / 1609)
+  
+  distTornadoes <- distTornadoes %>% rowwise() %>% 
+    mutate(sDistance = distm(c(slon, slat), c(-87.6298, 41.8781), fun = distHaversine)[,1] / 1609)
+  
+  a1<-melt(table(cut(distTornadoes$eDistance,breaks=c(0,10,20,30,60,120,240,480,960)))) 
+  
+  distTornadoes$eDistance <- round(distTornadoes$eDistance,digits=0)
+  distTornadoes$sDistance <- round(distTornadoes$sDistance,digits=0)
+  
+  distTornadoesCountE <- as.data.frame(table(distTornadoes$eDistance))
+  distTornadoesCountS <- as.data.frame(table(distTornadoes$sDistance))
+  #omit unknowns
+  n<-dim(distTornadoesCountE)[1]
+  distTornadoesCountE<-distTornadoesCountE[1:(n-1),]
+  
+  nn<-dim(distTornadoesCountS)[1]
+  distTornadoesCountS<-distTornadoesCountS[1:(n-1),]
+  
+  
+  
+  eDistance<-melt(table(cut(distTornadoes$eDistance,breaks=c(0,10,20,30,60,120,240,480,960)))) 
+  eDistanceData<-data.frame(sapply(a1,function(x) gsub("\\(|\\]","",gsub("\\,","-",x)))) 
+  colnames(eDistanceData)<-c("Miles Away","End Count")
+  
+  sDistance<-melt(table(cut(distTornadoes$eDistance,breaks=c(0,10,20,30,60,120,240,480,960)))) 
+  sDistanceData<-data.frame(sapply(a1,function(x) gsub("\\(|\\]","",gsub("\\,","-",x)))) 
+  colnames(sDistanceData)<-c("Miles Away","Start Count")
+  
+  
+  eDistanceData <- merge(eDistanceData,sDistanceData,by="Miles Away")
   
   #5
   totalDamages <- getFullDamageData("yr")
@@ -175,47 +215,7 @@ server <- function(input, output) {
   topTornadoes <- topTornadoes[order(-topTornadoes$Score),] 
   
   
-  #chicago lat: 41.8781 N
-  #chicago lng: -87.6298 W
-  # need lat, lng, and magnitude. Add magnitude percentage. Add distance.
-  #ranges? X or less? X or more? X + 100 ? 
-  #start or end? or both?
   
-  distTornadoes <- subset(totalTornadoes, select = c("elat", "elon","slat", "slon", "mag"))
-  
-  #get distance from chicago in miles
-  distTornadoes <- distTornadoes %>% rowwise() %>% 
-    mutate(eDistance = distm(c(elon, elat), c(-87.6298, 41.8781), fun = distHaversine)[,1] / 1609)
-  
-  distTornadoes <- distTornadoes %>% rowwise() %>% 
-    mutate(sDistance = distm(c(slon, slat), c(-87.6298, 41.8781), fun = distHaversine)[,1] / 1609)
-  
-  a1<-melt(table(cut(distTornadoes$eDistance,breaks=c(0,10,20,30,60,120,240,480,960)))) 
-  
-  distTornadoes$eDistance <- round(distTornadoes$eDistance,digits=0)
-  distTornadoes$sDistance <- round(distTornadoes$sDistance,digits=0)
-  
-  distTornadoesCountE <- as.data.frame(table(distTornadoes$eDistance))
-  distTornadoesCountS <- as.data.frame(table(distTornadoes$sDistance))
-  #omit unknowns
-  n<-dim(distTornadoesCountE)[1]
-  distTornadoesCountE<-distTornadoesCountE[1:(n-1),]
-  
-  nn<-dim(distTornadoesCountS)[1]
-  distTornadoesCountS<-distTornadoesCountS[1:(n-1),]
-  
-  
-  
-  eDistance<-melt(table(cut(distTornadoes$eDistance,breaks=c(0,10,20,30,60,120,240,480,960)))) 
-  eDistanceData<-data.frame(sapply(a1,function(x) gsub("\\(|\\]","",gsub("\\,","-",x)))) 
-  colnames(eDistanceData)<-c("Miles Away","End Count")
-  
-  sDistance<-melt(table(cut(distTornadoes$eDistance,breaks=c(0,10,20,30,60,120,240,480,960)))) 
-  sDistanceData<-data.frame(sapply(a1,function(x) gsub("\\(|\\]","",gsub("\\,","-",x)))) 
-  colnames(sDistanceData)<-c("Miles Away","Start Count")
-  
-  
-  eDistanceData <- merge(eDistanceData,sDistanceData,by="Miles Away")
   
   
   
