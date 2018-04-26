@@ -77,7 +77,41 @@ ui <- dashboardPage(
           margin-left: 15px;  /*set the margin, so boxes don't overlap labels... BUT IT MISALIGNS OUR SIDEBAR -- VIJAY*/
           line-height: 30px; 
       }         "),
-    tabItems(
+    tabItems(tabItem(tabName = "info",
+                     fluidRow(
+                       column(2,""
+                       ),
+                       column(8,
+                              p(" Written by:"),
+                              h2("Bartosz Kupiec, Vijay Mahida, Isabel Lindmae"),
+                              br(),
+                              p("Project 3 for CS 424 Spring 2018 UIC"),
+                              br(),
+                              p("Libraries used: shiny, shinyjs, 
+                                shinydashboard, 
+                                ggplot2, 
+                                lubridate, 
+                                DT, 
+                                grid, 
+                                leaflet, 
+                                reshape2, 
+                                dplyr, 
+                                plotly, 
+                                shinyWidgets, 
+                                shinycssloaders,  gdata,  RColorBrewer, 
+                                geojsonio, 
+                                geosphere."),
+                              br(),
+                              p("Data from: NOAA's National Weather Service ", a("www.spc.noaa.gov/wcm/index.html#data", href="www.spc.noaa.gov/wcm/index.html#data", target="blank"), ")"),
+                              br(),
+                              p("For project requirements visit here: ", a("www.evl.uic.edu/aej/424/", href="www.evl.uic.edu/aej/424/", target="blank")),
+                              br(),
+                              p("For more information/analysis visit: ", a("Website goes here", href="", target="blank"))
+                       ),
+                       column(2,""
+                       )
+                     )
+    ),
       tabItem(tabName = "isabel",
               fluidRow( 
                 tabBox(
