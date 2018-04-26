@@ -330,6 +330,10 @@ server <- function(input, output) {
     tornadoesMap <- reactiveMap()
     colorNumeric(input$colors, as.numeric(tornadoesMap[,selectedColor]))
   })
+  # TODO: Isabel, put your input here 
+  reactiveMapProvider <- reactive({
+    selected <- "CartoDB.Positron"
+  })
 
 #--------TABLES-----------------------------------------------------------------------
 output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller', rownames = FALSE, 
@@ -768,7 +772,7 @@ output$hourlyGraph <- renderPlotly({
     tornadoesMap <- reactiveMap()
     selectedWidth <- reactiveMapWidth()
     selectedColor <- reactiveMapColor()
-    pal <- colorNumeric(input$colors, as.numeric(tornadoesMap[,selectedColor]))
+    pal <- colorpal()
     
     m <-leaflet(tornadoesMap) %>%  addTiles() 
     
@@ -784,7 +788,7 @@ output$hourlyGraph <- renderPlotly({
     
     
     # use the black/white map so it doesn't colide with the data we are displaying 
-    m = addProviderTiles(map = m, provider = "CartoDB.Positron")
+    m = addProviderTiles(map = m, provider = reactiveMapProvider())
 
     m
   })
