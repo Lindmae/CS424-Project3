@@ -149,49 +149,50 @@ ui <- dashboardPage(
               
       ),
       tabItem(tabName = "bart",
-              fluidRow(div(column(4,box(title = "Tornado tracks across Illinois", solidHeader = TRUE, status = "primary",width = 12,
-                        checkboxGroupInput("magnitudes", "Magnitudes to show:",
-                                           choices=c(0,1,2,3,4,5,"unknown" = -9), inline = TRUE,selected = 1),
-                        radioButtons("mapWidth","Tornado tracks with color based on :",
-                                     choices=c("magnitude" = "mag", "length" = "len", "width" = "wid",
-                                               "loss" = "loss", "injuries" = "inj", "fatalities" = "fat"),
-                                     inline = TRUE,selected = "mag"),
-                        radioButtons("mapColor","Tornado tracks with width based on :",
-                                     choices=c("magnitude" = "mag", "length" = "len", "width" = "wid", 
-                                               "loss" = "loss", "injuries" = "inj", "fatalities" = "fat"), 
-                                     inline = TRUE,selected = "mag"),
-                        # Sliders for all the different values
-                        #val = Length 
-                        sliderInput("mapLenSlider", label = "Length Range", min = 0, 
-                                    max = 240, value = c(0, 240)),
-                        #val = Width 
-                        sliderInput("mapWidthSlider", label = "Width Range", min = 0, 
-                                    max = 4600, value = c(0, 4600)),
-                         #val = Loss
-                         sliderInput("mapLossSlider", label = "Loss($ in million/s) Range", min = 0, 
-                                    max = 22, value = c(0, 22),step = .01),
-                        #val = injury
-                        sliderInput("mapInjurySlider", label = "Injury Range", min = 0, 
-                                    max = 1750, value = c(0, 1750)),
-                        #val = fatalities 
-                        sliderInput("mapFatSlider", label = "Fatality Range", min = 0, 
-                                    max = 160, value = c(0, 160)),
-                        #val = year 
-                        checkboxInput("yearChoice", "Specific year", FALSE),
-                        sliderInput("mapYearSlider", label = "Year Range", min = 1950, 
-                                    max = 2016, value = c(1950, 2016),sep="",step = 1,animate = TRUE),
-                        #below here is formatting for the map / colors 
-                        checkboxInput("legend", "Show legend", TRUE),
-                        #val = theme 
-                        selectInput("colors", "Color Scheme",
-                                    rownames(subset(brewer.pal.info, category %in% c("seq", "div")))
-                        ),
-                        selectInput("topTornado", label = h3("Choose a tornado.."), 
-                                    choices = list("Choice 1" = 1, "Choice 2" = 2, "Choice 3" = 3))
-                        
-                        )),
-                        column(8, box(title = "Map", solidHeader = TRUE, status = "primary", width = 24,
-                            leafletOutput("map")))), style = "font-size: 300%")
+              fluidRow(div(
+                        column(12, box(title = "Map", solidHeader = TRUE, status = "primary", width = 24,
+                            leafletOutput("map")))), style = "font-size: 300%"),
+              absolutePanel(top = 150, right = 50,box(title = "Tornado tracks across Illinois", solidHeader = TRUE, status = "primary",width = 12,
+                           checkboxGroupInput("magnitudes", "Magnitudes to show:",
+                                              choices=c(0,1,2,3,4,5,"unknown" = -9), inline = TRUE,selected = c(1,2)),
+                           radioButtons("mapColor","Tornado tracks with color based on :",
+                                        choices=c("magnitude" = "mag", "length" = "len", "width" = "wid",
+                                                  "loss" = "loss", "injuries" = "inj", "fatalities" = "fat"),
+                                        inline = TRUE,selected = "len"),
+                           radioButtons("mapWidth","Tornado tracks with width based on :",
+                                        choices=c("magnitude" = "mag", "length" = "len", "width" = "wid", 
+                                                  "loss" = "loss", "injuries" = "inj", "fatalities" = "fat"), 
+                                        inline = TRUE,selected = "loss"),
+                           # Sliders for all the different values
+                           #val = Length 
+                           sliderInput("mapLenSlider", label = "Length Range", min = 0, 
+                                       max = 240, value = c(0, 240)),
+                           #val = Width 
+                           sliderInput("mapWidthSlider", label = "Width Range", min = 0, 
+                                       max = 4600, value = c(0, 4600)),
+                           #val = Loss
+                           sliderInput("mapLossSlider", label = "Loss($ in million/s) Range", min = 0, 
+                                       max = 22, value = c(0, 22),step = .01),
+                           #val = injury
+                           sliderInput("mapInjurySlider", label = "Injury Range", min = 0, 
+                                       max = 1750, value = c(0, 1750)),
+                           #val = fatalities 
+                           sliderInput("mapFatSlider", label = "Fatality Range", min = 0, 
+                                       max = 160, value = c(0, 160)),
+                           #val = year 
+                           checkboxInput("yearChoice", "Specific year", FALSE),
+                           sliderInput("mapYearSlider", label = "Year Range", min = 1950, 
+                                       max = 2016, value = c(1950, 2016),sep="",step = 1,animate = TRUE),
+                           #below here is formatting for the map / colors 
+                           checkboxInput("legend", "Show legend", TRUE),
+                           #val = theme 
+                           selectInput("colors", "Color Scheme",
+                                       rownames(subset(brewer.pal.info, category %in% c("seq", "div")))
+                           ),
+                           selectInput("topTornado", label = h3("Choose a tornado.."), 
+                                       choices = list("Choice 1" = 1, "Choice 2" = 2, "Choice 3" = 3))
+                           
+              ))
       ),
       tabItem(tabName = "vijay",
               tabsetPanel(

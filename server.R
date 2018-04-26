@@ -306,7 +306,12 @@ server <- function(input, output) {
                                             yr >= input$mapYearSlider[1] & yr <= input$mapYearSlider[2] &
                                             fat >= input$mapFatSlider[1] & fat <= input$mapFatSlider[2] 
                                             )
-
+    #based off the width and color selection, make sure that the values are normalized 
+    selectedWidth <- reactiveMapWidth()
+    tornadoesMap[,selectedWidth] <- rescale(tornadoesMap[,selectedWidth], to=c(1,6))
+    #selectedColor <- reactiveMapColor()
+    #tornadoesMap[,selectedColor] <- rescale(tornadoesMap[,selectedColor], to=c(1,6))
+    
     #return the data frame 
     tornadoesMap
     
@@ -763,13 +768,13 @@ output$hourlyGraph <- renderPlotly({
     tornadoesMap <- reactiveMap()
     selectedWidth <- reactiveMapWidth()
     selectedColor <- reactiveMapColor()
-    pal <- colorpal()
+    pal <- colorNumeric(input$colors, as.numeric(tornadoesMap[,selectedColor]))
     
     m <-leaflet(tornadoesMap) %>%  addTiles() 
     
     #adding all the different lines 
     for(i in 1:nrow(tornadoesMap)){
-    m <-  addPolylines(m,data = tornadoesMap, weight = as.numeric(tornadoesMap[i,selectedWidth]), color = "black", #popup = ~paste(tornadoesMap$yr),
+    m <-  addPolylines(m,data = tornadoesMap, weight = as.numeric(tornadoesMap[i,selectedWidth]), color = pal(tornadoesMap[1,selectedColor]), #popup = ~paste(tornadoesMap$yr),
          lat = as.numeric(tornadoesMap[i, c('slat','elat' )]), lng = as.numeric(tornadoesMap[i, c('slon', 'elon')])) 
     }
   
