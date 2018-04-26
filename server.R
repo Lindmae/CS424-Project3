@@ -189,12 +189,33 @@ server <- function(input, output) {
   
   distTornadoes <- distTornadoes %>% rowwise() %>% 
     mutate(sDistance = distm(c(slon, slat), c(-87.6298, 41.8781), fun = distHaversine)[,1] / 1609)
-    
+  
   a1<-melt(table(cut(distTornadoes$eDistance,breaks=c(0,10,20,30,60,120,240,480,960)))) 
+  
+  distTornadoes$eDistance <- round(distTornadoes$eDistance,digits=0)
+  distTornadoes$sDistance <- round(distTornadoes$sDistance,digits=0)
+  
+  distTornadoesCountE <- as.data.frame(table(distTornadoes$eDistance))
+  distTornadoesCountS <- as.data.frame(table(distTornadoes$sDistance))
+  #omit unknowns
+  n<-dim(distTornadoesCountE)[1]
+  distTornadoesCountE<-distTornadoesCountE[1:(n-1),]
+  
+  nn<-dim(distTornadoesCountS)[1]
+  distTornadoesCountS<-distTornadoesCountS[1:(n-1),]
+  
+  
   
   eDistance<-melt(table(cut(distTornadoes$eDistance,breaks=c(0,10,20,30,60,120,240,480,960)))) 
   eDistanceData<-data.frame(sapply(a1,function(x) gsub("\\(|\\]","",gsub("\\,","-",x)))) 
-  colnames(eDistanceData)<-c("Miles Away","Count") 
+  colnames(eDistanceData)<-c("Miles Away","End Count")
+  
+  sDistance<-melt(table(cut(distTornadoes$eDistance,breaks=c(0,10,20,30,60,120,240,480,960)))) 
+  sDistanceData<-data.frame(sapply(a1,function(x) gsub("\\(|\\]","",gsub("\\,","-",x)))) 
+  colnames(sDistanceData)<-c("Miles Away","Start Count")
+  
+  
+  eDistanceData <- merge(eDistanceData,sDistanceData,by="Miles Away")
   
   
   
@@ -511,6 +532,17 @@ output$hourlyGraph <- renderPlotly({
       layout(font = list(size=30), title="Property Loss per Year",
              yaxis = list(title = "Property Loss Value", titlefont=list(size=30), tickfont=list(size=20)),
              margin = list(l = 100, t = 100, b = 100),
+             barmode = 'group')
+  })
+  
+  output$distanceCountGraph <- renderPlotly({
+    
+    s <- seq(1, 322, by = 1)
+    plot_ly(distTornadoesCountE, x = ~s, y = ~Freq, type = 'scatter', name = 'End', mode = 'lines') %>%
+      add_trace(y = ~distTornadoesCountS$Freq, name = 'Start', mode = 'lines') %>%
+      layout(font = list(size=30), xaxis = list(title = "Distance (miles)", autotick = T, tickangle = 0, dtick = 1, titlefont=list(size=25), tickfont=list(size=20)),
+             yaxis = list(title = "# of Tornadoes", titlefont=list(size=30), tickfont=list(size=20)),
+             margin = list(l = 100, b = 100),
              barmode = 'group')
   })
   

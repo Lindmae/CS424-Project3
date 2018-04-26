@@ -108,9 +108,12 @@ ui <- dashboardPage(
                     div(DT::dataTableOutput("yearlyTornadoTable", height = 800), style = "font-size: 200%")
                 ),
                 box(status = "primary", solidHeader = TRUE, width = 12,
-                    div(DT::dataTableOutput("eDistanceTable", height = 800), style = "font-size: 200%")
+                    div(DT::dataTableOutput("eDistanceTable", height = 800), style = "font-size: 200%"),
+                    div(plotlyOutput("distanceCountGraph", height = 800), style = "font-size: 200%")
+                    
+                     )
                 )
-                )
+              
       ),
       tabItem(tabName = "bart",
               fluidRow(div(column(4,box(title = "Tornado tracks across Illinois", solidHeader = TRUE, status = "primary",width = 12,
