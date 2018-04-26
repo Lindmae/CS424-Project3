@@ -190,7 +190,9 @@ ui <- dashboardPage(
                                        rownames(subset(brewer.pal.info, category %in% c("seq", "div")))
                            ),
                            selectInput("topTornado", label = h3("Choose a tornado.."), 
-                                       choices = list("Choice 1" = 1, "Choice 2" = 2, "Choice 3" = 3))
+                                       choices = list("Choice 1" = 1, "Choice 2" = 2, "Choice 3" = 3)),
+                           selectInput("mapChoice", label = h3("Choose a base map.."), 
+                                       choices = list("Base" = 1, "Dark" = 2, "Terrain" = 3, "Satellite" = 4))
                            
               ))
       ),

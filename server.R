@@ -330,9 +330,27 @@ server <- function(input, output) {
     tornadoesMap <- reactiveMap()
     colorNumeric(input$colors, as.numeric(tornadoesMap[,selectedColor]))
   })
+  
   # TODO: Isabel, put your input here 
   reactiveMapProvider <- reactive({
-    selected <- "CartoDB.Positron"
+    #get input
+    choice <- input$mapChoice
+    choice <- as.integer(choice)
+    print(choice)
+    #choose map
+    if(choice == 1){
+      selected <- "CartoDB.Positron"
+    }
+    else if(choice == 2) {
+      selected <- "CartoDB.DarkMatterNoLabels"
+    }
+    else if(choice == 3) {
+      selected <- "Stamen.Terrain"
+    }
+    else{
+      selected <- "Esri.WorldImagery"
+    }
+      
   })
 
 #--------TABLES-----------------------------------------------------------------------
