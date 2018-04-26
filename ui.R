@@ -19,7 +19,7 @@ library(shinyWidgets)
 library(shinycssloaders) #needed for loading bars
 library(gdata) #needed for xls files 
 library(RColorBrewer)
-#library(geojsonio)
+library(geojsonio)
 library(geosphere)
 
 # load any processed data here
