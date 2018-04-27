@@ -315,10 +315,15 @@ server <- function(input, output) {
                                             wid >= input$mapWidthSlider[1] & wid <= input$mapWidthSlider[2] &
                                             loss >= ( input$mapLossSlider[1] * 1000000) & loss <= (input$mapLossSlider[2] * 1000000)  &
                                             inj >= input$mapInjurySlider[1] & inj <= input$mapInjurySlider[2] &
-                                            yr >= input$mapYearSlider[1] & yr <= input$mapYearSlider[2] &
+                                            yr == input$mapYearSlider&
                                             fat >= input$mapFatSlider[1] & fat <= input$mapFatSlider[2] 
                                             )
-
+    #based off the width and color selection, make sure that the values are normalized 
+    selectedWidth <- reactiveMapWidth()
+    tornadoesMap[,selectedWidth] <- rescale(tornadoesMap[,selectedWidth], to=c(1,6))
+    #selectedColor <- reactiveMapColor()
+    #tornadoesMap[,selectedColor] <- rescale(tornadoesMap[,selectedColor], to=c(1,6))
+    
     #return the data frame 
     tornadoesMap
     
@@ -336,6 +341,28 @@ server <- function(input, output) {
     selectedColor <- reactiveMapColor()
     tornadoesMap <- reactiveMap()
     colorNumeric(input$colors, as.numeric(tornadoesMap[,selectedColor]))
+  })
+  
+  # TODO: Isabel, put your input here 
+  reactiveMapProvider <- reactive({
+    #get input
+    choice <- input$mapChoice
+    choice <- as.integer(choice)
+    print(choice)
+    #choose map
+    if(choice == 1){
+      selected <- "CartoDB.Positron"
+    }
+    else if(choice == 2) {
+      selected <- "CartoDB.DarkMatterNoLabels"
+    }
+    else if(choice == 3) {
+      selected <- "Stamen.Terrain"
+    }
+    else{
+      selected <- "Esri.WorldImagery"
+    }
+      
   })
 
 #--------TABLES-----------------------------------------------------------------------
@@ -454,7 +481,7 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                                      )
   )
   
-  
+  output$yearSelected <- renderText({ input$mapYearSlider})
 
 
 #--------CHARTS/GRAPHS-----------------------------------------------------------------------
@@ -781,7 +808,7 @@ output$hourlyGraph <- renderPlotly({
     
     #adding all the different lines 
     for(i in 1:nrow(tornadoesMap)){
-    m <-  addPolylines(m,data = tornadoesMap, weight = as.numeric(tornadoesMap[i,selectedWidth]), color = "black", #popup = ~paste(tornadoesMap$yr),
+    m <-  addPolylines(m,data = tornadoesMap, weight = as.numeric(tornadoesMap[i,selectedWidth]), color = pal(tornadoesMap[1,selectedColor]), #popup = ~paste(tornadoesMap$yr),
          lat = as.numeric(tornadoesMap[i, c('slat','elat' )]), lng = as.numeric(tornadoesMap[i, c('slon', 'elon')])) 
     }
   
@@ -790,11 +817,14 @@ output$hourlyGraph <- renderPlotly({
   m <- addCircleMarkers(m, lng = tornadoesMap$elon , lat = tornadoesMap$elat , radius = 2, color = "red", fillColor = "red")
     
     
-    # use the black/white map so it doesn't colide with the data we are displaying 
-    m = addProviderTiles(map = m, provider = "CartoDB.Positron")
-
+    # change the theme to what ever is selected
+    m = addProviderTiles(map = m, provider = reactiveMapProvider())
     m
   })
+  
+  
+  
+  
   
   # similar approach as found here: https://rstudio.github.io/leaflet/json.html
   output$countyMap <- renderLeaflet({
