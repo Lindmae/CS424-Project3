@@ -259,6 +259,7 @@ server <- function(input, output) {
   load("rdata/countyDataIL.RData")
   countyDataIL <- countyDataIL[-1,]
   allMags <- c(0, 1, 2, 3, 4, 5, -9)
+  #TODO: correct IL county data where there are NA (change the 0)... it makes sense don't worry about it
   
   
 #--------REACTIVE-----------------------------------------------------------------------
@@ -408,11 +409,19 @@ server <- function(input, output) {
             } else {
               countyData[[j + 5]][i] <- temp$TornadoCount
             }
-          }
+        }
+        currentCounty <- countyData$County[i]
+        if (as.numeric(currentCounty) < 10){
+          countyData$County[i] <- paste("00", currentCounty, sep = "")
+        } else if (as.numeric(currentCounty) < 100){
+          countyData$County[i] <- paste("0", currentCounty, sep = "")
+        }
       }
+      
+      countyData <- countyData[-1,]
     }
     
-    countyData 
+    countyData
   })
 
 #--------TABLES-----------------------------------------------------------------------
