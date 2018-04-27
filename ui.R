@@ -294,41 +294,18 @@ ui <- dashboardPage(
                          box(title = "Tools", status = "primary", solidHeader = TRUE, width = 12,
                              selectInput("cState", label = "Select a State:", state.abb, selected = "IL")
                          ),
-                         box(title = "Total Tornadoes - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 3,
-                             tabBox(
-                               id = "totalTornadoByCounty", height = "850px",
-                               tabPanel("All", leafletOutput("countyMap", height = 800)),
-                               tabPanel("Mag0", h4("Nothing yet...")),
-                               tabPanel("Mag1", h4("Nothing yet...")),
-                               tabPanel("Mag2", h4("Nothing yet...")),
-                               tabPanel("Mag3", h4("Nothing yet...")),
-                               tabPanel("Mag4", h4("Nothing yet...")),
-                               tabPanel("Mag5", h4("Nothing yet...")),
-                               tabPanel("MagUnknown", h4("Nothing yet...")),
-                               
-                               width = 12
-                             )
+                         box(title = "Total Tornadoes - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
+                             radioButtons("mapChosenMag", "Tornado Magnitude: ", choices=c("all" = -1,0,1,2,3,4,5,"unknown" = -9), inline = TRUE, selected = -1),
+                             leafletOutput("countyMap", height = "928px")
                          ),
-                         box(title = "Deaths - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 3,
-                             tabBox(
-                               id = "DeathsByCounty", height = "850px",
-                               tabPanel("County Map", h4("Nothing yet...")),
-                               width = 12
-                             )
+                         box(title = "Deaths - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
+                                h4("Nothing yet...")
                          ),
-                         box(title = "Injuries - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 3,
-                             tabBox(
-                               id = "InjuriesByCounty", height = "850px",
-                               tabPanel("County Map", h4("Nothing yet...")),
-                               width = 12
-                             )
+                         box(title = "Injuries - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
+                               h4("Nothing yet...")
                          ),
-                         box(title = "Losses - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 3,
-                             tabBox(
-                               id = "LossByCounty", height = "850px",
-                               tabPanel("County Map", h4("Nothing yet...")),
-                               width = 12
-                             )
+                         box(title = "Losses - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
+                                h4("Nothing yet...")
                          ),
                          box(title = "Data Table", status = "primary", solidHeader = TRUE, width = 12,
                              div(DT::dataTableOutput("countyDataILTable", height = 800))

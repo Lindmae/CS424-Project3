@@ -827,7 +827,7 @@ output$hourlyGraph <- renderPlotly({
   
   
   
-  # similar approach as found here: https://rstudio.github.io/leaflet/json.html
+  # similar approach as found here: http://rstudio-pubs-static.s3.amazonaws.com/90665_de25062951e540e7b732f21de53001f0.html
   output$countyMap <- renderLeaflet({
     selectedStateCounties <- counties(state = 'IL', cb = TRUE, resolution = '20m')
     
