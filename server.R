@@ -257,17 +257,8 @@ server <- function(input, output) {
   # also includes tornado by magnitude that started at the county OR passed by the county
   # put in function below because I want to expand it for ANY STATE and ANY COUNTY (you know go above and beyond reqs)
   load("rdata/countyDataIL.RData")
-  #countyDataIL <- countyDataIL[-1,]
+  countyDataIL <- countyDataIL[-1,]
   allMags <- c(0, 1, 2, 3, 4, 5, -9)
-  
-  for(i in 1:length(countyDataIL$County)){
-    currentCounty <- countyDataIL$County[i]
-    if (i < 6){
-      countyDataIL$County[i] <- paste("00", currentCounty, sep = "")
-    } else if (i < 51){
-      countyDataIL$County[i] <- paste("0", currentCounty, sep = "")
-    }
-  }
   
   
 #--------REACTIVE-----------------------------------------------------------------------
