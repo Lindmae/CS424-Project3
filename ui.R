@@ -296,7 +296,7 @@ ui <- dashboardPage(
                          ),
                          box(title = "Total Tornadoes - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
                              radioButtons("mapChosenMag", "Tornado Magnitude: ", choices=c("all" = -1,0,1,2,3,4,5,"unknown" = -9), inline = TRUE, selected = -1),
-                             leafletOutput("countyMap", height = "928px")
+                             leafletOutput("mapTotalTornadoes", height = "928px")
                          ),
                          box(title = "Deaths - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
                                 h4("Nothing yet...")
@@ -308,7 +308,7 @@ ui <- dashboardPage(
                                 h4("Nothing yet...")
                          ),
                          box(title = "Data Table", status = "primary", solidHeader = TRUE, width = 12,
-                             div(DT::dataTableOutput("countyDataILTable", height = 800))
+                             div(DT::dataTableOutput("countyDataTable", height = 800))
                          )
                        )
               ),

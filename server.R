@@ -26,7 +26,7 @@ server <- function(input, output) {
     totalDamagesByType <- merge(totalDamagesByType, lossCount, by=columnType)
   }
   
-  getFullDamageDataByCounty <- function(sData){
+  getFullDamageDataByCounty <- function(sData, sOrdCountyData){
     # get injuries, deaths, and losses on a per county basis
     county1 <- getFullDamageData("f1", sData)
     county2 <- getFullDamageData("f2", sData)
@@ -47,7 +47,7 @@ server <- function(input, output) {
     countyCounts$TotalInjuriesByTornado <- rowSums(countyCounts[, c(3, 6, 9, 12)])
     countyCounts$TotalLossByTornado <- rowSums(countyCounts[, c(4, 7, 10, 13)])
     #TODO: FIX SUCH THAT ORDCOUNTY IS LOCAL TO THIS FUNCTION....
-    countyCounts$TotalTornadoes <- ordCountyData[[2]]
+    countyCounts$TotalTornadoes <- sOrdCountyData[[2]]
     
     overallCountyData <- subset(countyCounts, select = c(County,TotalTornadoes, TotalDeathsByTornado,TotalInjuriesByTornado,TotalLossByTornado))
     
@@ -68,7 +68,7 @@ server <- function(input, output) {
     return(magInfoTotals)
   }
   
-  getMagInfoByCounty <- function(){
+  getMagInfoByCounty <- function(sData){
     county1 <- getMagInfo("f1", sData)
     county2 <- getMagInfo("f2", sData)
     county3 <- getMagInfo("f3", sData)
@@ -90,6 +90,35 @@ server <- function(input, output) {
     overallCountyData <- subset(countyCounts, select = c(County, Magnitude, TornadoCount, TotalTornado))
     
     return(overallCountyData)
+  }
+  
+  getTotalTornadoes <- function(sData){
+    county1 <- sData %>% group_by(f1) %>% summarise(n())
+    county2 <- sData %>% group_by(f2) %>% summarise(n())
+    county3 <- sData %>% group_by(f3) %>% summarise(n())
+    county4 <- sData %>% group_by(f4) %>% summarise(n())
+    
+    names(county1) <- c("County", "Count1")
+    names(county2) <- c("County", "Count2")
+    names(county3) <- c("County", "Count3")
+    names(county4) <- c("County", "Count4")
+    
+    countyCounts <- merge(county1, county2, by="County", all.x = TRUE, all.y = TRUE)
+    countyCounts <- merge(countyCounts, county3, by="County", all.x = TRUE, all.y = TRUE)
+    countyCounts <- merge(countyCounts, county4, by="County", all.x = TRUE, all.y = TRUE)
+    countyCounts[is.na(countyCounts)] <- 0
+    countyCounts$Final <- rowSums( countyCounts[,2:5] )
+    
+    countyData <- subset(countyCounts, select = c(County,Final))
+    names(countyData) <- c("County", "Total Tornadoes")
+    
+    #order by total tornadoes
+    countyData <- countyData[order(-countyData$`Total Tornadoes`),]
+    
+    #order ascending
+    ordCountyData <- countyData[order(countyData$County),]
+    
+    return(ordCountyData)
   }
   
 #--------DATA---------------------------------------------------------------------------
@@ -228,7 +257,7 @@ server <- function(input, output) {
   # also includes tornado by magnitude that started at the county OR passed by the county
   # put in function below because I want to expand it for ANY STATE and ANY COUNTY (you know go above and beyond reqs)
   load("rdata/countyDataIL.RData")
-  countyDataIL <- countyDataIL[-1,] # for our analysis on the map we will never need '0' or Unkown tornado data
+  #countyDataIL <- countyDataIL[-1,]
   allMags <- c(0, 1, 2, 3, 4, 5, -9)
   
   for(i in 1:length(countyDataIL$County)){
@@ -365,6 +394,35 @@ server <- function(input, output) {
     }
       
   })
+  
+  getCountyDataByState <- reactive({
+    chosenState <- as.character(input$cState)
+    
+    if(chosenState == "IL"){
+      countyData <- countyDataIL
+    } else {
+      chosenStateData <- cTornadoes %>% filter(st == chosenState)
+      chTotalTornadoes <- getTotalTornadoes(chosenStateData)
+      countyData <- data.frame(
+        getFullDamageDataByCounty(chosenStateData, chTotalTornadoes),
+        mag0 = 0, mag1 = 0, mag2 = 0, mag3 = 0, mag4 = 0, mag5 = 0, magUnknown = 0
+      )
+      countyMagInfo <- getMagInfoByCounty(chosenStateData)
+      
+      for(i in 1:length(countyData$County)){
+        for(j in 1:length(allMags)){
+            temp <- countyMagInfo %>% filter(County == countyData$County[i]) %>% filter(Magnitude == allMags[[j]])
+            if(length(temp$Magnitude) == 0){
+              countyData[[j + 5]][i] <- 0
+            } else {
+              countyData[[j + 5]][i] <- temp$TornadoCount
+            }
+          }
+      }
+    }
+    
+    countyData 
+  })
 
 #--------TABLES-----------------------------------------------------------------------
 output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller', rownames = FALSE, 
@@ -473,7 +531,7 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                                 )
   )
   
-  output$countyDataILTable <- renderDataTable(countyDataIL, extensions = 'Scroller', 
+  output$countyDataTable <- renderDataTable(getCountyDataByState(), extensions = 'Scroller', 
                                                      rownames = FALSE, options = list(
                                                        deferRender = TRUE,
                                                        scrollY = 800,
@@ -826,12 +884,13 @@ output$hourlyGraph <- renderPlotly({
   
   
   
-  
+  # TODO: have four different maps (with the first being able to choose magnitude)
   # similar approach as found here: http://rstudio-pubs-static.s3.amazonaws.com/90665_de25062951e540e7b732f21de53001f0.html
-  output$countyMap <- renderLeaflet({
-    selectedStateCounties <- counties(state = 'IL', cb = TRUE, resolution = '20m')
+  output$mapTotalTornadoes <- renderLeaflet({
+    chosenState <- as.character(input$cState)
+    selectedStateCounties <- counties(state = chosenState, cb = TRUE, resolution = '20m')
     
-    totalTornadoData <- countyDataIL
+    totalTornadoData <- getCountyDataByState()
     colnames(totalTornadoData) <- c("COUNTYFP", "TotalTornadoes", "TotalDeathsByTornado", "TotalInjuriesByTornado", "TotalLossByTornado", "mag0", "mag1", "mag2", "mag3", "mag4", "mag5", "magUnknown")
   
     mCountyData <- geo_join(selectedStateCounties, totalTornadoData, "COUNTYFP", "COUNTYFP")
