@@ -4,8 +4,8 @@ server <- function(input, output) {
   # columnType = any column from totalTornadoes; damageType = fat, inj, loss
   # Note: group_by_ has been used, more on it here: https://stackoverflow.com/questions/47721747/error-in-grouped-df-impldata-unnamevars-drop
   # TODO: perhaps make it general enough for any state AND county (part A requirements 1 & 2)
-  getDamageData <- function(columnType, damageType){
-    damage <- totalTornadoes %>% group_by_(columnType, damageType) %>% summarise(n())
+  getDamageData <- function(columnType, damageType, sData){
+    damage <- sData %>% group_by_(columnType, damageType) %>% summarise(n())
     names(damage) <- c(columnType, "X", "Count")
     damageCount <- aggregate(damage$Count * damage$X, by=list(Category=damage[[1]]), FUN=sum)
     names(damageCount) <- c(columnType, damageType)
@@ -13,10 +13,10 @@ server <- function(input, output) {
     return(damageCount)
   }
   
-  getFullDamageData <- function(columnType){
-    deathCount <- getDamageData(columnType, "fat")
-    injuriesCount <- getDamageData(columnType, "inj")
-    lossCount <- getDamageData(columnType, "loss")
+  getFullDamageData <- function(columnType, sData){
+    deathCount <- getDamageData(columnType, "fat", sData)
+    injuriesCount <- getDamageData(columnType, "inj", sData)
+    lossCount <- getDamageData(columnType, "loss", sData)
     
     names(deathCount) <- c(columnType, "Deaths")
     names(injuriesCount) <- c(columnType, "Injuries")
@@ -26,12 +26,12 @@ server <- function(input, output) {
     totalDamagesByType <- merge(totalDamagesByType, lossCount, by=columnType)
   }
   
-  getFullDamageDataByCounty <- function(){
+  getFullDamageDataByCounty <- function(sData){
     # get injuries, deaths, and losses on a per county basis
-    county1 <- getFullDamageData("f1")
-    county2 <- getFullDamageData("f2")
-    county3 <- getFullDamageData("f3")
-    county4 <- getFullDamageData("f4")
+    county1 <- getFullDamageData("f1", sData)
+    county2 <- getFullDamageData("f2", sData)
+    county3 <- getFullDamageData("f3", sData)
+    county4 <- getFullDamageData("f4", sData)
     
     names(county1) <- c("County", "Deaths1", "Injuries1", "Loss1")
     names(county2) <- c("County", "Deaths2", "Injuries2", "Loss2")
@@ -46,6 +46,7 @@ server <- function(input, output) {
     countyCounts$TotalDeathsByTornado <- rowSums(countyCounts[, c(2, 5, 8, 11)])
     countyCounts$TotalInjuriesByTornado <- rowSums(countyCounts[, c(3, 6, 9, 12)])
     countyCounts$TotalLossByTornado <- rowSums(countyCounts[, c(4, 7, 10, 13)])
+    #TODO: FIX SUCH THAT ORDCOUNTY IS LOCAL TO THIS FUNCTION....
     countyCounts$TotalTornadoes <- ordCountyData[[2]]
     
     overallCountyData <- subset(countyCounts, select = c(County,TotalTornadoes, TotalDeathsByTornado,TotalInjuriesByTornado,TotalLossByTornado))
@@ -53,12 +54,12 @@ server <- function(input, output) {
     return(overallCountyData)
   }
   
-  getMagInfo <- function(columnType, mag = "mag"){
-    magInfo <- totalTornadoes %>% group_by_(columnType, mag) %>% summarise(Count = n())
+  getMagInfo <- function(columnType, sData, mag = "mag"){
+    magInfo <- sData %>% group_by_(columnType, mag) %>% summarise(Count = n())
     names(magInfo) <- c(columnType, "Magnitude", "Count")
     
     magInfo$Magnitude <- factor(magInfo$Magnitude)
-    magInfoTotals <- totalTornadoes %>% group_by_(columnType) %>% summarise(n())
+    magInfoTotals <- sData %>% group_by_(columnType) %>% summarise(n())
     names(magInfoTotals) <- c(columnType, "Total")
     
     magInfoTotals <- merge(magInfo,magInfoTotals,by=columnType)
@@ -68,10 +69,10 @@ server <- function(input, output) {
   }
   
   getMagInfoByCounty <- function(){
-    county1 <- getMagInfo("f1")
-    county2 <- getMagInfo("f2")
-    county3 <- getMagInfo("f3")
-    county4 <- getMagInfo("f4")
+    county1 <- getMagInfo("f1", sData)
+    county2 <- getMagInfo("f2", sData)
+    county3 <- getMagInfo("f3", sData)
+    county4 <- getMagInfo("f4", sData)
     
     names(county1) <- c("County", "Magnitude", "Count1", "Total1")
     names(county2) <- c("County", "Magnitude", "Count2", "Total2")
@@ -172,15 +173,15 @@ server <- function(input, output) {
   eDistanceData <- merge(eDistanceData,sDistanceData,by="Miles Away")
   
   #5
-  totalDamages <- getFullDamageData("yr")
+  totalDamages <- getFullDamageData("yr", totalTornadoes)
   # we followed slightly different naming conventions in our graphs so I'll keep it the same for your data -- Vijay
   names(totalDamages) <- c("Year", "Deaths", "Injuries", "Loss")
   
   #6 
-  totalDamagesByMonth <- getFullDamageData("mo")
+  totalDamagesByMonth <- getFullDamageData("mo", totalTornadoes)
 
   #7
-  totalDamagesByHour <- getFullDamageData("hr")
+  totalDamagesByHour <- getFullDamageData("hr", totalTornadoes)
 
   #8
   county1 <- totalTornadoes %>% group_by(f1) %>% summarise(n())
@@ -234,7 +235,7 @@ server <- function(input, output) {
     currentCounty <- countyDataIL$County[i]
     if (i < 6){
       countyDataIL$County[i] <- paste("00", currentCounty, sep = "")
-    } else if (i < 52){
+    } else if (i < 51){
       countyDataIL$County[i] <- paste("0", currentCounty, sep = "")
     }
   }
