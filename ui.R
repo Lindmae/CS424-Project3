@@ -4,24 +4,21 @@
 library(shiny)
 library(shinyjs)
 library(shinydashboard)
-#library(data.table)
 library(ggplot2)
 library(lubridate)
 library(DT)
-#library(jpeg)
 library(grid)
 library(leaflet)
 library(reshape2)
-#library(scales)
+library(scales)
 library(dplyr)
 library(plotly)
 library(shinyWidgets)
 library(shinycssloaders) #needed for loading bars
 library(gdata) #needed for xls files 
 library(RColorBrewer)
-#library(geojsonio)
 library(geosphere)
-library(tigris)
+library(tigris) # to grab census data on state, counties, roads, etc.
 library(sp)
 
 # load any processed data here
