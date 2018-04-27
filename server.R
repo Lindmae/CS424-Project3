@@ -469,7 +469,7 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                                      )
   )
   
-  
+  output$yearSelected <- renderText({ input$mapYearSlider})
 
 
 #--------CHARTS/GRAPHS-----------------------------------------------------------------------

@@ -19,7 +19,7 @@ library(shinyWidgets)
 library(shinycssloaders) #needed for loading bars
 library(gdata) #needed for xls files 
 library(RColorBrewer)
-library(geojsonio)
+#library(geojsonio)
 library(geosphere)
 
 # load any processed data here
@@ -76,6 +76,11 @@ ui <- dashboardPage(
        .checkbox-inline span { 
           margin-left: 15px;  /*set the margin, so boxes don't overlap labels... BUT IT MISALIGNS OUR SIDEBAR -- VIJAY*/
           line-height: 30px; 
+      }       
+      .slider-animate-button {
+          font-size: 5.2em;
+          color: green;
+          opacity: 1;
       }         "),
     tabItems(tabItem(tabName = "info",
                      fluidRow(
@@ -152,6 +157,18 @@ ui <- dashboardPage(
               fluidRow(div(
                         column(12, box(title = "Map", solidHeader = TRUE, status = "primary", width = 24,
                             leafletOutput("map")))), style = "font-size: 300%"),
+              
+              
+              
+              
+              absolutePanel(bottom = 80, left = 280,
+                            box(status = "info",solidHeader = TRUE, width = 14,
+                                h1(textOutput("yearSelected"),style = "font-size: 500%"))
+                            ),
+              
+              
+              
+              
               absolutePanel(top = 150, right = 50,box(title = "Tornado tracks across Illinois", solidHeader = TRUE, status = "primary",width = 12,
                            checkboxGroupInput("magnitudes", "Magnitudes to show:",
                                               choices=c(0,1,2,3,4,5,"unknown" = -9), inline = TRUE,selected = c(1,2)),
