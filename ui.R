@@ -21,6 +21,8 @@ library(gdata) #needed for xls files
 library(RColorBrewer)
 library(geojsonio)
 library(geosphere)
+library(tigris)
+library(sp)
 
 # load any processed data here
 #format: load("rdata/datafile.RData")

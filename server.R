@@ -96,6 +96,8 @@ server <- function(input, output) {
   #format:  load("rdata/datatoload.RData") for RData,
   tornadoes <- read.csv(file="data/tornadoes.csv", header=TRUE, sep=",")
   fipsCodes <- read.csv("data/US_FIPS_Codes.csv",header = TRUE, sep =  ",")
+  # below tornado data is corrected such that losses are actual values and hour and minutes are seperate columns
+  load("rdata/cTornadoes.RData")
   
   # filtered to IL data
   totalTornadoes <- tornadoes %>% filter(st == "IL")
@@ -225,7 +227,17 @@ server <- function(input, output) {
   # also includes tornado by magnitude that started at the county OR passed by the county
   # put in function below because I want to expand it for ANY STATE and ANY COUNTY (you know go above and beyond reqs)
   load("rdata/countyDataIL.RData")
+  countyDataIL <- countyDataIL[-1,] # for our analysis on the map we will never need '0' or Unkown tornado data
   allMags <- c(0, 1, 2, 3, 4, 5, -9)
+  
+  for(i in 1:length(countyDataIL$County)){
+    currentCounty <- countyDataIL$County[i]
+    if (i < 6){
+      countyDataIL$County[i] <- paste("00", currentCounty, sep = "")
+    } else if (i < 52){
+      countyDataIL$County[i] <- paste("0", currentCounty, sep = "")
+    }
+  }
   
   
 #--------REACTIVE-----------------------------------------------------------------------
@@ -786,17 +798,27 @@ output$hourlyGraph <- renderPlotly({
   
   # similar approach as found here: https://rstudio.github.io/leaflet/json.html
   output$countyMap <- renderLeaflet({
-    usCounties <- geojsonio::geojson_read("data/gz_2010_us_050_00_20m.json", what = "sp")
+    selectedStateCounties <- counties(state = 'IL', cb = TRUE, resolution = '20m')
+    
+    totalTornadoData <- countyDataIL
+    colnames(totalTornadoData) <- c("COUNTYFP", "TotalTornadoes", "TotalDeathsByTornado", "TotalInjuriesByTornado", "TotalLossByTornado", "mag0", "mag1", "mag2", "mag3", "mag4", "mag5", "magUnknown")
+  
+    mCountyData <- geo_join(selectedStateCounties, totalTornadoData, "COUNTYFP", "COUNTYFP")
     
     pal <- colorNumeric("viridis", NULL)
     
-    leaflet(usCounties) %>% setView(lng = -98.583, lat = 39.833, zoom = 4) %>%
+    leaflet() %>%
       addTiles() %>%
-      addPolygons(stroke = FALSE, smoothFactor = 0.3, fillOpacity = 1,
-                  fillColor = ~pal(countyDataIL$TotalTornadoes),
-                  label = ~paste0(countyDataIL$County, ": ", formatC(countyDataIL$TotalTornadoes, big.mark = ","))) %>%
-      addLegend(pal = pal, values = ~countyDataIL$TotalTornadoes, opacity = 1.0,
-                labFormat = labelFormat(transform = function(x) round(10^x)))
+      addPolygons(data = mCountyData,
+                  fillColor = ~pal(as.numeric(mCountyData$TotalTornadoes)), 
+                  fillOpacity = 0.7, 
+                  weight = 0.2, 
+                  smoothFactor = 0.2,
+                  label = ~paste(mCountyData$NAME, 'County (FIPS=', mCountyData$COUNTYFP, '): ', formatC(mCountyData$TotalTornadoes, big.mark = ","), 'Total Tornadoes')) %>%
+      addLegend(pal = pal, 
+                values = mCountyData$TotalTornadoes, 
+                position = "bottomright", 
+                title = "Total Tornadoes in IL")
   })
 
   

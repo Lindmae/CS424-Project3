@@ -1,0 +1,25 @@
+  totalTornadoesPre1996 <- tornadoes %>% filter(yr <= 1995)
+  valueOfLoss <- list(50, 500, 5000, 50000, 500000, 5000000, 50000000, 500000000, 5000000000)
+  for(i in 1:length(totalTornadoesPre1996$loss)){
+    if(totalTornadoesPre1996$loss[i] != 0){
+      totalTornadoesPre1996$loss[i] <- valueOfLoss[[totalTornadoesPre1996$loss[i]]]
+    }
+  }
+  
+  totalTornadoesPre2015 <- tornadoes %>% filter(yr >= 1996 & yr <= 2015)
+  for(i in 1:length(totalTornadoesPre2015$loss)){
+    if(totalTornadoesPre2015$loss[i] != 0){
+      totalTornadoesPre2015$loss[i] <- totalTornadoesPre2015$loss[i] * 1000000
+    }
+  }
+  
+  totalTornadoesModern <- tornadoes %>% filter(yr == 2016)
+  
+  cTornadoes <- rbind(totalTornadoesPre1996, totalTornadoesPre2015)
+  cTornadoes <- rbind(cTornadoes, totalTornadoesModern)
+
+  hr <- format(as.POSIXct(strptime(tornadoes$time,"%H:%M:%S",tz="")) ,format = "%H")
+  min <- format(as.POSIXct(strptime(tornadoes$time,"%H:%M:%S",tz="")) ,format = "%M")
+  
+  cTornadoes$hr <- hr
+  cTornadoes$min <- min
