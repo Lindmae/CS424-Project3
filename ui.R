@@ -291,20 +291,20 @@ ui <- dashboardPage(
                 ),
               tabPanel("Damages by County",
                        fluidRow(
-                         box(title = "Tools", status = "primary", solidHeader = TRUE, width = 12,
+                         box(title = textOutput('countyStateTypeText', inline = TRUE), status = "primary", solidHeader = TRUE, width = 12,
                              selectInput("cState", label = "Select a State:", state.abb, selected = "IL")
                          ),
-                         box(title = "Total Tornadoes - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
-                             radioButtons("mapChosenMag", "Tornado Magnitude: ", choices=c("all" = -1,0,1,2,3,4,5,"unknown" = -9), inline = TRUE, selected = -1),
+                         box(title = textOutput('magTypeText', inline = TRUE), status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
+                             radioButtons("mapChosenMag", "Tornado Magnitude: ", choices=c("all" = 6, 0, 1, 2, 3, 4, 5,"unknown" = -9), inline = TRUE, selected = 6),
                              leafletOutput("mapTotalTornadoes", height = "928px")
                          ),
-                         box(title = "Deaths - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
+                         box(title = "Deaths", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
                                 h4("Nothing yet...")
                          ),
-                         box(title = "Injuries - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
+                         box(title = "Injuries", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
                                h4("Nothing yet...")
                          ),
-                         box(title = "Losses - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
+                         box(title = "Losses", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
                                 h4("Nothing yet...")
                          ),
                          box(title = "Data Table", status = "primary", solidHeader = TRUE, width = 12,

@@ -423,6 +423,49 @@ server <- function(input, output) {
     
     countyData
   })
+  
+  getMergedCountyDataByState <- reactive({
+    chosenState <- as.character(input$cState)
+    selectedStateCounties <- counties(state = chosenState, cb = TRUE, resolution = '20m')
+    
+    totalTornadoData <- getCountyDataByState()
+    colnames(totalTornadoData) <- c("COUNTYFP", "TotalTornadoes", "TotalDeathsByTornado", "TotalInjuriesByTornado", "TotalLossByTornado", "mag0", "mag1", "mag2", "mag3", "mag4", "mag5", "magUnknown")
+    
+    mCountyData <- geo_join(selectedStateCounties, totalTornadoData, "COUNTYFP", "COUNTYFP")
+    mCountyData
+  })
+  
+  getCountyDataByStateTable <- reactive({
+    mCountyData <- getMergedCountyDataByState()
+    
+    chosenData <- data.frame(
+      County = mCountyData$NAME,
+      FIPS = mCountyData$COUNTYFP,
+      TotalTornadoes = mCountyData$TotalTornadoes,
+      TotalDeathsByTornado = mCountyData$TotalDeathsByTornado,
+      TotalInjuriesByTornado = mCountyData$TotalInjuriesByTornado,
+      TotalLossByTornado = mCountyData$TotalLossByTornado,
+      mag0 = mCountyData$mag0, mag1 = mCountyData$mag1, mag2 = mCountyData$mag2, mag3 = mCountyData$mag3, mag4 = mCountyData$mag4, mag5 = mCountyData$mag5, magUnknown = mCountyData$magUnknown
+    )
+    chosenData <- chosenData[order(chosenData$FIPS),]
+    
+    chosenData
+  })
+  
+  getMagTypeText <- reactive({
+    if (input$mapChosenMag > 5){
+      thisText <- paste('All Tornadoes')
+    } else if (input$mapChosenMag < 0) {
+      thisText <- thisText <- paste('MagUnknown', ' Tornadoes')
+    } else {
+      thisText <- thisText <- paste('Mag', as.character(input$mapChosenMag), ' Tornadoes', sep = '')
+    }
+  })
+  
+  getCountyStateTypeText <- reactive({
+    chosenText <- paste(as.character(input$cState), '- 1950 to 2016')
+    chosenText
+  })
 
 #--------TABLES-----------------------------------------------------------------------
 output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller', rownames = FALSE, 
@@ -531,7 +574,7 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                                 )
   )
   
-  output$countyDataTable <- renderDataTable(getCountyDataByState(), extensions = 'Scroller', 
+  output$countyDataTable <- renderDataTable(getCountyDataByStateTable(), extensions = 'Scroller', 
                                                      rownames = FALSE, options = list(
                                                        deferRender = TRUE,
                                                        scrollY = 800,
@@ -851,6 +894,10 @@ output$hourlyGraph <- renderPlotly({
              margin=list(l=100, t=100, b=100))
   })
   
+  output$magTypeText <- renderText({ getMagTypeText() })
+  
+  output$countyStateTypeText <- renderText({ getCountyStateTypeText() })
+  
   
 #--------MAP-----------------------------------------------------------------------
   
@@ -882,33 +929,35 @@ output$hourlyGraph <- renderPlotly({
   })
   
   
-  
-  
-  # TODO: have four different maps (with the first being able to choose magnitude)
   # similar approach as found here: http://rstudio-pubs-static.s3.amazonaws.com/90665_de25062951e540e7b732f21de53001f0.html
   output$mapTotalTornadoes <- renderLeaflet({
-    chosenState <- as.character(input$cState)
-    selectedStateCounties <- counties(state = chosenState, cb = TRUE, resolution = '20m')
+    mCountyData <- getMergedCountyDataByState()
     
-    totalTornadoData <- getCountyDataByState()
-    colnames(totalTornadoData) <- c("COUNTYFP", "TotalTornadoes", "TotalDeathsByTornado", "TotalInjuriesByTornado", "TotalLossByTornado", "mag0", "mag1", "mag2", "mag3", "mag4", "mag5", "magUnknown")
-  
-    mCountyData <- geo_join(selectedStateCounties, totalTornadoData, "COUNTYFP", "COUNTYFP")
+    if (input$mapChosenMag > 5){
+      chosenData <- mCountyData$TotalTornadoes
+    } else if (input$mapChosenMag < 0) {
+      chosenData <- mCountyData$magUnkown
+    } else {
+      chosenData <- mCountyData[[as.numeric(input$mapChosenMag) + 15]]
+    }
     
     pal <- colorNumeric("viridis", NULL)
     
     leaflet() %>%
       addTiles() %>%
       addPolygons(data = mCountyData,
-                  fillColor = ~pal(as.numeric(mCountyData$TotalTornadoes)), 
-                  fillOpacity = 0.7, 
-                  weight = 0.2, 
+                  fillColor = ~pal(as.numeric(chosenData)),
+                  fillOpacity = 0.7,
+                  color = "#444444",
+                  opacity = 1.0,
+                  weight = 1.0, 
                   smoothFactor = 0.2,
-                  label = ~paste(mCountyData$NAME, 'County (FIPS=', mCountyData$COUNTYFP, '): ', formatC(mCountyData$TotalTornadoes, big.mark = ","), 'Total Tornadoes')) %>%
+                  highlightOptions = highlightOptions(color = "red", weight = 10, bringToFront = TRUE),
+                  label = ~paste(mCountyData$NAME, '(FIPS=', mCountyData$COUNTYFP, '): ', formatC(chosenData, big.mark = ","))) %>%
       addLegend(pal = pal, 
-                values = mCountyData$TotalTornadoes, 
+                values = chosenData, 
                 position = "bottomright", 
-                title = "Total Tornadoes in IL")
+                title = "Tornadoes in IL")
   })
 
   
