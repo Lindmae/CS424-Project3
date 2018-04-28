@@ -299,13 +299,13 @@ ui <- dashboardPage(
                              leafletOutput("mapTotalTornadoes", height = "928px")
                          ),
                          box(title = "Deaths", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
-                                h4("Nothing yet...")
+                             leafletOutput("mapDeathsByTornadoes", height = "1080px")
                          ),
                          box(title = "Injuries", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
-                               h4("Nothing yet...")
+                             leafletOutput("mapInjuriesByTornadoes", height = "1080px")
                          ),
                          box(title = "Losses", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
-                                h4("Nothing yet...")
+                             leafletOutput("mapLossByTornadoes", height = "1080px")
                          ),
                          box(title = "Data Table", status = "primary", solidHeader = TRUE, width = 12,
                              div(DT::dataTableOutput("countyDataTable", height = 800))

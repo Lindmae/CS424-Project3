@@ -957,9 +957,76 @@ output$hourlyGraph <- renderPlotly({
       addLegend(pal = pal, 
                 values = chosenData, 
                 position = "bottomright", 
-                title = "Tornadoes in IL")
+                title = "# of Tornado")
   })
 
+  output$mapDeathsByTornadoes<- renderLeaflet({
+    mCountyData <- getMergedCountyDataByState()
+    chosenData <- mCountyData$TotalDeathsByTornado
+    
+    pal <- colorNumeric("viridis", NULL)
+    
+    leaflet() %>%
+      addTiles() %>%
+      addPolygons(data = mCountyData,
+                  fillColor = ~pal(as.numeric(chosenData)),
+                  fillOpacity = 0.7,
+                  color = "#444444",
+                  opacity = 1.0,
+                  weight = 1.0, 
+                  smoothFactor = 0.2,
+                  highlightOptions = highlightOptions(color = "red", weight = 10, bringToFront = TRUE),
+                  label = ~paste(mCountyData$NAME, '(FIPS=', mCountyData$COUNTYFP, '): ', formatC(chosenData, big.mark = ","))) %>%
+      addLegend(pal = pal, 
+                values = chosenData, 
+                position = "bottomright", 
+                title = "# of Deaths")
+  })
   
+  output$mapInjuriesByTornadoes <- renderLeaflet({
+    mCountyData <- getMergedCountyDataByState()
+    chosenData <- mCountyData$TotalInjuriesByTornado
+    
+    pal <- colorNumeric("viridis", NULL)
+    
+    leaflet() %>%
+      addTiles() %>%
+      addPolygons(data = mCountyData,
+                  fillColor = ~pal(as.numeric(chosenData)),
+                  fillOpacity = 0.7,
+                  color = "#444444",
+                  opacity = 1.0,
+                  weight = 1.0, 
+                  smoothFactor = 0.2,
+                  highlightOptions = highlightOptions(color = "red", weight = 10, bringToFront = TRUE),
+                  label = ~paste(mCountyData$NAME, '(FIPS=', mCountyData$COUNTYFP, '): ', formatC(chosenData, big.mark = ","))) %>%
+      addLegend(pal = pal, 
+                values = chosenData, 
+                position = "bottomright", 
+                title = "# of Deaths")
+  })
+  
+  output$mapLossByTornadoes <- renderLeaflet({
+    mCountyData <- getMergedCountyDataByState()
+    chosenData <- mCountyData$TotalLossByTornado
+    
+    pal <- colorNumeric("viridis", NULL)
+    
+    leaflet() %>%
+      addTiles() %>%
+      addPolygons(data = mCountyData,
+                  fillColor = ~pal(as.numeric(chosenData)),
+                  fillOpacity = 0.7,
+                  color = "#444444",
+                  opacity = 1.0,
+                  weight = 1.0, 
+                  smoothFactor = 0.2,
+                  highlightOptions = highlightOptions(color = "red", weight = 10, bringToFront = TRUE),
+                  label = ~paste(mCountyData$NAME, '(FIPS=', mCountyData$COUNTYFP, '): ', formatC(chosenData, big.mark = ","))) %>%
+      addLegend(pal = pal, 
+                values = chosenData, 
+                position = "bottomright", 
+                title = "# of Deaths")
+  })
   
 }
