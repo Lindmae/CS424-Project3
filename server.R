@@ -962,6 +962,11 @@ output$hourlyGraph <- renderPlotly({
   
   output$countyStateTypeText <- renderText({ getCountyStateTypeText() })
   
+  output$mState1Text <- renderText({ paste('Tornado', as.character(input$tabDataType1), 'in',  as.character(input$aState1), '(', as.character(input$tabDataFormat1), ')',  '- 1950 - 2016') })
+  
+  output$mState2Text <- renderText({ paste('Tornado', as.character(input$tabDataType1), 'in',  as.character(input$aState2), '(', as.character(input$tabDataFormat2), ')',  '- 1950 - 2016') })
+  
+  
   
 #--------MAP-----------------------------------------------------------------------
   
@@ -1000,7 +1005,7 @@ output$hourlyGraph <- renderPlotly({
     if (input$mapChosenMag > 5){
       chosenData <- mCountyData$TotalTornadoes
     } else if (input$mapChosenMag < 0) {
-      chosenData <- mCountyData$magUnkown
+      chosenData <- mCountyData$magUnknown
     } else {
       chosenData <- mCountyData[[as.numeric(input$mapChosenMag) + 15]]
     }
@@ -1067,7 +1072,7 @@ output$hourlyGraph <- renderPlotly({
       addLegend(pal = pal, 
                 values = chosenData, 
                 position = "bottomright", 
-                title = "# of Deaths")
+                title = "# of Injuries")
   })
   
   output$mapLossByTornadoes <- renderLeaflet({
@@ -1090,7 +1095,7 @@ output$hourlyGraph <- renderPlotly({
       addLegend(pal = pal, 
                 values = chosenData, 
                 position = "bottomright", 
-                title = "# of Deaths")
+                title = "Losses (in $)")
   })
   
 }
