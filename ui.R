@@ -314,9 +314,22 @@ ui <- dashboardPage(
               ),
               tabPanel("Inter-State Comparison",
                        fluidRow(
-                         box(title= "Tools", status = "primary", solidHeader = TRUE, width = 6, height = "850px",
-                             selectInput("selectState", label = "Select a State:", state.abb, selected = "IL")
-                          )
+                         box(title= "Tools State1", status = "primary", solidHeader = TRUE, width = 6,
+                             selectInput("aState1", label = "Select a State:", state.abb, selected = "IL"),
+                             radioButtons("tabDataFormat", label = "Select a Format:", choices = c("Yearly", "Monthly", "Hourly"), selected = "Yearly", inline = TRUE),
+                             radioButtons("tabDataType", label = "Select a Type:", choices = c("Magnitude", "Damages"), selected = "Magnitude", inline = TRUE)
+                          ),
+                         box(title= "Tools State2", status = "primary", solidHeader = TRUE, width = 6,
+                             selectInput("aState2", label = "Select a State:", state.abb, selected = "IL"),
+                             radioButtons("tabDataFormat2", label = "Select a Format:", choices = c("Yearly", "Monthly", "Hourly"), selected = "Yearly", inline = TRUE),
+                             radioButtons("tabDataType2", label = "Select a Type:", choices = c("Magnitude", "Damages"), selected = "Magnitude", inline = TRUE)
+                         ),
+                         box(title= "State1 Data", status = "primary", solidHeader = TRUE, width = 6, height = "850px",
+                             h1("nothing yet...")
+                         ),
+                         box(title= "State2 Data", status = "primary", solidHeader = TRUE, width = 6, height = "850px",
+                             h1("nothing yet...")
+                         )
                        
                 ))
               
