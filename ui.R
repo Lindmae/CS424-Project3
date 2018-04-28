@@ -302,7 +302,7 @@ ui <- dashboardPage(
               ),
               box(title = textOutput('magTypeText', inline = TRUE), status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
                   leafletOutput("mapTotalTornadoes", height = "928px") %>% withSpinner(color="#0dc5c1"),
-                  radioButtons("mapChosenMag", "Tornado Magnitude: ", choices=c("all" = 6, 0, 1, 2, 3, 4, 5, "unknown" = -9), inline = TRUE, selected = 6)
+                  radioButtons("mapChosenMag", "Tornado Magnitude: ", choices=c("all" = 6, 0, 1, 2, 3, 4, 5, "unknown" = 7), inline = TRUE, selected = 6)
               ),
               box(title = "Deaths", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
                   leafletOutput("mapDeathsByTornadoes", height = "928px") %>% withSpinner(color="#0dc5c1")

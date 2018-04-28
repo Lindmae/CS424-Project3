@@ -1002,10 +1002,10 @@ output$hourlyGraph <- renderPlotly({
   output$mapTotalTornadoes <- renderLeaflet({
     mCountyData <- getMergedCountyDataByState()
     
-    if (input$mapChosenMag > 5){
+    if (input$mapChosenMag == 6){
       chosenData <- mCountyData$TotalTornadoes
-    } else if (input$mapChosenMag < 0) {
-      chosenData <- mCountyData$magUnknown
+    } else if (input$mapChosenMag == 7) { # for some reason negative numbers don't work in shiny apps cloud
+      chosenData <- mCountyData[[21]]
     } else {
       chosenData <- mCountyData[[as.numeric(input$mapChosenMag) + 15]]
     }
