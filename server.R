@@ -246,21 +246,13 @@ server <- function(input, output) {
   topTornadoes$WeightScore <- (topTornadoes$fat)*10 + topTornadoes$inj
   topTornadoes <- topTornadoes[order(-topTornadoes$Score),] 
   
-  
-  
-  
-  
-  
-  
-  # A -- requirement 1 (DO NOT MOVE... .............K ): 
+  # A -- requirement 1
   # total deaths, injuries, and loss caused by a tornado that started at the county OR passed by the county
   # also includes tornado by magnitude that started at the county OR passed by the county
   # put in function below because I want to expand it for ANY STATE and ANY COUNTY (you know go above and beyond reqs)
   load("rdata/countyDataIL.RData")
   countyDataIL <- countyDataIL[-1,]
   allMags <- c(0, 1, 2, 3, 4, 5, -9)
-  #TODO: correct IL county data where there are NA (change the 0)... it makes sense don't worry about it
-  
   
 #--------REACTIVE-----------------------------------------------------------------------
   # adjust graphical interfaces to am/pm
@@ -466,6 +458,62 @@ server <- function(input, output) {
     chosenText <- paste(as.character(input$cState), '- 1950 to 2016')
     chosenText
   })
+  
+  getState1Table <- reactive({
+    chosenState <- as.character(input$aState1)
+    chosenStateData <- cTornadoes %>% filter(st == chosenState)
+    
+    chosenType <- as.character(input$tabDataType1)
+    chosenFormat <- as.character(input$tabDataFormat1)
+    
+    if(chosenType == "Damages"){
+      if(chosenFormat == "Yearly"){
+        chosenData <- getFullDamageData("yr", chosenStateData)
+      } else if (chosenFormat == "Monthly"){
+        chosenData <- getFullDamageData("mo", chosenStateData)
+      } else {
+        chosenData <- getFullDamageData("hr", chosenStateData)
+      }
+    } else {
+      if(chosenFormat == "Yearly"){
+        chosenData <- getMagInfo("yr", chosenStateData)
+      } else if (chosenFormat == "Monthly"){
+        chosenData <- getMagInfo("mo", chosenStateData)
+      } else {
+        chosenData <- getMagInfo("hr", chosenStateData)
+      }
+    }
+    
+    chosenData
+  })
+  
+  getState2Table <- reactive({
+    chosenState <- as.character(input$aState2)
+    chosenStateData <- cTornadoes %>% filter(st == chosenState)
+    
+    chosenType <- as.character(input$tabDataType2)
+    chosenFormat <- as.character(input$tabDataFormat2)
+    
+    if(chosenType == "Damages"){
+      if(chosenFormat == "Yearly"){
+        chosenData <- getFullDamageData("yr", chosenStateData)
+      } else if (chosenFormat == "Monthly"){
+        chosenData <- getFullDamageData("mo", chosenStateData)
+      } else {
+        chosenData <- getFullDamageData("hr", chosenStateData)
+      }
+    } else {
+      if(chosenFormat == "Yearly"){
+        chosenData <- getMagInfo("yr", chosenStateData)
+      } else if (chosenFormat == "Monthly"){
+        chosenData <- getMagInfo("mo", chosenStateData)
+      } else {
+        chosenData <- getMagInfo("hr", chosenStateData)
+      }
+    }
+    
+    chosenData
+  })
 
 #--------TABLES-----------------------------------------------------------------------
 output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller', rownames = FALSE, 
@@ -581,6 +629,22 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                                        scroller = TRUE,
                                                        bFilter=0
                                                      )
+  )
+  
+  output$state1DataTable <- renderDataTable(getState1Table(),  extensions = 'Scroller', 
+                                            rownames = FALSE, options = list(
+                                              deferRender = TRUE,
+                                              scrollY = 800,
+                                              scroller = TRUE,
+                                              bFilter=0)
+  )
+  
+  output$state2DataTable <- renderDataTable(getState2Table(),  extensions = 'Scroller', 
+                                            rownames = FALSE, options = list(
+                                              deferRender = TRUE,
+                                              scrollY = 800,
+                                              scroller = TRUE,
+                                              bFilter=0)
   )
   
   output$yearSelected <- renderText({ input$mapYearSlider})

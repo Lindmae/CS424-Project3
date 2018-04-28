@@ -316,19 +316,20 @@ ui <- dashboardPage(
                        fluidRow(
                          box(title= "Tools State1", status = "primary", solidHeader = TRUE, width = 6,
                              selectInput("aState1", label = "Select a State:", state.abb, selected = "IL"),
-                             radioButtons("tabDataFormat", label = "Select a Format:", choices = c("Yearly", "Monthly", "Hourly"), selected = "Yearly", inline = TRUE),
-                             radioButtons("tabDataType", label = "Select a Type:", choices = c("Magnitude", "Damages"), selected = "Magnitude", inline = TRUE)
+                             radioButtons("tabDataFormat1", label = "Select a Format:", choices = c("Yearly", "Monthly", "Hourly"), selected = "Yearly", inline = TRUE),
+                             radioButtons("tabDataType1", label = "Select a Type:", choices = c("Damages", "Magnitude"), selected = "Damages", inline = TRUE)
                           ),
                          box(title= "Tools State2", status = "primary", solidHeader = TRUE, width = 6,
-                             selectInput("aState2", label = "Select a State:", state.abb, selected = "IL"),
+                             selectInput("aState2", label = "Select a State:", state.abb, selected = "NY"),
                              radioButtons("tabDataFormat2", label = "Select a Format:", choices = c("Yearly", "Monthly", "Hourly"), selected = "Yearly", inline = TRUE),
-                             radioButtons("tabDataType2", label = "Select a Type:", choices = c("Magnitude", "Damages"), selected = "Magnitude", inline = TRUE)
-                         ),
+                             radioButtons("tabDataType2", label = "Select a Type:", choices = c("Damages", "Magnitude"), selected = "Damages", inline = TRUE)
+                         )),
+                        fluidRow(
                          box(title= "State1 Data", status = "primary", solidHeader = TRUE, width = 6, height = "850px",
-                             h1("nothing yet...")
+                             div(DT::dataTableOutput("state1DataTable", height = 800))
                          ),
                          box(title= "State2 Data", status = "primary", solidHeader = TRUE, width = 6, height = "850px",
-                             h1("nothing yet...")
+                             div(DT::dataTableOutput("state2DataTable", height = 800))
                          )
                        
                 ))
