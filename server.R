@@ -352,11 +352,13 @@ server <- function(input, output) {
   })
   
   colorpal <- reactive({
-    #selectedColor <- reactiveMapColor()
-    #tornadoesMap <- reactiveMap()
-    #colorNumeric(input$colors, as.numeric(tornadoesMap[,selectedColor]))
-    colorRampPalette(c(input$colorPathStart,input$colorPathEnd))
-  })
+    selectedColor <- reactiveMapColor()
+    tornadoesMap <- reactiveMap()
+    colorNumeric(c(input$colorPathStart,input$colorPathEnd),
+                 domain =tornadoesMap[,selectedColor])
+ })
+  
+
   
   colorMapStart <- reactive({
     input$colorStart
@@ -660,7 +662,7 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                               bFilter=0)
   )
   
-  output$yearSelected <- renderText({ input$mapYearSlider})
+  output$yearSelected <- renderText({  paste("Year: ",input$mapYearSlider)})
 
 
 #--------CHARTS/GRAPHS-----------------------------------------------------------------------
@@ -979,6 +981,17 @@ output$hourlyGraph <- renderPlotly({
   
   output$mState2Text <- renderText({ paste('Tornado', as.character(input$tabDataType1), 'in',  as.character(input$aState2), '(', as.character(input$tabDataFormat2), ')',  '- 1950 - 2016') })
   
+  #labels for each dot on the map
+  labs <- lapply(seq(nrow(totalTornadoes)), function(i) {
+    paste0( '<p>',"Date: ", totalTornadoes[i, "date"], '<p></p>', 
+            "Time: ",totalTornadoes[i, "time"], '<p></p>', 
+            "Starting position Lon: " ,totalTornadoes[i, "slon"]," Lat: ",totalTornadoes[i, "slat"],'</p><p>', 
+            "Ending position Lon: " ,totalTornadoes[i, "elon"]," Lat: ",totalTornadoes[i, "elat"],'</p><p>', 
+            "Magnitude: ",totalTornadoes[i, "mag"], '<p></p>', 
+            "Injures: ",totalTornadoes[i, "inj"], '<p></p>', 
+            "Fatalities: ",totalTornadoes[i, "fat"], '<p></p>', 
+            "Loss : $",totalTornadoes[i, "inj"], " million",'</p>' ) 
+  })
   
   
 #--------MAP-----------------------------------------------------------------------
@@ -994,7 +1007,15 @@ output$hourlyGraph <- renderPlotly({
     end <- colorMapEnd()
     pal <- colorpal()
     
-    m <-leaflet(tornadoesMap) %>%  addTiles() 
+    m <-leaflet(tornadoesMap) %>% 
+      setView(lat = 40, lng =-89.3985, zoom = 9) %>% 
+      addTiles()
+    
+    
+    m<- addLegend(m,pal = pal, 
+                  values = tornadoesMap[,selectedColor], 
+                  position = "bottomleft", 
+                  title = "Path color value")
     
     #adding all the different lines 
     for(i in 1:nrow(tornadoesMap)){
@@ -1003,9 +1024,19 @@ output$hourlyGraph <- renderPlotly({
     }
   
   #adding circles to denote start and end of all the tornadoes 
-  m <- addCircleMarkers(m, lng = tornadoesMap$slon , lat = tornadoesMap$slat , radius = 2, color = start, fillColor = start,opacity = 1)
-  m <- addCircleMarkers(m, lng = tornadoesMap$elon , lat = tornadoesMap$elat , radius = 2, color = end, fillColor = end,opacity = 1)
-    
+  m <- addCircleMarkers(m, lng = tornadoesMap$slon , lat = tornadoesMap$slat, radius = 8, color = start, fillColor = start,opacity = 1,
+                        label = lapply(labs,HTML),
+                        labelOptions = labelOptions( style = list(
+                          "box-shadow" = "3px 3px rgba(0,0,0,0.25)",
+                          "font-size" = "36px",
+                          "border-color" = "rgba(0,0,0,0.5)")))
+  m <- addCircleMarkers(m, lng = tornadoesMap$elon , lat = tornadoesMap$elat , radius = 8, color = end, fillColor = end,opacity = 1,
+                        label = lapply(labs,HTML),
+                        labelOptions = labelOptions( style = list(
+                          "box-shadow" = "3px 3px rgba(0,0,0,0.25)",
+                          "font-size" = "36px",
+                          "border-color" = "rgba(0,0,0,0.5)")))
+ 
     # change the theme to what ever is selected
     m = addProviderTiles(map = m, provider = reactiveMapProvider())
     m

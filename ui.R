@@ -162,7 +162,7 @@ ui <- dashboardPage(
               fluidRow(
                         column(12, box(title = "Map", solidHeader = FALSE, status = "primary", width = 24,
                             leafletOutput("map"))), style = "font-size: 300%"),
-               fixedPanel(bottom = 80, left = 280, draggable = TRUE,
+               fixedPanel(bottom = 80, left = 380, draggable = TRUE,
                             box(status = "info",solidHeader = TRUE, width = 14,
                                 h1(textOutput("yearSelected"),style = "font-size: 500%"))
                             ),
