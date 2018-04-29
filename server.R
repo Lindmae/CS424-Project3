@@ -1,4 +1,4 @@
-server <- function(input, output) {
+server <- function(input, output,session) {
 
 #--------FUNCTIONS----------------------------------------------------------------------
   # columnType = any column from totalTornadoes; damageType = fat, inj, loss
@@ -318,7 +318,7 @@ server <- function(input, output) {
   reactiveMap <- reactive({
 
     #filter to be only illinois, and make sure they are valid points
-    tornadoesMap <- totalTornadoes %>% filter(st == "IL" & slon != 0.00)
+    tornadoesMap <- totalTornadoes
     #for any position that ends at 0.00 lat/lon, we will set it to be the same as the start
     tornadoesMap$elat[tornadoesMap$elat == 0.00] <- tornadoesMap$slat
     tornadoesMap$elon[tornadoesMap$elon == 0.00] <- tornadoesMap$slon
@@ -334,7 +334,7 @@ server <- function(input, output) {
                                             )
     #based off the width and color selection, make sure that the values are normalized
     selectedWidth <- reactiveMapWidth()
-    tornadoesMap[,selectedWidth] <- rescale(tornadoesMap[,selectedWidth], to=c(1,6))
+    tornadoesMap$width <- rescale(tornadoesMap[,selectedWidth], to=c(1,6))
     #selectedColor <- reactiveMapColor()
     #tornadoesMap[,selectedColor] <- rescale(tornadoesMap[,selectedColor], to=c(1,6))
 
@@ -982,6 +982,25 @@ output$hourlyGraph <- renderPlotly({
   output$mState2Text <- renderText({ paste('Tornado', as.character(input$tabDataType1), 'in',  as.character(input$aState2), '(', as.character(input$tabDataFormat2), ')',  '- 1950 - 2016') })
 
 #--------MAP-----------------------------------------------------------------------
+  #top 10 selection, which will set the other values
+  observe({
+    val <- input$topTornado
+    if(val > 0)
+    {
+    year <- year(totalTornadoes[val,"date"])
+    inj <- totalTornadoes[val,"inj"]
+    fat <- totalTornadoes[val,"fat"]
+    updateSliderInput(session, "mapYearSlider", value = year)
+    updateSliderInput(session, "mapFatSlider", value = c(fat-1,fat+1))
+    updateSliderInput(session, "mapInjurySlider", value = c(inj-1,inj+1))
+    }
+    else
+    {
+      updateSliderInput(session, "mapYearSlider", value = 1950)
+      updateSliderInput(session, "mapFatSlider", value = c(0, 160))
+      updateSliderInput(session, "mapInjurySlider", value = c(0, 1750))
+    }
+  })
 
   # add a leaflet map and put markers where the deaths occured
 
@@ -1006,30 +1025,30 @@ output$hourlyGraph <- renderPlotly({
 
     #adding all the different lines
     for(i in 1:nrow(tornadoesMap)){
-    m <-  addPolylines(m,data = tornadoesMap, weight = as.numeric(tornadoesMap[i,selectedWidth]), color = pal(tornadoesMap[1,selectedColor]), #popup = ~paste(tornadoesMap$yr),
+    m <-  addPolylines(m,data = tornadoesMap, weight = as.numeric(tornadoesMap[i,"width"]), color = pal(tornadoesMap[1,selectedColor]), #popup = ~paste(tornadoesMap$yr),
          lat = as.numeric(tornadoesMap[i, c('slat','elat' )]), lng = as.numeric(tornadoesMap[i, c('slon', 'elon')]))
     }
 
   #adding circles to denote start and end of all the tornadoes
   m <- addCircleMarkers(m, lng = tornadoesMap$slon , lat = tornadoesMap$slat, radius = 8, color = start, fillColor = start,opacity = 1,
-                        popup  =  paste('<p>',"Date: ", totalTornadoes[i, "date"], '<p></p>',
-                                        "Time: ",totalTornadoes[i, "time"], '<p></p>',
-                                        "Starting position (current position)" ,"<br>&emsp;Lon: ",totalTornadoes[i, "slon"]," Lat: ",totalTornadoes[i, "slat"],'</p><p>',
-                                        "Ending position","<br>&emsp;Lon:",totalTornadoes[i, "elon"]," Lat: ",totalTornadoes[i, "elat"],'</p><p>',
-                                        "Magnitude: ",totalTornadoes[i, "mag"], '<p></p>',
-                                        "Injures: ",totalTornadoes[i, "inj"], '<p></p>',
-                                        "Fatalities: ",totalTornadoes[i, "fat"], '<p></p>',
-                                        "Loss : $",totalTornadoes[i, "inj"], " million",'</p>' ))
+                        popup  =  paste('<p>',"Date: ", tornadoesMap[, "date"], '<p></p>',
+                                        "Time: ",tornadoesMap[, "time"], '<p></p>',
+                                        "Starting position (current position)" ,"<br>&emsp;Lon: ",tornadoesMap[, "slon"]," Lat: ",tornadoesMap[, "slat"],'</p><p>',
+                                        "Ending position","<br>&emsp;Lon:",tornadoesMap[, "elon"]," Lat: ",tornadoesMap[, "elat"],'</p><p>',
+                                        "Magnitude: ",tornadoesMap[, "mag"], '<p></p>',
+                                        "Injures: ",tornadoesMap[, "inj"], '<p></p>',
+                                        "Fatalities: ",tornadoesMap[, "fat"], '<p></p>',
+                                        "Loss : $",tornadoesMap[, "loss"], '</p>' ))
 
   m <- addCircleMarkers(m, lng = tornadoesMap$elon , lat = tornadoesMap$elat , radius = 8, color = end, fillColor = end,opacity = 1,
-                        popup  =  paste('<p>',"Date: ", totalTornadoes[i, "date"], '<p></p>',
-                                        "Time: ",totalTornadoes[i, "time"], '<p></p>',
-                                        "Starting position","<br>&emsp;Lon:" ,totalTornadoes[i, "slon"]," Lat: ",totalTornadoes[i, "slat"],'</p><p>',
-                                        "Ending position (current position)" ,"<br>&emsp;Lon:", totalTornadoes[i, "elon"]," Lat: ",totalTornadoes[i, "elat"],'</p><p>',
-                                        "Magnitude: ",totalTornadoes[i, "mag"], '<p></p>',
-                                        "Injures: ",totalTornadoes[i, "inj"], '<p></p>',
-                                        "Fatalities: ",totalTornadoes[i, "fat"], '<p></p>',
-                                        "Loss : $",totalTornadoes[i, "inj"], " million",'</p>' ))
+                        popup  =  paste('<p>',"Date: ", tornadoesMap[, "date"], '<p></p>',
+                                        "Time: ",tornadoesMap[, "time"], '<p></p>',
+                                        "Starting position","<br>&emsp;Lon:" ,tornadoesMap[, "slon"]," Lat: ",tornadoesMap[, "slat"],'</p><p>',
+                                        "Ending position (current position)" ,"<br>&emsp;Lon:", tornadoesMap[, "elon"]," Lat: ",tornadoesMap[, "elat"],'</p><p>',
+                                        "Magnitude: ",tornadoesMap[, "mag"], '<p></p>',
+                                        "Injures: ",tornadoesMap[, "inj"], '<p></p>',
+                                        "Fatalities: ",tornadoesMap[, "fat"], '<p></p>',
+                                        "Loss : $",format(tornadoesMap[, "loss"], scientific = FALSE), '</p>' ))
 
     # change the theme to what ever is selected
     m = addProviderTiles(map = m, provider = reactiveMapProvider())

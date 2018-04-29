@@ -182,7 +182,7 @@ ui <- dashboardPage(
                             ),
               fixedPanel(top = 150, right = 50,draggable = TRUE, box(title = "Tornado tracks across Illinois", solidHeader = TRUE, status = "primary",width = 12,
                            checkboxGroupInput("magnitudes", h3("Magnitudes to show:"),
-                                              choices=c(0,1,2,3,4,5,"unknown" = -9), inline = TRUE,selected = c(1,2)),
+                                              choices=c(0,1,2,3,4,5,"unknown" = -9), inline = TRUE,selected = c(0,1,2,3,4,5)),
                            radioButtons("mapColor",h3("Tornado tracks with color based on :"),
                                         choices=c("magnitude" = "mag", "length" = "len", "width" = "wid",
                                                   "loss" = "loss", "injuries" = "inj", "fatalities" = "fat"),
@@ -200,7 +200,7 @@ ui <- dashboardPage(
                                        max = 4600, value = c(0, 4600)),
                            #val = Loss
                            sliderInput("mapLossSlider", label = h3("Loss($ in million/s) Range"), min = 0, 
-                                       max = 22, value = c(0, 22),step = 1),
+                                       max = 1000, value = c(0, 1000),step = 1),
                            #val = injury
                            sliderInput("mapInjurySlider", label = h3("Injury Range"), min = 0, 
                                        max = 1750, value = c(0, 1750)),
@@ -221,7 +221,7 @@ ui <- dashboardPage(
                                          "white", "black", "red","green","blue","orange","purple","brown","steelblue1")),
                            colourInput("colorEnd", label = h3("Tornado's ending position color"), "red",returnName = TRUE,palette = "limited"),
                            selectInput("topTornado", label = h3("Choose a tornado.."), 
-                                       choices = list("Choice 1" = 1, "Choice 2" = 2, "Choice 3" = 3)),
+                                       choices = list("None/reset" = -1,"Choice 1" = 367, "Choice 2" = 355, "Choice 3" = 1037,"Choice 4" = 116, "Choice 5" = 834, "Choice 6" = 2265,"Choice 7" = 233, "Choice 8" = 2206, "Choice 9" = 362, "Choice 10" = 325)),
                            selectInput("mapChoice", label = h3("Choose a base map.."), 
                                        choices = list("Base" = 1, "Dark" = 2, "Terrain" = 3, "Satellite" = 4))
                            
