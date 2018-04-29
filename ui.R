@@ -16,7 +16,6 @@ library(plotly)
 library(shinyWidgets)
 library(shinycssloaders) #needed for loading bars
 library(gdata) #needed for xls files 
-library(RColorBrewer)
 library(geosphere)
 library(tigris) # to grab census data on state, counties, roads, etc.
 library(sp)
@@ -57,7 +56,7 @@ ui <- dashboardPage(
   ),
   dashboardBody(
     #below is all the styling for the map and it's controls 
-    tags$style(type = "text/css", "#map {/* make map taller */  height: calc(100vh - 240px) !important;}
+    tags$style(type = "text/css", "#map {/* make map taller */  height: calc(100vh - 240px) !important;position:sticky !important;}
       .irs-grid-text {font-size: 100%;color:black;}
       .irs-grid-pol {display: none;}
        .checkbox { /* checkbox is a div class*/
@@ -86,7 +85,8 @@ ui <- dashboardPage(
           font-size: 5.2em;
           color: green;
           opacity: 1;
-      }         "),
+      }
+      "),
     tabItems(tabItem(tabName = "info",
                      fluidRow(
                        column(2,""
@@ -159,22 +159,14 @@ ui <- dashboardPage(
               
       ),
       tabItem(tabName = "bart",
-              fluidRow(div(
-                        column(12, box(title = "Map", solidHeader = TRUE, status = "primary", width = 24,
-                            leafletOutput("map")))), style = "font-size: 300%"),
-              
-              
-              
-              
-              absolutePanel(bottom = 80, left = 280,
+              fluidRow(
+                        column(12, box(title = "Map", solidHeader = FALSE, status = "primary", width = 24,
+                            leafletOutput("map"))), style = "font-size: 300%"),
+               fixedPanel(bottom = 80, left = 280, draggable = TRUE,
                             box(status = "info",solidHeader = TRUE, width = 14,
                                 h1(textOutput("yearSelected"),style = "font-size: 500%"))
                             ),
-              
-              
-              
-              
-              absolutePanel(top = 150, right = 50,box(title = "Tornado tracks across Illinois", solidHeader = TRUE, status = "primary",width = 12,
+              fixedPanel(top = 150, right = 50,draggable = TRUE, box(title = "Tornado tracks across Illinois", solidHeader = TRUE, status = "primary",width = 12,
                            checkboxGroupInput("magnitudes", h3("Magnitudes to show:"),
                                               choices=c(0,1,2,3,4,5,"unknown" = -9), inline = TRUE,selected = c(1,2)),
                            radioButtons("mapColor",h3("Tornado tracks with color based on :"),
