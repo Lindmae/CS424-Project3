@@ -86,6 +86,20 @@ ui <- dashboardPage(
           color: green;
           opacity: 1;
       }
+      .leaflet-popup  leaflet-zoom-animated
+       {
+          left: -271px !important;
+       }
+      .leaflet-popup-content
+       {
+          width: 500px !important;
+          font-size: 24px;
+       }
+      .leaflet-container a.leaflet-popup-close-button 
+       {
+          font: 46px/44px Tahoma, Verdana, sans-serif !important;
+          width: 48px;
+        }
       "),
     tabItems(tabItem(tabName = "info",
                      fluidRow(
@@ -162,7 +176,7 @@ ui <- dashboardPage(
               fluidRow(
                         column(12, box(title = "Map", solidHeader = FALSE, status = "primary", width = 24,
                             leafletOutput("map"))), style = "font-size: 300%"),
-               fixedPanel(bottom = 80, left = 380, draggable = TRUE,
+               fixedPanel(bottom = 80, left = 420, draggable = TRUE,
                             box(status = "info",solidHeader = TRUE, width = 14,
                                 h1(textOutput("yearSelected"),style = "font-size: 500%"))
                             ),
