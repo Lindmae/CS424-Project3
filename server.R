@@ -323,7 +323,7 @@ server <- function(input, output) {
     tornadoesMap$elat[tornadoesMap$elat == 0.00] <- tornadoesMap$slat 
     tornadoesMap$elon[tornadoesMap$elon == 0.00] <- tornadoesMap$slon
     #only render magnitudes that have been selected 
-    tornadoesMap <- tornadoesMap %>% filter(mag == input$magnitudes)
+    tornadoesMap <- tornadoesMap %>% filter(mag %in% input$magnitudes)
     #check for all the range sliders 
     tornadoesMap <- tornadoesMap %>% filter(len >= input$mapLenSlider[1] & len <= input$mapLenSlider[2] &
                                             wid >= input$mapWidthSlider[1] & wid <= input$mapWidthSlider[2] &
@@ -352,9 +352,22 @@ server <- function(input, output) {
   })
   
   colorpal <- reactive({
-    selectedColor <- reactiveMapColor()
-    tornadoesMap <- reactiveMap()
-    colorNumeric(input$colors, as.numeric(tornadoesMap[,selectedColor]))
+    #selectedColor <- reactiveMapColor()
+    #tornadoesMap <- reactiveMap()
+    #colorNumeric(input$colors, as.numeric(tornadoesMap[,selectedColor]))
+    colorRampPalette(c(input$colorPathStart,input$colorPathEnd))
+  })
+  
+  colorMapStart <- reactive({
+    input$colorStart
+  })
+  
+  colorMapEnd <- reactive({
+    input$colorEnd
+  })
+  
+  colorMapWidth <- reactive({
+    input$colorPath
   })
   
   # TODO: Isabel, put your input here 
@@ -977,6 +990,8 @@ output$hourlyGraph <- renderPlotly({
     tornadoesMap <- reactiveMap()
     selectedWidth <- reactiveMapWidth()
     selectedColor <- reactiveMapColor()
+    start <- colorMapStart()
+    end <- colorMapEnd()
     pal <- colorpal()
     
     m <-leaflet(tornadoesMap) %>%  addTiles() 
@@ -988,9 +1003,8 @@ output$hourlyGraph <- renderPlotly({
     }
   
   #adding circles to denote start and end of all the tornadoes 
-  m <- addCircleMarkers(m, lng = tornadoesMap$slon , lat = tornadoesMap$slat , radius = 2, color = "green", fillColor = "green")
-  m <- addCircleMarkers(m, lng = tornadoesMap$elon , lat = tornadoesMap$elat , radius = 2, color = "red", fillColor = "red")
-    
+  m <- addCircleMarkers(m, lng = tornadoesMap$slon , lat = tornadoesMap$slat , radius = 2, color = start, fillColor = start,opacity = 1)
+  m <- addCircleMarkers(m, lng = tornadoesMap$elon , lat = tornadoesMap$elat , radius = 2, color = end, fillColor = end,opacity = 1)
     
     # change the theme to what ever is selected
     m = addProviderTiles(map = m, provider = reactiveMapProvider())
