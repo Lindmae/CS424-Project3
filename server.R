@@ -1001,9 +1001,23 @@ output$hourlyGraph <- renderPlotly({
       updateSliderInput(session, "mapYearSlider", value = 1950)
       updateSliderInput(session, "mapFatSlider", value = c(0, 160))
       updateSliderInput(session, "mapInjurySlider", value = c(0, 1750))
+      updateRadioButtons(session, "mapColor", selected = "mag")
+      updateRadioButtons(session, "mapWidth", selected = "mag")
+      updateCheckboxGroupButtons(session,"magnitudes",selected = c(0,1,2,3,4,5))
     }
   })
 
+  observe({
+    reset <- input$resetMap
+    updateSliderInput(session, "mapYearSlider", value = 1950)
+    updateSliderInput(session, "mapFatSlider", value = c(0, 160))
+    updateSliderInput(session, "mapInjurySlider", value = c(0, 1750))
+    updateRadioButtons(session, "mapColor", selected = "mag")
+    updateRadioButtons(session, "mapWidth", selected = "mag")
+    updateCheckboxGroupButtons(session,"magnitudes",selected = c(0,1,2,3,4,5))
+    
+  })
+  
   # add a leaflet map and put markers where the deaths occured
 
   output$map <- renderLeaflet({

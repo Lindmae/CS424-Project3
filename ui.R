@@ -181,7 +181,8 @@ ui <- dashboardPage(
                                 h1(textOutput("yearSelected"),style = "font-size: 500%"))
                             ),
               fixedPanel(top = 150, right = 50,draggable = TRUE, box(title = "Tornado tracks across Illinois", solidHeader = TRUE, status = "primary",width = 12,
-                           checkboxGroupInput("magnitudes", h3("Magnitudes to show:"),
+                           actionBttn("resetMap","----Reset all values----",icon = NULL, color="danger", style = "material-flat",size = "lg"),
+                            checkboxGroupInput("magnitudes", h3("Magnitudes to show:"),
                                               choices=c(0,1,2,3,4,5,"unknown" = -9), inline = TRUE,selected = c(0,1,2,3,4,5)),
                            radioButtons("mapColor",h3("Tornado tracks with color based on :"),
                                         choices=c("magnitude" = "mag", "length" = "len", "width" = "wid",
