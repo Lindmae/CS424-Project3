@@ -18,7 +18,7 @@ library(shinycssloaders) #needed for loading bars
 library(gdata) #needed for xls files 
 library(RColorBrewer)
 library(geosphere)
-#library(tigris) # to grab census data on state, counties, roads, etc.
+library(tigris) # to grab census data on state, counties, roads, etc.
 library(sp)
 library(colourpicker)
 
