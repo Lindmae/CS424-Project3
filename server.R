@@ -241,11 +241,13 @@ server <- function(input, output,session) {
   ordCountyDataWithout <- ordCountyData[-1,]
 
   #Top destructive
-  topTornadoes <- subset(totalTornadoes, select = c("date", "time", "inj", "fat"))
-  topTornadoes$Score <- topTornadoes$fat + topTornadoes$inj
-  topTornadoes$WeightScore <- (topTornadoes$fat)*10 + topTornadoes$inj
-  topTornadoes <- topTornadoes[order(-topTornadoes$Score),]
-
+  topTornadoes <- subset(totalTornadoes, select = c("mag", "len", "wid", "loss","inj", "fat", "yr"))
+  #topTornadoes$Score <- topTornadoes$fat + topTornadoes$inj
+  #topTornadoes$WeightScore <- (topTornadoes$fat)*10 + topTornadoes$inj
+  topTornadoes <- topTornadoes[order(-topTornadoes$inj),]
+  topTornadoes <- topTornadoes[1:10,]
+  rownames(topTornadoes) <- 1:nrow(topTornadoes)
+  
   # A -- requirement 1
   # total deaths, injuries, and loss caused by a tornado that started at the county OR passed by the county
   # also includes tornado by magnitude that started at the county OR passed by the county
