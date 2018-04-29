@@ -40,6 +40,11 @@ ui <- dashboardPage(
       
       menuItem("Vijay", icon = icon("plane", lib = "font-awesome"), tabName = "vijay"),
       
+      menuItem("County Analysis", icon = icon("map", lib = "font-awesome"), tabName = "countyAnalysis"),
+      
+      menuItem("Multi-State Analysis", icon = icon("table", lib = "font-awesome"), tabName = "stateAnalysis"),
+      
+      
       #change between 12/24 hours time formats
       materialSwitch(inputId = "time", label = "24 Time Format", status = "primary", right = TRUE, value = TRUE),
       
@@ -291,56 +296,56 @@ ui <- dashboardPage(
                       box(status = "primary", solidHeader = TRUE, width = 12,
                           div(DT::dataTableOutput("totalDamagesByHourTable", height = 800), style = "font-size: 200%")
                       )   
-                  )
-                  )
-                ),
-              tabPanel("County Analysis",
-                       fluidRow(
-                         box(title = textOutput('countyStateTypeText', inline = TRUE), status = "primary", solidHeader = TRUE, width = 12,
-                             selectInput("cState", label = "Select a State:", state.abb, selected = "IL")
-                         ),
-                         box(title = textOutput('magTypeText', inline = TRUE), status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
-                             leafletOutput("mapTotalTornadoes", height = "928px") %>% withSpinner(color="#0dc5c1"),
-                             radioButtons("mapChosenMag", "Tornado Magnitude: ", choices=c("all" = 6, 0, 1, 2, 3, 4, 5, "unknown" = -9), inline = TRUE, selected = 6)
-                         ),
-                         box(title = "Deaths", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
-                             leafletOutput("mapDeathsByTornadoes", height = "928px") %>% withSpinner(color="#0dc5c1")
-                         ),
-                         box(title = "Injuries", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
-                             leafletOutput("mapInjuriesByTornadoes", height = "928px") %>% withSpinner(color="#0dc5c1")
-                         ),
-                         box(title = "Losses", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
-                             leafletOutput("mapLossByTornadoes", height = "928px") %>% withSpinner(color="#0dc5c1")
-                         ),
-                         box(title = "Data Table", status = "primary", solidHeader = TRUE, width = 12,
-                             div(DT::dataTableOutput("countyDataTable", height = 800) %>% withSpinner(color="#0dc5c1"))
-                         )
-                       )
-              ),
-              tabPanel("Multi-State Analysis",
-                       fluidRow(
-                         box(status = "primary", solidHeader = TRUE, width = 6,
-                             selectInput("aState1", label = "Select a State:", state.abb, selected = "IL"),
-                             radioButtons("tabDataFormat1", label = "Select a Format:", choices = c("Yearly", "Monthly", "Hourly"), selected = "Yearly", inline = TRUE),
-                             radioButtons("tabDataType1", label = "Select a Type:", choices = c("Damages", "Magnitude"), selected = "Damages", inline = TRUE)
-                          ),
-                         box(status = "primary", solidHeader = TRUE, width = 6,
-                             selectInput("aState2", label = "Select a State:", state.abb, selected = "NY"),
-                             radioButtons("tabDataFormat2", label = "Select a Format:", choices = c("Yearly", "Monthly", "Hourly"), selected = "Yearly", inline = TRUE),
-                             radioButtons("tabDataType2", label = "Select a Type:", choices = c("Damages", "Magnitude"), selected = "Damages", inline = TRUE)
-                         )),
-                        fluidRow(
-                         box(title= textOutput("mState1Text", inline = TRUE), status = "primary", solidHeader = TRUE, width = 6, height = "850px",
-                             div(DT::dataTableOutput("state1DataTable", height = 800) %>% withSpinner(color="#0dc5c1"))
-                         ),
-                         box(title= textOutput("mState2Text", inline = TRUE), status = "primary", solidHeader = TRUE, width = 6, height = "850px",
-                             div(DT::dataTableOutput("state2DataTable", height = 800) %>% withSpinner(color="#0dc5c1"))
-                         )
-                       
-                ))
-              
+                  ))
+                )
               )
-        )
+        ),
+    tabItem(tabName = "countyAnalysis",
+            fluidRow(
+              box(title = textOutput('countyStateTypeText', inline = TRUE), status = "primary", solidHeader = TRUE, width = 12,
+                  selectInput("cState", label = "Select a State:", state.abb, selected = "IL")
+              ),
+              box(title = textOutput('magTypeText', inline = TRUE), status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
+                  leafletOutput("mapTotalTornadoes", height = "928px") %>% withSpinner(color="#0dc5c1"),
+                  radioButtons("mapChosenMag", "Tornado Magnitude: ", choices=c("all" = 6, 0, 1, 2, 3, 4, 5, "unknown" = 7), inline = TRUE, selected = 6)
+              ),
+              box(title = "Deaths", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
+                  leafletOutput("mapDeathsByTornadoes", height = "928px") %>% withSpinner(color="#0dc5c1")
+              ),
+              box(title = "Injuries", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
+                  leafletOutput("mapInjuriesByTornadoes", height = "928px") %>% withSpinner(color="#0dc5c1")
+              ),
+              box(title = "Losses", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
+                  leafletOutput("mapLossByTornadoes", height = "928px") %>% withSpinner(color="#0dc5c1")
+              ),
+              box(title = "Data Table", status = "primary", solidHeader = TRUE, width = 12,
+                  div(DT::dataTableOutput("countyDataTable", height = 800) %>% withSpinner(color="#0dc5c1"))
+              )
+            )
+    ),
+    tabItem(tabName = "stateAnalysis",
+            fluidRow(
+              box(status = "primary", solidHeader = TRUE, width = 6,
+                  selectInput("aState1", label = "Select a State:", state.abb, selected = "IL"),
+                  radioButtons("tabDataFormat1", label = "Select a Format:", choices = c("Yearly", "Monthly", "Hourly"), selected = "Yearly", inline = TRUE),
+                  radioButtons("tabDataType1", label = "Select a Type:", choices = c("Damages", "Magnitude"), selected = "Damages", inline = TRUE)
+              ),
+              box(status = "primary", solidHeader = TRUE, width = 6,
+                  selectInput("aState2", label = "Select a State:", state.abb, selected = "NY"),
+                  radioButtons("tabDataFormat2", label = "Select a Format:", choices = c("Yearly", "Monthly", "Hourly"), selected = "Yearly", inline = TRUE),
+                  radioButtons("tabDataType2", label = "Select a Type:", choices = c("Damages", "Magnitude"), selected = "Damages", inline = TRUE)
+              )),
+            fluidRow(
+              box(title= textOutput("mState1Text", inline = TRUE), status = "primary", solidHeader = TRUE, width = 6, height = "850px",
+                  div(DT::dataTableOutput("state1DataTable", height = 800) %>% withSpinner(color="#0dc5c1"))
+              ),
+              box(title= textOutput("mState2Text", inline = TRUE), status = "primary", solidHeader = TRUE, width = 6, height = "850px",
+                  div(DT::dataTableOutput("state2DataTable", height = 800) %>% withSpinner(color="#0dc5c1"))
+              ))
+    )
+    
+    
+    
     )
   )
 )
