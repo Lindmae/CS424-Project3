@@ -340,7 +340,7 @@ ui <- dashboardPage(
                   leafletOutput("mapLossByTornadoes", height = "928px") %>% withSpinner(color="#0dc5c1")
               ),
               box(title = "Data Table", status = "primary", solidHeader = TRUE, width = 12,
-                  div(DT::dataTableOutput("countyDataTable", height = 800) %>% withSpinner(color="#0dc5c1"))
+                  div(DT::dataTableOutput("countyDataTable", height = 600) %>% withSpinner(color="#0dc5c1"))
               )
             )
     ),
@@ -357,11 +357,11 @@ ui <- dashboardPage(
                   radioButtons("tabDataType2", label = "Select a Type:", choices = c("Damages", "Magnitude"), selected = "Damages", inline = TRUE)
               )),
             fluidRow(
-              box(title= textOutput("mState1Text", inline = TRUE), status = "primary", solidHeader = TRUE, width = 6, height = "850px",
-                  div(DT::dataTableOutput("state1DataTable", height = 800) %>% withSpinner(color="#0dc5c1"))
+              box(title= textOutput("mState1Text", inline = TRUE), status = "primary", solidHeader = TRUE, width = 6, height = "1850px",
+                  div(DT::dataTableOutput("state1DataTable", height = 1800) %>% withSpinner(color="#0dc5c1"))
               ),
-              box(title= textOutput("mState2Text", inline = TRUE), status = "primary", solidHeader = TRUE, width = 6, height = "850px",
-                  div(DT::dataTableOutput("state2DataTable", height = 800) %>% withSpinner(color="#0dc5c1"))
+              box(title= textOutput("mState2Text", inline = TRUE), status = "primary", solidHeader = TRUE, width = 6, height = "1850px",
+                  div(DT::dataTableOutput("state2DataTable", height = 1800) %>% withSpinner(color="#0dc5c1"))
               ))
     )
     
