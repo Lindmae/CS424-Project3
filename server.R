@@ -866,8 +866,8 @@ output$hourlyGraph <- renderPlotly({
   
   total <- total[order(total$Distance),] 
   #omit unknowns
-  n<-dim(chosen)[1]
-  chosen<-chosen[1:(n-1),]
+  n<-dim(total)[1]
+  total<-total[1:(n-1),]
   
   total[is.na(total)] <- 0
   
