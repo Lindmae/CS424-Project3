@@ -378,6 +378,9 @@ server <- function(input, output,session) {
     #for any position that ends at 0.00 lat/lon, we will set it to be the same as the start
     tornadoesMap$elat[tornadoesMap$elat == 0.00] <- tornadoesMap$slat
     tornadoesMap$elon[tornadoesMap$elon == 0.00] <- tornadoesMap$slon
+    tornadoesMap$elat[tornadoesMap$slat == 0.00] <- tornadoesMap$elat
+    tornadoesMap$elon[tornadoesMap$slon == 0.00] <- tornadoesMap$elon
+    
     #only render magnitudes that have been selected
     tornadoesMap <- tornadoesMap %>% filter(mag %in% input$magnitudes)
     #check for all the range sliders
@@ -661,8 +664,28 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                                 bFilter=0
                                               )
   )
+  
+  getOrdUnitsTable <- reactive({
+    df <- getUnitsTable()
+    vector <- NA
+    
+    if(!input$"metric") {
+      vector <- c(0, 10, 100, 120, 150, 20, 200, 240, 30, 50)
+    } else {
+      vector <- c(0, 16, 160, 193, 241, 32, 321, 386, 48, 80)
+    }
+    
+    ordData <- data.frame(
+      df,
+      lower = vector
+    )
+    
+    ordData <- ordData[order(ordData$lower),]
+    chosenData <- ordData[,c(1,2,3)]
+    chosenData
+  })
 
-  output$eDistanceTable<- renderDataTable(getUnitsTable(), extensions = 'Scroller',
+  output$eDistanceTable<- renderDataTable(getOrdUnitsTable(), extensions = 'Scroller',
                                                rownames = FALSE, options = list(
                                                  deferRender = TRUE,
                                                  scrollY = 600,
