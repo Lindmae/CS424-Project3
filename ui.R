@@ -33,13 +33,12 @@ ui <- dashboardPage(
   dashboardHeader(title = "CS 424 | Project 3"),
   dashboardSidebar(
     sidebarMenu(
-      menuItem("Isabel", icon = icon("plane", lib = "font-awesome"), tabName = "isabel"),
 
-      menuItem("Bart", icon = icon("plane", lib = "font-awesome"), tabName = "bart"),
+      menuItem("Map", icon = icon("map", lib = "font-awesome"), tabName = "bart"),
       
-      menuItem("Vijay", icon = icon("plane", lib = "font-awesome"), tabName = "vijay"),
+      menuItem("Illinois Analysis", icon = icon("search", lib = "font-awesome"), tabName = "vijay"),
       
-      menuItem("County Analysis", icon = icon("map", lib = "font-awesome"), tabName = "countyAnalysis"),
+      menuItem("County Analysis", icon = icon("compass", lib = "font-awesome"), tabName = "countyAnalysis"),
       
       menuItem("Multi-State Analysis", icon = icon("table", lib = "font-awesome"), tabName = "stateAnalysis"),
       
