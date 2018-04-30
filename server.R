@@ -446,11 +446,11 @@ server <- function(input, output,session) {
       selected <- "Esri.WorldImagery"
     }
     else if(choice == 5){
-      selected <- "NASAGIBS.ViirsEarthAtNight2012"
+      selected <- "Thunderforest.TransportDark"
     }
     
     else{
-      selected <- "OpenWeatherMap.Clouds"
+      selected <- "Hydda.Full"
     }
 
   })
@@ -884,8 +884,10 @@ output$hourlyGraph <- renderPlotly({
   
   units <- getUnitsText()
     
-    plot_ly(total, x = ~Distance, y = ~`End Count`, type = 'scatter', name = 'End', mode = 'lines') %>%
-       add_trace(y = ~`Start Count`, name = 'Start', mode = 'lines') %>%
+    plot_ly(total, x = ~Distance, y = ~`End Count`, type = 'scatter', name = 'End', mode = 'lines', hoverinfo = 'text',
+            text = ~paste('</br>Distance:', Distance, '</br>Count:', `End Count`)) %>%
+       add_trace(y = ~`Start Count`, name = 'Start', mode = 'lines', hoverinfo = 'text',
+                 text = ~paste('</br>Distance:', Distance, '</br>Count:', `Start Count`)) %>%
       layout(font = list(size=30), title ="Number of Tornadoes Based on Distance", xaxis = list(title = paste("Distance (", units,")", sep=" "), autotick = T, tickangle = 0, titlefont=list(size=25), tickfont=list(size=20)),
              yaxis = list(title = "# of Tornadoes", titlefont=list(size=30), tickfont=list(size=20)),
              margin = list(l = 100, b = 100, t= 100),

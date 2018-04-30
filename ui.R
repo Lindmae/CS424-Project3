@@ -107,6 +107,11 @@ ui <- dashboardPage(
         line-height: 100px;
         font-size: 100px;
       }
+      .col-sm-8
+      {
+        font-size: 600%;
+        /* ISABEL, FONTSIZE HERE */
+      }
 
       "),
     tabItems(tabItem(tabName = "info",
@@ -119,7 +124,8 @@ ui <- dashboardPage(
                               br(),
                               p("Project 3 for CS 424 Spring 2018 UIC"),
                               br(),
-                              p("Libraries used: shiny, shinyjs, 
+                              p("Libraries used: shiny, 
+                                shinyjs, 
                                 shinydashboard, 
                                 ggplot2, 
                                 lubridate, 
@@ -127,17 +133,21 @@ ui <- dashboardPage(
                                 grid, 
                                 leaflet, 
                                 reshape2, 
+                                scales, 
                                 dplyr, 
                                 plotly, 
                                 shinyWidgets, 
-                                shinycssloaders,  gdata,  RColorBrewer, 
-                                geojsonio, 
-                                geosphere."),
+                                shinycssloaders, 
+                                gdata,  
+                                geosphere, 
+                                tigris,  
+                                sp, 
+                                colourpicker."),
                               p("Data from: NOAA's National Weather Service ", a("www.spc.noaa.gov/wcm/index.html#data", href="www.spc.noaa.gov/wcm/index.html#data", target="blank"), ")"),
                               br(),
                               p("For project requirements visit here: ", a("www.evl.uic.edu/aej/424/", href="www.evl.uic.edu/aej/424/", target="blank")),
                               br(),
-                              p("For more information/analysis visit: ", a("Website goes here", href="", target="blank"))
+                              p("For more information/analysis visit: ", a("https://vking12.github.io/projects/cs424/project3.html", href="https://vking12.github.io/projects/cs424/project3.html", target="blank"))
                        ),
                        column(2,""
                        )
@@ -195,7 +205,7 @@ ui <- dashboardPage(
                            selectInput("topTornado", label = h3("Choose a tornado.."), 
                                        choices = list("None/reset" = -1,"Choice 1" = 367, "Choice 2" = 355, "Choice 3" = 1037,"Choice 4" = 116, "Choice 5" = 834, "Choice 6" = 2265,"Choice 7" = 233, "Choice 8" = 2206, "Choice 9" = 362, "Choice 10" = 325)),
                            selectInput("mapChoice", label = h3("Choose a base map.."), 
-                                       choices = list("Base" = 1, "Dark" = 2, "Terrain" = 3, "Satellite" = 4, "Light Pollution" = 5, "Something" = 6))
+                                       choices = list("Base" = 1, "Dark" = 2, "Terrain" = 3, "Satellite" = 4, "Transport Routes" = 5, "Water Bodies" = 6))
                            
               ))
       ),
