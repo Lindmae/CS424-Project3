@@ -654,7 +654,7 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
   output$eDistanceTable<- renderDataTable(getUnitsTable(), extensions = 'Scroller',
                                                rownames = FALSE, options = list(
                                                  deferRender = TRUE,
-                                                 scrollY = 800,
+                                                 scrollY = 600,
                                                  scroller = TRUE,
                                                  bFilter=0
                                                )
@@ -875,9 +875,9 @@ output$hourlyGraph <- renderPlotly({
     
     plot_ly(total, x = ~Distance, y = ~`End Count`, type = 'scatter', name = 'End', mode = 'lines') %>%
        add_trace(y = ~`Start Count`, name = 'Start', mode = 'lines') %>%
-      layout(font = list(size=30), xaxis = list(title = paste("Distance (", units,")", sep=" "), autotick = T, tickangle = 0, titlefont=list(size=25), tickfont=list(size=20)),
+      layout(font = list(size=30), title ="Number of Tornadoes Based on Distance", xaxis = list(title = paste("Distance (", units,")", sep=" "), autotick = T, tickangle = 0, titlefont=list(size=25), tickfont=list(size=20)),
              yaxis = list(title = "# of Tornadoes", titlefont=list(size=30), tickfont=list(size=20)),
-             margin = list(l = 100, b = 100),
+             margin = list(l = 100, b = 100, t= 100),
              barmode = 'group')
   })
 
@@ -910,6 +910,7 @@ output$hourlyGraph <- renderPlotly({
       layout(yaxis = list(title = 'Total Tornadoes', titlefont=list(size=30), tickfont=list(size=20)), barmode = 'stack',
              margin=list(l=100, t=100, b=100))
 
+    
   })
 
   # vis PERCENT TORNADOES (by MAG) per MONTH summed over 1950 - 2016

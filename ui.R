@@ -144,21 +144,6 @@ ui <- dashboardPage(
                        )
                      )
     ),
-      tabItem(tabName = "isabel",
-              fluidRow( 
-                tabBox(
-                  #title = "First tabBox",
-                  # The id lets us use input$tabset1 on the server to find the current tab
-                  id = "tabset10", height = "800px",
-                  tabPanel("Graph", div(DT::dataTableOutput("eDistanceTable", height = 800), style = "font-size: 200%")),
-                  tabPanel("Table", div(plotlyOutput("distanceCountGraph", height = 800), style = "font-size: 200%")),
-                  width = 12
-                )
-                
-                
-                )
-              
-      ),
       tabItem(tabName = "bart",
               fluidRow(
                         column(12, box(title = "Map", solidHeader = FALSE, status = "primary", width = 24,
@@ -323,6 +308,18 @@ ui <- dashboardPage(
                                  div(DT::dataTableOutput("totalDamagesTable", height = 800), style = "font-size: 200%")
                              )   
                          ))
+              ),
+              
+              
+              tabPanel("Distance",
+                       fluidRow(
+                         box(title = "Total tornadoes by distance - IL - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 12,
+                             div(plotlyOutput("distanceCountGraph", height = 1200), style = "font-size: 200%")
+                             ),
+                         box(title = "Total tornadoes by distance - IL - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 12,
+                             div(DT::dataTableOutput("eDistanceTable", height = 600), style = "font-size: 200%")
+                         ) 
+                         )
               )
               
               )
