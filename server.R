@@ -378,6 +378,9 @@ server <- function(input, output,session) {
     #for any position that ends at 0.00 lat/lon, we will set it to be the same as the start
     tornadoesMap$elat[tornadoesMap$elat == 0.00] <- tornadoesMap$slat
     tornadoesMap$elon[tornadoesMap$elon == 0.00] <- tornadoesMap$slon
+    tornadoesMap$elat[tornadoesMap$slat == 0.00] <- tornadoesMap$elat
+    tornadoesMap$elon[tornadoesMap$slon == 0.00] <- tornadoesMap$elon
+    
     #only render magnitudes that have been selected
     tornadoesMap <- tornadoesMap %>% filter(mag %in% input$magnitudes)
     #check for all the range sliders
