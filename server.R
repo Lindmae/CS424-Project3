@@ -688,7 +688,7 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
   output$magTotalMonthTable <- renderDataTable(magTotals[, 1:14], extensions = 'Scroller',
                                                rownames = FALSE, options = list(
                                                  deferRender = TRUE,
-                                                 scrollY = 800,
+                                                 scrollY = 350,
                                                  scroller = TRUE,
                                                  bFilter=0
                                                  )
@@ -697,7 +697,7 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
   output$magTotalMonthTablePercent <- renderDataTable(magTotals[, c(1, 15:26)], extensions = 'Scroller',
                                                rownames = FALSE, options = list(
                                                  deferRender = TRUE,
-                                                 scrollY = 800,
+                                                 scrollY = 350,
                                                  scroller = TRUE,
                                                  bFilter=0
                                                )
@@ -706,7 +706,7 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
   output$magTotalHourTableI <- renderDataTable(getMagTotalsByHourAMPM()[, 1:14], extensions = 'Scroller',
                                                       rownames = FALSE, options = list(
                                                         deferRender = TRUE,
-                                                        scrollY = 800,
+                                                        scrollY = 350,
                                                         scroller = TRUE,
                                                         bFilter=0
                                                       )
@@ -714,7 +714,7 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
   output$magTotalHourTableII <- renderDataTable(getMagTotalsByHourAMPM()[, c(1, 2, 15:26)], extensions = 'Scroller',
                                                rownames = FALSE, options = list(
                                                  deferRender = TRUE,
-                                                 scrollY = 800,
+                                                 scrollY = 350,
                                                  scroller = TRUE,
                                                  bFilter=0
                                                )
@@ -722,7 +722,7 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
   output$magTotalHourTablePercentI <- renderDataTable(getMagTotalsByHourAMPM()[, c(1, 27:38)], extensions = 'Scroller',
                                                rownames = FALSE, options = list(
                                                  deferRender = TRUE,
-                                                 scrollY = 800,
+                                                 scrollY = 350,
                                                  scroller = TRUE,
                                                  bFilter=0
                                                )
@@ -730,7 +730,7 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
   output$magTotalHourTablePercentII <- renderDataTable(getMagTotalsByHourAMPM()[, c(1, 39:50)], extensions = 'Scroller',
                                                 rownames = FALSE, options = list(
                                                   deferRender = TRUE,
-                                                  scrollY = 800,
+                                                  scrollY = 350,
                                                   scroller = TRUE,
                                                   bFilter=0
                                                 )
