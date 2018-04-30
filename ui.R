@@ -142,7 +142,7 @@ ui <- dashboardPage(
                               br(),
                               p("For project requirements visit here: ", a("www.evl.uic.edu/aej/424/", href="www.evl.uic.edu/aej/424/", target="blank")),
                               br(),
-                              p("For more information/analysis visit: ", a("Website goes here", href="", target="blank"))
+                              p("For more information/analysis visit: ", a("https://vking12.github.io/projects/cs424/project3.html", href="https://vking12.github.io/projects/cs424/project3.html", target="blank"))
                        ),
                        column(2,""
                        )
