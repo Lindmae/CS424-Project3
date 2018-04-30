@@ -99,7 +99,16 @@ ui <- dashboardPage(
        {
           font: 46px/44px Tahoma, Verdana, sans-serif !important;
           width: 48px;
-        }
+       }
+
+      .leaflet-touch .leaflet-bar a 
+      {
+        width: 100px;
+        height: 100px;
+        line-height: 100px;
+        font-size: 100px;
+      }
+
       "),
     tabItems(tabItem(tabName = "info",
                      fluidRow(
