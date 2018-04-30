@@ -693,9 +693,14 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                                  bFilter=0
                                                )
   )
-
-
-  output$totalDamagesByMonthTable <- renderDataTable(totalDamagesByMonth, extensions = 'Scroller',
+  
+  getTotalDamagesByMonthTable <- reactive({
+    totalDamagesByMonth$Loss <- prettyNum(totalDamagesByMonth$Loss, big.mark = ",")
+    
+    totalDamagesByMonth
+  })
+  
+  output$totalDamagesByMonthTable <- renderDataTable(getTotalDamagesByMonthTable(), extensions = 'Scroller',
                                               rownames = FALSE, options = list(
                                                 deferRender = TRUE,
                                                 scrollY = 800,
@@ -704,7 +709,14 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                               )
   )
 
-  output$totalDamagesByHourTable <- renderDataTable(getTotalDamagesByHourAMPM(), extensions = 'Scroller',
+  getTotalDamagesByHourTable <- reactive({
+    totalDamages <- getTotalDamagesByHourAMPM()
+    totalDamages$Loss <- prettyNum(totalDamages$Loss, big.mark = ",")
+    
+    totalDamages
+  })
+  
+  output$totalDamagesByHourTable <- renderDataTable(getTotalDamagesByHourTable(), extensions = 'Scroller',
                                                      rownames = FALSE, options = list(
                                                        deferRender = TRUE,
                                                        scrollY = 800,
