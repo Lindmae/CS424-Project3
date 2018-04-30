@@ -147,7 +147,7 @@ ui <- dashboardPage(
                               br(),
                               p("For project requirements visit here: ", a("www.evl.uic.edu/aej/424/", href="www.evl.uic.edu/aej/424/", target="blank")),
                               br(),
-                              p("For more information/analysis visit: ", a("Website goes here", href="", target="blank"))
+                              p("For more information/analysis visit: ", a("https://vking12.github.io/projects/cs424/project3.html", href="https://vking12.github.io/projects/cs424/project3.html", target="blank"))
                        ),
                        column(2,""
                        )
@@ -215,16 +215,16 @@ ui <- dashboardPage(
                     fluidRow(
                       box(title = "MONTHLY Total Tornadoes by Magnitude - IL - 1950 to 2016", solidHeader = TRUE, status = "primary", width = 12,
                             tabBox(
-                              id = "tab_monthyTotalsInILGraphs", height = "1000px",
-                              tabPanel("Total Numbers Monthly", plotlyOutput("magTotalMonthChart", height = 950)),
-                              tabPanel("Total Percent Monthly", plotlyOutput("magTotalMonthChartPercent", height = 950)),
+                              id = "tab_monthyTotalsInILGraphs", height = "1300px",
+                              tabPanel("Total Numbers Monthly", plotlyOutput("magTotalMonthChart", height = 1200)),
+                              tabPanel("Total Percent Monthly", plotlyOutput("magTotalMonthChartPercent", height = 1200)),
                               width = 12
                             )
                         ),
                       
                       box(title = "MONTHLY Total Tornadoes by Magnitude - IL - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 12,
                           tabBox(
-                            id = "tab_monthlyTotalsInILTables", height = "850px",
+                            id = "tab_monthlyTotalsInILTables", height = "350px",
                             tabPanel("Total Numbers Monthly", div(DT::dataTableOutput("magTotalMonthTable", height = 300), style = "font-size: 200%")),
                             tabPanel("Total Percent Monthly", div(DT::dataTableOutput("magTotalMonthTablePercent", height = 300), style = "font-size: 200%")),
                             width = 12
@@ -236,22 +236,23 @@ ui <- dashboardPage(
                   fluidRow(
                   box(title = "HOURLY Total Tornadoes by Magnitude - IL - 1950 to 2016", solidHeader = TRUE, status = "primary", width = 12,
                       tabBox(
-                        id = "tab_monthyTotalsInILGraphs", height = "1000px",
-                        tabPanel("Total Numbers Hourly", plotlyOutput("magTotalHourChart", height = 950)),
-                        tabPanel("Total Percent Hourly", plotlyOutput("magTotalHourChartPercent", height = 950)),
+                        id = "tab_monthyTotalsInILGraphs", height = "1300px",
+                        tabPanel("Total Numbers Hourly", plotlyOutput("magTotalHourChart", height = 1200)),
+                        tabPanel("Total Percent Hourly", plotlyOutput("magTotalHourChartPercent", height = 1200)),
                         width = 12
                       )
                   ),
                   box(title = "HOURLY Total Tornadoes by Magnitude - IL - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 12,
                       tabBox(
-                        id = "tab_monthlyTotalsInILTables", height = "850px",
-                        tabPanel("Total Numbers Hourly", 
-                                 div(DT::dataTableOutput("magTotalHourTableI", height = 300), style = "font-size: 200%"),
+                        id = "tab_monthlyTotalsInILTables", height = "350px",width = 12,
+                        tabPanel("Total Numbers Morning", 
+                                 div(DT::dataTableOutput("magTotalHourTableI", height = 300), style = "font-size: 200%")),
+                        tabPanel("Total Numbers Evening", 
                                  div(DT::dataTableOutput("magTotalHourTableII", height = 300), style = "font-size: 200%")),
-                        tabPanel("Total Percent Hourly",
-                                 div(DT::dataTableOutput("magTotalHourTablePercentI", height = 300), style = "font-size: 200%"),
-                                 div(DT::dataTableOutput("magTotalHourTablePercentII", height = 300), style = "font-size: 200%")),
-                        width = 12
+                        tabPanel("Total Percent Morning",
+                                 div(DT::dataTableOutput("magTotalHourTablePercentI", height = 300), style = "font-size: 200%")),
+                        tabPanel("Total Percent Evening",
+                                 div(DT::dataTableOutput("magTotalHourTablePercentII", height = 300), style = "font-size: 200%"))
                       )
                   )
                   )
@@ -260,14 +261,14 @@ ui <- dashboardPage(
                        fluidRow(
                          box(title = "YEARLY Total Tornadoes by Magnitude - IL - 1950 to 2016", solidHeader = TRUE, status = "primary", width = 12,
                              tabBox(
-                               id = "tab_yearlyTotalsInILGraphs", height = "1000px",
-                               tabPanel("Total Numbers Hourly", plotlyOutput("yearlyGraph", height = 950)),
-                               tabPanel("Total Percent Hourly", plotlyOutput("yearlyGraphPer", height = 950)),
+                               id = "tab_yearlyTotalsInILGraphs", height = "1300px",
+                               tabPanel("Total Numbers Hourly", plotlyOutput("yearlyGraph", height = 1200)),
+                               tabPanel("Total Percent Hourly", plotlyOutput("yearlyGraphPer", height = 1200)),
                                width = 12
                              )
                          ),
                          box(title = "YEARLY Total Tornadoes by Magnitude - IL - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 12,
-                             div(DT::dataTableOutput("yearlyTornadoTable", height = 800), style = "font-size: 200%")
+                             div(DT::dataTableOutput("yearlyTornadoTable", height = 350), style = "font-size: 200%")
                          )
                        )
               ),
