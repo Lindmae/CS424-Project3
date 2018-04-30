@@ -638,8 +638,13 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
   bFilter=0
   )
 )
+  getTotalDamagesByYear <- reactive({
+    totalDamages$Loss <- prettyNum(totalDamages$Loss, big.mark = ",")
+    
+    totalDamages
+  })
 
-  output$totalDamagesTable <- renderDataTable(totalDamages, extensions = 'Scroller',
+  output$totalDamagesTable <- renderDataTable(getTotalDamagesByYear(), extensions = 'Scroller',
                                                    rownames = FALSE, options = list(
                                                      deferRender = TRUE,
                                                      scrollY = 800,
