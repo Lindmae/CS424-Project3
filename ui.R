@@ -108,6 +108,11 @@ ui <- dashboardPage(
         line-height: 100px;
         font-size: 100px;
       }
+      .col-sm-8
+      {
+        font-size: 600%;
+        /* ISABEL, FONTSIZE HERE */
+      }
 
       "),
     tabItems(tabItem(tabName = "info",
