@@ -33,13 +33,12 @@ ui <- dashboardPage(
   dashboardHeader(title = "CS 424 | Project 3"),
   dashboardSidebar(
     sidebarMenu(
-      menuItem("Isabel", icon = icon("plane", lib = "font-awesome"), tabName = "isabel"),
 
-      menuItem("Bart", icon = icon("plane", lib = "font-awesome"), tabName = "bart"),
+      menuItem("Map", icon = icon("map", lib = "font-awesome"), tabName = "bart"),
       
-      menuItem("Vijay", icon = icon("plane", lib = "font-awesome"), tabName = "vijay"),
+      menuItem("Illinois Analysis", icon = icon("search", lib = "font-awesome"), tabName = "vijay"),
       
-      menuItem("County Analysis", icon = icon("map", lib = "font-awesome"), tabName = "countyAnalysis"),
+      menuItem("County Analysis", icon = icon("compass", lib = "font-awesome"), tabName = "countyAnalysis"),
       
       menuItem("Multi-State Analysis", icon = icon("table", lib = "font-awesome"), tabName = "stateAnalysis"),
       
@@ -125,7 +124,8 @@ ui <- dashboardPage(
                               br(),
                               p("Project 3 for CS 424 Spring 2018 UIC"),
                               br(),
-                              p("Libraries used: shiny, shinyjs, 
+                              p("Libraries used: shiny, 
+                                shinyjs, 
                                 shinydashboard, 
                                 ggplot2, 
                                 lubridate, 
@@ -133,12 +133,16 @@ ui <- dashboardPage(
                                 grid, 
                                 leaflet, 
                                 reshape2, 
+                                scales, 
                                 dplyr, 
                                 plotly, 
                                 shinyWidgets, 
-                                shinycssloaders,  gdata,  RColorBrewer, 
-                                geojsonio, 
-                                geosphere."),
+                                shinycssloaders, 
+                                gdata,  
+                                geosphere, 
+                                tigris,  
+                                sp, 
+                                colourpicker."),
                               p("Data from: NOAA's National Weather Service ", a("www.spc.noaa.gov/wcm/index.html#data", href="www.spc.noaa.gov/wcm/index.html#data", target="blank"), ")"),
                               br(),
                               p("For project requirements visit here: ", a("www.evl.uic.edu/aej/424/", href="www.evl.uic.edu/aej/424/", target="blank")),
@@ -149,21 +153,6 @@ ui <- dashboardPage(
                        )
                      )
     ),
-      tabItem(tabName = "isabel",
-              fluidRow( 
-                tabBox(
-                  #title = "First tabBox",
-                  # The id lets us use input$tabset1 on the server to find the current tab
-                  id = "tabset10", height = "800px",
-                  tabPanel("Graph", div(DT::dataTableOutput("eDistanceTable", height = 800), style = "font-size: 200%")),
-                  tabPanel("Table", div(plotlyOutput("distanceCountGraph", height = 800), style = "font-size: 200%")),
-                  width = 12
-                )
-                
-                
-                )
-              
-      ),
       tabItem(tabName = "bart",
               fluidRow(
                         column(12, box(title = "Map", solidHeader = FALSE, status = "primary", width = 24,
@@ -216,7 +205,7 @@ ui <- dashboardPage(
                            selectInput("topTornado", label = h3("Choose a tornado.."), 
                                        choices = list("None/reset" = -1,"Choice 1" = 367, "Choice 2" = 355, "Choice 3" = 1037,"Choice 4" = 116, "Choice 5" = 834, "Choice 6" = 2265,"Choice 7" = 233, "Choice 8" = 2206, "Choice 9" = 362, "Choice 10" = 325)),
                            selectInput("mapChoice", label = h3("Choose a base map.."), 
-                                       choices = list("Base" = 1, "Dark" = 2, "Terrain" = 3, "Satellite" = 4, "Light Pollution" = 5, "Something" = 6))
+                                       choices = list("Base" = 1, "Dark" = 2, "Terrain" = 3, "Satellite" = 4, "Transport Routes" = 5, "Water Bodies" = 6))
                            
               ))
       ),
@@ -328,6 +317,18 @@ ui <- dashboardPage(
                                  div(DT::dataTableOutput("totalDamagesTable", height = 800), style = "font-size: 200%")
                              )   
                          ))
+              ),
+              
+              
+              tabPanel("Distance",
+                       fluidRow(
+                         box(title = "Total tornadoes by distance - IL - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 12,
+                             div(plotlyOutput("distanceCountGraph", height = 1200), style = "font-size: 200%")
+                             ),
+                         box(title = "Total tornadoes by distance - IL - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 12,
+                             div(DT::dataTableOutput("eDistanceTable", height = 600), style = "font-size: 200%")
+                         ) 
+                         )
               )
               
               )
