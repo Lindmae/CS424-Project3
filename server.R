@@ -545,10 +545,12 @@ server <- function(input, output,session) {
     if(chosenType == "Damages"){
       if(chosenFormat == "Yearly"){
         chosenData <- getFullDamageData("yr", chosenStateData)
+        chosenData$Loss <- prettyNum(chosenData$Loss, big.mark = ",")
         names(chosenData) <- c("Year", "Deaths", "Injuries", "Loss")
       } else if (chosenFormat == "Monthly"){
         chosenData <- getFullDamageData("mo", chosenStateData)
         names(chosenData) <- c("Month", "Deaths", "Injuries", "Loss")
+        chosenData$Loss <- prettyNum(chosenData$Loss, big.mark = ",")
       } else {
         chosenData <- getFullDamageData("hr", chosenStateData)
         
@@ -557,6 +559,7 @@ server <- function(input, output,session) {
         }
         
         names(chosenData) <- c("Hour", "Deaths", "Injuries", "Loss")
+        chosenData$Loss <- prettyNum(chosenData$Loss, big.mark = ",")
       }
     } else {
       if(chosenFormat == "Yearly"){
@@ -590,9 +593,11 @@ server <- function(input, output,session) {
       if(chosenFormat == "Yearly"){
         chosenData <- getFullDamageData("yr", chosenStateData)
         names(chosenData) <- c("Year", "Deaths", "Injuries", "Loss")
+        chosenData$Loss <- prettyNum(chosenData$Loss, big.mark = ",")
       } else if (chosenFormat == "Monthly"){
         chosenData <- getFullDamageData("mo", chosenStateData)
         names(chosenData) <- c("Month", "Deaths", "Injuries", "Loss")
+        chosenData$Loss <- prettyNum(chosenData$Loss, big.mark = ",")
       } else {
         chosenData <- getFullDamageData("hr", chosenStateData)
         
@@ -601,6 +606,7 @@ server <- function(input, output,session) {
         }
         
         names(chosenData) <- c("Hour", "Deaths", "Injuries", "Loss")
+        chosenData$Loss <- prettyNum(chosenData$Loss, big.mark = ",")
       }
     } else {
       if(chosenFormat == "Yearly"){
