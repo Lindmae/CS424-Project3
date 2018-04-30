@@ -350,7 +350,6 @@ server <- function(input, output,session) {
     chosen
   })
 
-
   reactiveMap <- reactive({
 
     #filter to be only illinois, and make sure they are valid points
@@ -393,8 +392,6 @@ server <- function(input, output,session) {
     colorNumeric(c(input$colorPathStart,input$colorPathEnd),
                  domain =tornadoesMap[,selectedColor])
  })
-
-
 
   colorMapStart <- reactive({
     input$colorStart
@@ -520,18 +517,34 @@ server <- function(input, output,session) {
     if(chosenType == "Damages"){
       if(chosenFormat == "Yearly"){
         chosenData <- getFullDamageData("yr", chosenStateData)
+        names(chosenData) <- c("Year", "Deaths", "Injuries", "Loss")
       } else if (chosenFormat == "Monthly"){
         chosenData <- getFullDamageData("mo", chosenStateData)
+        names(chosenData) <- c("Month", "Deaths", "Injuries", "Loss")
       } else {
         chosenData <- getFullDamageData("hr", chosenStateData)
+        
+        if(!input$time){
+          chosenData$hr <- format(strptime(chosenData$hr, format='%H'), '%r')
+        }
+        
+        names(chosenData) <- c("Hour", "Deaths", "Injuries", "Loss")
       }
     } else {
       if(chosenFormat == "Yearly"){
         chosenData <- getMagInfo("yr", chosenStateData)
+        names(chosenData) <- c("Year", "Magnitude", "Count", "TotalInCounty")
       } else if (chosenFormat == "Monthly"){
         chosenData <- getMagInfo("mo", chosenStateData)
+        names(chosenData) <- c("Month", "Magnitude", "Count", "TotalInCounty")
       } else {
         chosenData <- getMagInfo("hr", chosenStateData)
+        
+        if(!input$time){
+          chosenData$hr <- format(strptime(chosenData$hr, format='%H'), '%r')
+        }
+        
+        names(chosenData) <- c("Hour", "Magnitude", "Count", "TotalInCounty")
       }
     }
 
@@ -548,18 +561,34 @@ server <- function(input, output,session) {
     if(chosenType == "Damages"){
       if(chosenFormat == "Yearly"){
         chosenData <- getFullDamageData("yr", chosenStateData)
+        names(chosenData) <- c("Year", "Deaths", "Injuries", "Loss")
       } else if (chosenFormat == "Monthly"){
         chosenData <- getFullDamageData("mo", chosenStateData)
+        names(chosenData) <- c("Month", "Deaths", "Injuries", "Loss")
       } else {
         chosenData <- getFullDamageData("hr", chosenStateData)
+        
+        if(!input$time){
+          chosenData$hr <- format(strptime(chosenData$hr, format='%H'), '%r')
+        }
+        
+        names(chosenData) <- c("Hour", "Deaths", "Injuries", "Loss")
       }
     } else {
       if(chosenFormat == "Yearly"){
         chosenData <- getMagInfo("yr", chosenStateData)
+        names(chosenData) <- c("Year", "Magnitude", "Count", "TotalInCounty")
       } else if (chosenFormat == "Monthly"){
         chosenData <- getMagInfo("mo", chosenStateData)
+        names(chosenData) <- c("Hour", "Magnitude", "Count", "TotalInCounty")
       } else {
         chosenData <- getMagInfo("hr", chosenStateData)
+        
+        if(!input$time){
+          chosenData$hr <- format(strptime(chosenData$hr, format='%H'), '%r')
+        }
+        
+        names(chosenData) <- c("Hour", "Magnitude", "Count", "TotalInCounty")
       }
     }
 
