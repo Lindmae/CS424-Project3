@@ -656,7 +656,7 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
   output$yearlyTornadoTable <- renderDataTable(yearlyTornadoesPercent, extensions = 'Scroller',
                                               rownames = FALSE, options = list(
                                                 deferRender = TRUE,
-                                                scrollY = 800,
+                                                scrollY = 350,
                                                 scroller = TRUE,
                                                 bFilter=0
                                               )

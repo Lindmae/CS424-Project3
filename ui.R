@@ -261,14 +261,14 @@ ui <- dashboardPage(
                        fluidRow(
                          box(title = "YEARLY Total Tornadoes by Magnitude - IL - 1950 to 2016", solidHeader = TRUE, status = "primary", width = 12,
                              tabBox(
-                               id = "tab_yearlyTotalsInILGraphs", height = "1000px",
-                               tabPanel("Total Numbers Hourly", plotlyOutput("yearlyGraph", height = 950)),
-                               tabPanel("Total Percent Hourly", plotlyOutput("yearlyGraphPer", height = 950)),
+                               id = "tab_yearlyTotalsInILGraphs", height = "1300px",
+                               tabPanel("Total Numbers Hourly", plotlyOutput("yearlyGraph", height = 1200)),
+                               tabPanel("Total Percent Hourly", plotlyOutput("yearlyGraphPer", height = 1200)),
                                width = 12
                              )
                          ),
                          box(title = "YEARLY Total Tornadoes by Magnitude - IL - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 12,
-                             div(DT::dataTableOutput("yearlyTornadoTable", height = 800), style = "font-size: 200%")
+                             div(DT::dataTableOutput("yearlyTornadoTable", height = 350), style = "font-size: 200%")
                          )
                        )
               ),
