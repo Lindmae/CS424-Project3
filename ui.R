@@ -140,29 +140,10 @@ ui <- dashboardPage(
                 tabBox(
                   #title = "First tabBox",
                   # The id lets us use input$tabset1 on the server to find the current tab
-                  id = "tabset1", height = "850px",
-                  tabPanel("Injuries", plotlyOutput("injuriesChart", height = 800)),
-                  tabPanel("Deaths", plotlyOutput("deathsChart", height = 800)),
-                  tabPanel("Property Loss", plotlyOutput("lossChart", height = 800)),
-                  width = 12
-                ),
-                box(status = "primary", solidHeader = TRUE, width = 12,
-                    div(DT::dataTableOutput("totalDamagesTable", height = 800), style = "font-size: 200%")
-                ),
-                tabBox(
-                  #title = "First tabBox",
-                  # The id lets us use input$tabset1 on the server to find the current tab
                   id = "tabset9", height = "850px",
                   tabPanel("Without", plotlyOutput("countyGraphWithout", height = 800)),
                   tabPanel("With", plotlyOutput("countyGraph", height = 800)),
                   width = 12
-                ),
-                box(status = "primary", solidHeader = TRUE, width = 12,
-                    div(plotlyOutput("yearlyGraph", height = 800), style = "font-size: 200%"),
-                    div(plotlyOutput("yearlyGraphPer", height = 800), style = "font-size: 200%")
-                ),
-                box(status = "primary", solidHeader = TRUE, width = 3,
-                    div(DT::dataTableOutput("yearlyTornadoTable", height = 800), style = "font-size: 200%")
                 ),
                 box(status = "primary", solidHeader = TRUE, width = 12,
                     div(DT::dataTableOutput("eDistanceTable", height = 800), style = "font-size: 200%"),
@@ -181,7 +162,8 @@ ui <- dashboardPage(
                                 h1(textOutput("yearSelected"),style = "font-size: 500%"))
                             ),
               fixedPanel(top = 150, right = 50,draggable = TRUE, box(title = "Tornado tracks across Illinois", solidHeader = TRUE, status = "primary",width = 12,
-                           checkboxGroupInput("magnitudes", h3("Magnitudes to show:"),
+                           actionBttn("resetMap","----Reset all values----",icon = NULL, color="danger", style = "material-flat",size = "lg"),
+                            checkboxGroupInput("magnitudes", h3("Magnitudes to show:"),
                                               choices=c(0,1,2,3,4,5,"unknown" = -9), inline = TRUE,selected = c(0,1,2,3,4,5)),
                            radioButtons("mapColor",h3("Tornado tracks with color based on :"),
                                         choices=c("magnitude" = "mag", "length" = "len", "width" = "wid",
@@ -233,12 +215,13 @@ ui <- dashboardPage(
                     fluidRow(
                       box(title = "MONTHLY Total Tornadoes by Magnitude - IL - 1950 to 2016", solidHeader = TRUE, status = "primary", width = 12,
                             tabBox(
-                              id = "tab_monthyTotalsInILGraphs", height = "850px",
-                              tabPanel("Total Numbers Monthly", plotlyOutput("magTotalMonthChart", height = 800)),
-                              tabPanel("Total Percent Monthly", plotlyOutput("magTotalMonthChartPercent", height = 800)),
+                              id = "tab_monthyTotalsInILGraphs", height = "1000px",
+                              tabPanel("Total Numbers Monthly", plotlyOutput("magTotalMonthChart", height = 950)),
+                              tabPanel("Total Percent Monthly", plotlyOutput("magTotalMonthChartPercent", height = 950)),
                               width = 12
                             )
                         ),
+                      
                       box(title = "MONTHLY Total Tornadoes by Magnitude - IL - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 12,
                           tabBox(
                             id = "tab_monthlyTotalsInILTables", height = "850px",
@@ -253,9 +236,9 @@ ui <- dashboardPage(
                   fluidRow(
                   box(title = "HOURLY Total Tornadoes by Magnitude - IL - 1950 to 2016", solidHeader = TRUE, status = "primary", width = 12,
                       tabBox(
-                        id = "tab_monthyTotalsInILGraphs", height = "850px",
-                        tabPanel("Total Numbers Hourly", plotlyOutput("magTotalHourChart", height = 800)),
-                        tabPanel("Total Percent Hourly", plotlyOutput("magTotalHourChartPercent", height = 800)),
+                        id = "tab_monthyTotalsInILGraphs", height = "1000px",
+                        tabPanel("Total Numbers Hourly", plotlyOutput("magTotalHourChart", height = 950)),
+                        tabPanel("Total Percent Hourly", plotlyOutput("magTotalHourChartPercent", height = 950)),
                         width = 12
                       )
                   ),
@@ -273,14 +256,29 @@ ui <- dashboardPage(
                   )
                   )
                 ),
+              tabPanel("Yearly",
+                       fluidRow(
+                         box(title = "YEARLY Total Tornadoes by Magnitude - IL - 1950 to 2016", solidHeader = TRUE, status = "primary", width = 12,
+                             tabBox(
+                               id = "tab_yearlyTotalsInILGraphs", height = "1000px",
+                               tabPanel("Total Numbers Hourly", plotlyOutput("yearlyGraph", height = 950)),
+                               tabPanel("Total Percent Hourly", plotlyOutput("yearlyGraphPer", height = 950)),
+                               width = 12
+                             )
+                         ),
+                         box(title = "YEARLY Total Tornadoes by Magnitude - IL - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 12,
+                             div(DT::dataTableOutput("yearlyTornadoTable", height = 800), style = "font-size: 200%")
+                         )
+                       )
+              ),
                 tabPanel("Damages Monthly",
                   fluidRow(
                   box(title = "MONTHLY Deaths, Injuries, and Losses - IL - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 12,
                       tabBox(
-                        id = "damagesByMonth", height = "850px",
-                        tabPanel("Injuries", plotlyOutput("injuriesChartByMonth", height = 800)),
-                        tabPanel("Deaths", plotlyOutput("deathsChartByMonth", height = 800)),
-                        tabPanel("Property Loss", plotlyOutput("lossChartByMonth", height = 800)),
+                        id = "damagesByMonth", height = "1000px",
+                        tabPanel("Injuries", plotlyOutput("injuriesChartByMonth", height = 950)),
+                        tabPanel("Deaths", plotlyOutput("deathsChartByMonth", height = 950)),
+                        tabPanel("Property Loss", plotlyOutput("lossChartByMonth", height = 950)),
                         width = 12
                       ),
                       box(status = "primary", solidHeader = TRUE, width = 12,
@@ -293,17 +291,34 @@ ui <- dashboardPage(
                   fluidRow(
                   box(title = "HOURLY Deaths, Injuries, and Losses - IL - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 12,
                       tabBox(
-                        id = "damagesByHour", height = "850px",
-                        tabPanel("Injuries", plotlyOutput("injuriesChartByHour", height = 800)),
-                        tabPanel("Deaths", plotlyOutput("deathsChartByHour", height = 800)),
-                        tabPanel("Property Loss", plotlyOutput("lossChartByHour", height = 800)),
+                        id = "damagesByHour", height = "1000px",
+                        tabPanel("Injuries", plotlyOutput("injuriesChartByHour", height = 950)),
+                        tabPanel("Deaths", plotlyOutput("deathsChartByHour", height = 950)),
+                        tabPanel("Property Loss", plotlyOutput("lossChartByHour", height = 950)),
                         width = 12
                       ),
                       box(status = "primary", solidHeader = TRUE, width = 12,
                           div(DT::dataTableOutput("totalDamagesByHourTable", height = 800), style = "font-size: 200%")
                       )   
                   ))
-                )
+                ),
+              
+              tabPanel("Damages Yearly",
+                       fluidRow(
+                         box(title = "Yearly Deaths, Injuries, and Losses - IL - 1950 to 2016", status = "primary", solidHeader = TRUE, width = 12,
+                             tabBox(
+                               id = "damagesByYear", height = "1000px",
+                               tabPanel("Injuries", plotlyOutput("injuriesChart", height = 950)),
+                               tabPanel("Deaths", plotlyOutput("deathsChart", height = 950)),
+                               tabPanel("Property Loss", plotlyOutput("lossChart", height = 950)),
+                               width = 12
+                             ),
+                             box(status = "primary", solidHeader = TRUE, width = 12,
+                                 div(DT::dataTableOutput("totalDamagesTable", height = 800), style = "font-size: 200%")
+                             )   
+                         ))
+              )
+              
               )
         ),
     tabItem(tabName = "countyAnalysis",
@@ -325,7 +340,7 @@ ui <- dashboardPage(
                   leafletOutput("mapLossByTornadoes", height = "928px") %>% withSpinner(color="#0dc5c1")
               ),
               box(title = "Data Table", status = "primary", solidHeader = TRUE, width = 12,
-                  div(DT::dataTableOutput("countyDataTable", height = 800) %>% withSpinner(color="#0dc5c1"))
+                  div(DT::dataTableOutput("countyDataTable", height = 600) %>% withSpinner(color="#0dc5c1"))
               )
             )
     ),
@@ -342,11 +357,11 @@ ui <- dashboardPage(
                   radioButtons("tabDataType2", label = "Select a Type:", choices = c("Damages", "Magnitude"), selected = "Damages", inline = TRUE)
               )),
             fluidRow(
-              box(title= textOutput("mState1Text", inline = TRUE), status = "primary", solidHeader = TRUE, width = 6, height = "850px",
-                  div(DT::dataTableOutput("state1DataTable", height = 800) %>% withSpinner(color="#0dc5c1"))
+              box(title= textOutput("mState1Text", inline = TRUE), status = "primary", solidHeader = TRUE, width = 6, height = "1850px",
+                  div(DT::dataTableOutput("state1DataTable", height = 1800) %>% withSpinner(color="#0dc5c1"))
               ),
-              box(title= textOutput("mState2Text", inline = TRUE), status = "primary", solidHeader = TRUE, width = 6, height = "850px",
-                  div(DT::dataTableOutput("state2DataTable", height = 800) %>% withSpinner(color="#0dc5c1"))
+              box(title= textOutput("mState2Text", inline = TRUE), status = "primary", solidHeader = TRUE, width = 6, height = "1850px",
+                  div(DT::dataTableOutput("state2DataTable", height = 1800) %>% withSpinner(color="#0dc5c1"))
               ))
     )
     

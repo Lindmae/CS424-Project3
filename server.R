@@ -145,7 +145,8 @@ server <- function(input, output,session) {
   yearlyTornadoesPercent <- totalTornadoes %>% group_by(yr) %>% summarise(n())
   names(yearlyTornadoesPercent) <- c("Year", "Total")
   yearlyTornadoesPercent <- merge(yearlyTornadoes,yearlyTornadoesPercent,by="Year")
-
+  yearlyTornadoesPercent$Percent <- ((yearlyTornadoesPercent$Count/yearlyTornadoesPercent$Total) *100)
+  #yearlyTornadoesPercent$Percent <- floor(yearlyTornadoesPercent$Percent)
 
   #2
   load("rdata/magTotals.RData")
@@ -671,7 +672,7 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
   output$countyDataTable <- renderDataTable(getCountyDataByStateTable(), extensions = 'Scroller',
                                                      rownames = FALSE, options = list(
                                                        deferRender = TRUE,
-                                                       scrollY = 800,
+                                                       scrollY = 750,
                                                        scroller = TRUE,
                                                        bFilter=0
                                                      )
@@ -680,7 +681,7 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
   output$state1DataTable <- renderDataTable(getState1Table(),  extensions = 'Scroller',
                                             rownames = FALSE, options = list(
                                               deferRender = TRUE,
-                                              scrollY = 800,
+                                              scrollY = 1750,
                                               scroller = TRUE,
                                               bFilter=0)
   )
@@ -688,7 +689,7 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
   output$state2DataTable <- renderDataTable(getState2Table(),  extensions = 'Scroller',
                                             rownames = FALSE, options = list(
                                               deferRender = TRUE,
-                                              scrollY = 800,
+                                              scrollY = 1750,
                                               scroller = TRUE,
                                               bFilter=0)
   )
@@ -718,18 +719,20 @@ output$hourlyGraph <- renderPlotly({
   })
 
   output$yearlyGraphPer <- renderPlotly({
+    
+    ggplot(yearlyTornadoesPercent, aes(x = Year, y = Percent ,fill = Magnitude)) +
+      ggtitle("Yearly Tornado Count by Magnitude") + geom_bar(stat = "identity", position = "stack") 
 
-    ggplot(yearlyTornadoesPercent, aes(x = Year, y = ((Count/Total) *100) ,fill = Magnitude)) +
-      ggtitle("Yearly Tornado Count by Magnitude") + geom_bar(stat = "identity", position = "stack")
-
+    
   })
 
   output$countyGraphWithout <- renderPlotly({
 
-    plot_ly(
+    plot_ly(ordCountyDataWithout,
       x = ordCountyDataWithout$County,
       y = ordCountyDataWithout$`Total Tornadoes`,
-      type = "bar"
+      type = "bar",
+      hoverinfo = 'text', text = ~paste('</br>County Code:', County, '<br>Count:', `Total Tornadoes`, '</br>')
     ) %>%
       layout(font = list(size=30), xaxis = list(title = "County Code", autotick = T, tickangle = 0, dtick = 1, titlefont=list(size=25), tickfont=list(size=20)),
              yaxis = list(title = "# of Tornadoes", titlefont=list(size=30), tickfont=list(size=20)),
@@ -741,10 +744,11 @@ output$hourlyGraph <- renderPlotly({
 
   output$countyGraph <- renderPlotly({
 
-    plot_ly(
+    plot_ly(ordCountyData,
       x = ordCountyData$County,
       y = ordCountyData$`Total Tornadoes`,
-      type = "bar"
+      type = "bar",
+      hoverinfo = 'text', text = ~paste('</br>County Code:', County, '<br>Count:', `Total Tornadoes`, '</br>')
     ) %>%
       layout(font = list(size=30), xaxis = list(title = "County Code", autotick = T, tickangle = 0, dtick = 1, titlefont=list(size=25), tickfont=list(size=20)),
              yaxis = list(title = "# of Tornadoes", titlefont=list(size=30), tickfont=list(size=20)),
@@ -755,7 +759,8 @@ output$hourlyGraph <- renderPlotly({
 
   output$injuriesChart <- renderPlotly({
 
-    plot_ly(totalDamages, x = ~Year, y = ~Injuries, name = 'trace 0', type = 'scatter', mode = 'lines+markers') %>%
+    plot_ly(totalDamages, x = ~Year, y = ~Injuries, name = 'trace 0', type = 'scatter', mode = 'lines+markers', 
+            hoverinfo = 'text', text = ~paste('</br>Injuries:', Injuries, '<br>Year:', Year, '</br>')) %>%
 
 
       layout(font = list(size=30), title="Injuries per Year",
@@ -766,7 +771,8 @@ output$hourlyGraph <- renderPlotly({
 
   output$deathsChart <- renderPlotly({
 
-    plot_ly(totalDamages, x = ~Year, y = ~Deaths, name = 'trace 0', type = 'scatter', mode = 'lines+markers') %>%
+    plot_ly(totalDamages, x = ~Year, y = ~Deaths, name = 'trace 0', type = 'scatter', mode = 'lines+markers',
+            hoverinfo = 'text', text = ~paste('</br>Deaths:', Deaths, '<br>Year:', Year, '</br>')) %>%
 
 
       layout(font = list(size=30), title="Deaths per Year",
@@ -777,7 +783,8 @@ output$hourlyGraph <- renderPlotly({
 
   output$lossChart <- renderPlotly({
 
-    plot_ly(totalDamages, x = ~Year, y = ~Loss, name = 'trace 0', type = 'scatter', mode = 'lines+markers') %>%
+    plot_ly(totalDamages, x = ~Year, y = ~Loss, name = 'trace 0', type = 'scatter', mode = 'lines+markers',
+            hoverinfo = 'text', text = ~paste('</br>Loss:', Loss, '<br>Year:', Year, '</br>')) %>%
 
 
       layout(font = list(size=30), title="Property Loss per Year",
@@ -1030,9 +1037,23 @@ output$hourlyGraph <- renderPlotly({
       updateSliderInput(session, "mapYearSlider", value = 1950)
       updateSliderInput(session, "mapFatSlider", value = c(0, 160))
       updateSliderInput(session, "mapInjurySlider", value = c(0, 1750))
+      updateRadioButtons(session, "mapColor", selected = "mag")
+      updateRadioButtons(session, "mapWidth", selected = "mag")
+      updateCheckboxGroupButtons(session,"magnitudes",selected = c(0,1,2,3,4,5))
     }
   })
 
+  observe({
+    reset <- input$resetMap
+    updateSliderInput(session, "mapYearSlider", value = 1950)
+    updateSliderInput(session, "mapFatSlider", value = c(0, 160))
+    updateSliderInput(session, "mapInjurySlider", value = c(0, 1750))
+    updateRadioButtons(session, "mapColor", selected = "mag")
+    updateRadioButtons(session, "mapWidth", selected = "mag")
+    updateCheckboxGroupButtons(session,"magnitudes",selected = c(0,1,2,3,4,5))
+    
+  })
+  
   # add a leaflet map and put markers where the deaths occured
 
   output$map <- renderLeaflet({
