@@ -838,12 +838,14 @@ output$hourlyGraph <- renderPlotly({
   })
 
   output$countyGraphWithout <- renderPlotly({
-
+    ordCountyDataWithout <- getCountyDataByStateTable()
+    ordCountyDataWithout[-1,]
+    
     plot_ly(ordCountyDataWithout,
-      x = ordCountyDataWithout$County,
-      y = ordCountyDataWithout$`Total Tornadoes`,
+      x = ordCountyDataWithout$FIPS,
+      y = ordCountyDataWithout$TotalTornadoes,
       type = "bar",
-      hoverinfo = 'text', text = ~paste('</br>County Code:', County, '<br>Count:', `Total Tornadoes`, '</br>')
+      hoverinfo = 'text', text = ~paste('</br>County Code:', FIPS, '<br>Count:', TotalTornadoes, '</br>')
     ) %>%
       layout(font = list(size=30), xaxis = list(title = "County Code", autotick = T, tickangle = 0, dtick = 1, titlefont=list(size=25), tickfont=list(size=20)),
              yaxis = list(title = "# of Tornadoes", titlefont=list(size=30), tickfont=list(size=20)),
@@ -854,12 +856,13 @@ output$hourlyGraph <- renderPlotly({
   })
 
   output$countyGraph <- renderPlotly({
-
+    ordCountyDataWithout <- getCountyDataByStateTable()
+    
     plot_ly(ordCountyData,
-      x = ordCountyData$County,
-      y = ordCountyData$`Total Tornadoes`,
+      x = ordCountyData$FIPS,
+      y = ordCountyData$TotalTornadoes,
       type = "bar",
-      hoverinfo = 'text', text = ~paste('</br>County Code:', County, '<br>Count:', `Total Tornadoes`, '</br>')
+      hoverinfo = 'text', text = ~paste('</br>County Code:', FIPS, '<br>Count:', TotalTornadoes, '</br>')
     ) %>%
       layout(font = list(size=30), xaxis = list(title = "County Code", autotick = T, tickangle = 0, dtick = 1, titlefont=list(size=25), tickfont=list(size=20)),
              yaxis = list(title = "# of Tornadoes", titlefont=list(size=30), tickfont=list(size=20)),

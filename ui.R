@@ -359,8 +359,8 @@ ui <- dashboardPage(
                 #title = "First tabBox",
                 # The id lets us use input$tabset1 on the server to find the current tab
                 id = "tabset9", height = "880px",
-                tabPanel("Without", plotlyOutput("countyGraphWithout", height = 800) %>% withSpinner(color="#0dc5c1")),
-                tabPanel("With", plotlyOutput("countyGraph", height = 800) %>% withSpinner(color="#0dc5c1")), 
+                tabPanel("Without Unknowns", plotlyOutput("countyGraphWithout", height = 800) %>% withSpinner(color="#0dc5c1")),
+                tabPanel("With Unknowns", plotlyOutput("countyGraph", height = 800) %>% withSpinner(color="#0dc5c1")), 
                 width = 6
               )
               
