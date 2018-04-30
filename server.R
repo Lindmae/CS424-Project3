@@ -174,28 +174,43 @@ server <- function(input, output,session) {
 
   distTornadoes <- distTornadoes %>% rowwise() %>%
     mutate(sDistance = distm(c(slon, slat), c(-87.6298, 41.8781), fun = distHaversine)[,1] / 1609)
-
-  a1<-melt(table(cut(distTornadoes$eDistance,breaks=c(0,10,20,30,60,120,240,480,960))))
-
+  
   distTornadoes$eDistanceKM <- distTornadoes$eDistance * 1.60934
   distTornadoes$sDistanceKM <- distTornadoes$sDistance * 1.60934
+  
+  a1<-melt(table(cut(distTornadoes$eDistance,breaks=c(0,10,20,30,50,100,120,150,200,240,355))))
+  a2<-melt(table(cut(distTornadoes$sDistance,breaks=c(0,10,20,30,50,100,120,150,200,240,355))))
+  a3<-melt(table(cut(distTornadoes$eDistanceKM,breaks=c(0,16,32,48,80,160,193,241,321,386,571))))
+  a4<-melt(table(cut(distTornadoes$sDistanceKM,breaks=c(0,16,32,48,80,160,193,241,321,386,571))))
+  
+  
   
   distTornadoes$eDistance <- round(distTornadoes$eDistance,digits=0)
   distTornadoes$sDistance <- round(distTornadoes$sDistance,digits=0)
   distTornadoes$eDistanceKM <- round(distTornadoes$eDistanceKM,digits=0)
   distTornadoes$sDistanceKM <- round(distTornadoes$sDistanceKM,digits=0)
 
-  eDistance<-melt(table(cut(distTornadoes$eDistance,breaks=c(0,10,20,30,60,120,240,480,960))))
+  #mile version
+  eDistance<-melt(table(cut(distTornadoes$eDistance,breaks=c(0,10,20,30,50,100,120,150,200,240,355))))
   eDistanceData<-data.frame(sapply(a1,function(x) gsub("\\(|\\]","",gsub("\\,","-",x))))
   colnames(eDistanceData)<-c("Miles Away","End Count")
 
-  sDistance<-melt(table(cut(distTornadoes$eDistance,breaks=c(0,10,20,30,60,120,240,480,960))))
-  sDistanceData<-data.frame(sapply(a1,function(x) gsub("\\(|\\]","",gsub("\\,","-",x))))
+  sDistance<-melt(table(cut(distTornadoes$eDistance,breaks=c(0,10,20,30,50,100,120,150,200,240,355))))
+  sDistanceData<-data.frame(sapply(a2,function(x) gsub("\\(|\\]","",gsub("\\,","-",x))))
   colnames(sDistanceData)<-c("Miles Away","Start Count")
+  
+  #now for KM version
+  eDistanceKM<-melt(table(cut(distTornadoes$eDistanceKM,breaks=c(0,16,32,48,80,160,193,241,321,386,571))))
+  eDistanceDataKM<-data.frame(sapply(a3,function(x) gsub("\\(|\\]","",gsub("\\,","-",x))))
+  colnames(eDistanceDataKM)<-c("Kilometers Away","End Count")
+  
+  sDistanceKM<-melt(table(cut(distTornadoes$eDistanceKM,breaks=c(0,16,32,48,80,160,193,241,321,386,571))))
+  sDistanceDataKM<-data.frame(sapply(a4,function(x) gsub("\\(|\\]","",gsub("\\,","-",x))))
+  colnames(sDistanceDataKM)<-c("Kilometers Away","Start Count")
 
 
   eDistanceData <- merge(eDistanceData,sDistanceData,by="Miles Away")
-  
+  eDistanceDataKM <- merge(eDistanceDataKM,sDistanceDataKM,by="Kilometers Away")
   
 
   #5
@@ -285,14 +300,18 @@ server <- function(input, output,session) {
 
   getDistanceE<- reactive({
     
-    if(input$metric){
-      chosen <- as.data.frame(table(distTornadoes$eDistance))
+    #TWO DIFFERENT SIZES!!!
+    if(input$"metric"){
+      chosenE <- as.data.frame(table(distTornadoes$eDistance))
+      chosenS <- as.data.frame(table(distTornadoes$sDistance))
       print("1")
     }
     else{
-      chosen <- as.data.frame(table(distTornadoes$eDistanceKM))
+      chosenE <- as.data.frame(table(distTornadoes$eDistanceKM))
+      chosenS <- as.data.frame(table(distTornadoes$sDistanceKM))
       print("2")
     }
+    
     
     #omit unknowns
     n<-dim(chosen)[1]
@@ -421,8 +440,15 @@ server <- function(input, output,session) {
     else if(choice == 3) {
       selected <- "Stamen.Terrain"
     }
-    else{
+    else if(choice == 4) {
       selected <- "Esri.WorldImagery"
+    }
+    else if(choice == 5){
+      selected <- "NASAGIBS.ViirsEarthAtNight2012"
+    }
+    
+    else{
+      selected <- "OpenWeatherMap.Clouds"
     }
 
   })
@@ -832,13 +858,12 @@ output$hourlyGraph <- renderPlotly({
   distTornadoesCountS <- getDistanceS()
     
     s <- seq(1, 322, by = 1)
-    plot_ly(distTornadoesCountE, x = ~s, y = ~Freq, type = 'scatter', name = 'End', mode = 'lines')
-    # %>%
-    #   add_trace(distTornadoesCountS, x= ~s, y = ~distTornadoesCountS$Freq, name = 'Start', mode = 'lines') %>%
-    #   layout(font = list(size=30), xaxis = list(title = "Distance (miles)", autotick = T, tickangle = 0, dtick = 1, titlefont=list(size=25), tickfont=list(size=20)),
-    #          yaxis = list(title = "# of Tornadoes", titlefont=list(size=30), tickfont=list(size=20)),
-    #          margin = list(l = 100, b = 100),
-    #          barmode = 'group')
+    plot_ly(distTornadoesCountE, x = ~Var1, y = ~Freq, type = 'scatter', name = 'End', mode = 'lines') %>%
+      add_trace(distTornadoesCountS, x= distTornadoesCountE$Var1, y = ~distTornadoesCountS$Freq, name = 'Start', mode = 'lines') %>%
+      layout(font = list(size=30), xaxis = list(title = "Distance (miles)", autotick = T, tickangle = 0, dtick = 1, titlefont=list(size=25), tickfont=list(size=20)),
+             yaxis = list(title = "# of Tornadoes", titlefont=list(size=30), tickfont=list(size=20)),
+             margin = list(l = 100, b = 100),
+             barmode = 'group')
   })
 
   # vis TOTAL TORNADOES (by MAG) per MONTH summed over 1950 - 2016

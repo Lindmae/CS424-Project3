@@ -205,7 +205,7 @@ ui <- dashboardPage(
                            selectInput("topTornado", label = h3("Choose a tornado.."), 
                                        choices = list("None/reset" = -1,"Choice 1" = 367, "Choice 2" = 355, "Choice 3" = 1037,"Choice 4" = 116, "Choice 5" = 834, "Choice 6" = 2265,"Choice 7" = 233, "Choice 8" = 2206, "Choice 9" = 362, "Choice 10" = 325)),
                            selectInput("mapChoice", label = h3("Choose a base map.."), 
-                                       choices = list("Base" = 1, "Dark" = 2, "Terrain" = 3, "Satellite" = 4))
+                                       choices = list("Base" = 1, "Dark" = 2, "Terrain" = 3, "Satellite" = 4, "Light Pollution" = 5, "Something" = 6))
                            
               ))
       ),
