@@ -177,19 +177,13 @@ server <- function(input, output,session) {
 
   a1<-melt(table(cut(distTornadoes$eDistance,breaks=c(0,10,20,30,60,120,240,480,960))))
 
+  distTornadoes$eDistanceKM <- distTornadoes$eDistance * 1.60934
+  distTornadoes$sDistanceKM <- distTornadoes$sDistance * 1.60934
+  
   distTornadoes$eDistance <- round(distTornadoes$eDistance,digits=0)
   distTornadoes$sDistance <- round(distTornadoes$sDistance,digits=0)
-
-  distTornadoesCountE <- as.data.frame(table(distTornadoes$eDistance))
-  distTornadoesCountS <- as.data.frame(table(distTornadoes$sDistance))
-  #omit unknowns
-  n<-dim(distTornadoesCountE)[1]
-  distTornadoesCountE<-distTornadoesCountE[1:(n-1),]
-
-  nn<-dim(distTornadoesCountS)[1]
-  distTornadoesCountS<-distTornadoesCountS[1:(n-1),]
-
-
+  distTornadoes$eDistanceKM <- round(distTornadoes$eDistanceKM,digits=0)
+  distTornadoes$sDistanceKM <- round(distTornadoes$sDistanceKM,digits=0)
 
   eDistance<-melt(table(cut(distTornadoes$eDistance,breaks=c(0,10,20,30,60,120,240,480,960))))
   eDistanceData<-data.frame(sapply(a1,function(x) gsub("\\(|\\]","",gsub("\\,","-",x))))
@@ -201,6 +195,8 @@ server <- function(input, output,session) {
 
 
   eDistanceData <- merge(eDistanceData,sDistanceData,by="Miles Away")
+  
+  
 
   #5
   totalDamages <- getFullDamageData("yr", totalTornadoes)
@@ -287,6 +283,43 @@ server <- function(input, output,session) {
     chosen
   })
 
+  getDistanceE<- reactive({
+    
+    if(input$metric){
+      chosen <- as.data.frame(table(distTornadoes$eDistance))
+      print("1")
+    }
+    else{
+      chosen <- as.data.frame(table(distTornadoes$eDistanceKM))
+      print("2")
+    }
+    
+    #omit unknowns
+    n<-dim(chosen)[1]
+    chosen<-chosen[1:(n-1),]
+    
+    chosen
+  })
+  
+  getDistanceS<- reactive({
+    
+    
+    if(input$metric){
+      chosen <- as.data.frame(table(distTornadoes$sDistance))
+      print("1")
+    }
+    else{
+      chosen <- as.data.frame(table(distTornadoes$sDistanceKM))
+      print("2")
+    }
+    
+    #omit unknowns
+    n<-dim(chosen)[1]
+    chosen<-chosen[1:(n-1),]
+    
+    chosen
+  })
+  
   getTotalDamagesByHourAMPM<- reactive({
     totalALL <- NA
     totalALL$hr <- totalDamagesByHour$hr
@@ -766,13 +799,17 @@ output$hourlyGraph <- renderPlotly({
 
   output$distanceCountGraph <- renderPlotly({
 
+  distTornadoesCountE <- getDistanceE()
+  distTornadoesCountS <- getDistanceS()
+    
     s <- seq(1, 322, by = 1)
-    plot_ly(distTornadoesCountE, x = ~s, y = ~Freq, type = 'scatter', name = 'End', mode = 'lines') %>%
-      add_trace(y = ~distTornadoesCountS$Freq, name = 'Start', mode = 'lines') %>%
-      layout(font = list(size=30), xaxis = list(title = "Distance (miles)", autotick = T, tickangle = 0, dtick = 1, titlefont=list(size=25), tickfont=list(size=20)),
-             yaxis = list(title = "# of Tornadoes", titlefont=list(size=30), tickfont=list(size=20)),
-             margin = list(l = 100, b = 100),
-             barmode = 'group')
+    plot_ly(distTornadoesCountE, x = ~s, y = ~Freq, type = 'scatter', name = 'End', mode = 'lines')
+    # %>%
+    #   add_trace(distTornadoesCountS, x= ~s, y = ~distTornadoesCountS$Freq, name = 'Start', mode = 'lines') %>%
+    #   layout(font = list(size=30), xaxis = list(title = "Distance (miles)", autotick = T, tickangle = 0, dtick = 1, titlefont=list(size=25), tickfont=list(size=20)),
+    #          yaxis = list(title = "# of Tornadoes", titlefont=list(size=30), tickfont=list(size=20)),
+    #          margin = list(l = 100, b = 100),
+    #          barmode = 'group')
   })
 
   # vis TOTAL TORNADOES (by MAG) per MONTH summed over 1950 - 2016
