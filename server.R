@@ -446,11 +446,11 @@ server <- function(input, output,session) {
       selected <- "Esri.WorldImagery"
     }
     else if(choice == 5){
-      selected <- "NASAGIBS.ViirsEarthAtNight2012"
+      selected <- "Thunderforest.TransportDark"
     }
     
     else{
-      selected <- "OpenWeatherMap.Clouds"
+      selected <- "Hydda.Full"
     }
 
   })
