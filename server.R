@@ -183,8 +183,6 @@ server <- function(input, output,session) {
   a3<-melt(table(cut(distTornadoes$eDistanceKM,breaks=c(0,16,32,48,80,160,193,241,321,386,571))))
   a4<-melt(table(cut(distTornadoes$sDistanceKM,breaks=c(0,16,32,48,80,160,193,241,321,386,571))))
   
-  
-  
   distTornadoes$eDistance <- round(distTornadoes$eDistance,digits=0)
   distTornadoes$sDistance <- round(distTornadoes$sDistance,digits=0)
   distTornadoes$eDistanceKM <- round(distTornadoes$eDistanceKM,digits=0)
@@ -212,6 +210,8 @@ server <- function(input, output,session) {
   eDistanceData <- merge(eDistanceData,sDistanceData,by="Miles Away")
   eDistanceDataKM <- merge(eDistanceDataKM,sDistanceDataKM,by="Kilometers Away")
   
+  
+  
 
   #5
   totalDamages <- getFullDamageData("yr", totalTornadoes)
@@ -225,32 +225,8 @@ server <- function(input, output,session) {
   totalDamagesByHour <- getFullDamageData("hr", totalTornadoes)
 
   #8
-  county1 <- totalTornadoes %>% group_by(f1) %>% summarise(n())
-  names(county1) <- c("County", "Count1")
-  county2 <- totalTornadoes %>% group_by(f2) %>% summarise(n())
-  names(county2) <- c("County", "Count2")
-  county3 <- totalTornadoes %>% group_by(f3) %>% summarise(n())
-  names(county3) <- c("County", "Count3")
-  county4 <- totalTornadoes %>% group_by(f4) %>% summarise(n())
-  names(county4) <- c("County", "Count4")
-
-  countyCounts <- merge(county1, county2, by="County", all.x = TRUE, all.y = TRUE)
-  countyCounts <- merge(countyCounts, county3, by="County", all.x = TRUE, all.y = TRUE)
-  countyCounts <- merge(countyCounts, county4, by="County", all.x = TRUE, all.y = TRUE)
-  countyCounts[is.na(countyCounts)] <- 0
-  countyCounts$Final <- rowSums( countyCounts[,2:5] )
-
-  countyData <- subset(countyCounts, select = c(County,Final))
-  names(countyData) <- c("County", "Total Tornadoes")
-
-  #order by total tornadoes
-  countyData <- countyData[order(-countyData$`Total Tornadoes`),]
-
-  #order ascending
-  ordCountyData <- countyData[order(countyData$County),]
-
-  #Make data set without 0 counties
-  ordCountyDataWithout <- ordCountyData[-1,]
+  load("rdata/ordCountyData.RData")
+  load("rdata/ordCountyDataWithout.RData")
 
   #Top destructive
   topTornadoes <- subset(totalTornadoes, select = c("mag", "len", "wid", "loss","inj", "fat", "yr"))
@@ -310,18 +286,31 @@ server <- function(input, output,session) {
     
     chosen
   })
+  
+  getUnitsText <- reactive({
+    
+    if(input$"metric"){
+      chosen <- 'Miles'
+    }
+    else{
+      chosen <- 'Kilometers'
+    }
+    
+    
+    chosen
+  })
 
   getDistanceE<- reactive({
     
     #TWO DIFFERENT SIZES!!!
     if(input$"metric"){
-      chosenE <- as.data.frame(table(distTornadoes$eDistance))
-      chosenS <- as.data.frame(table(distTornadoes$sDistance))
+      chosen <- as.data.frame(table(distTornadoes$eDistance))
+      #chosenS <- as.data.frame(table(distTornadoes$sDistance))
       print("1")
     }
     else{
-      chosenE <- as.data.frame(table(distTornadoes$eDistanceKM))
-      chosenS <- as.data.frame(table(distTornadoes$sDistanceKM))
+      chosen <- as.data.frame(table(distTornadoes$eDistanceKM))
+      #chosenS <- as.data.frame(table(distTornadoes$sDistanceKM))
       print("2")
     }
     
@@ -868,12 +857,25 @@ output$hourlyGraph <- renderPlotly({
   output$distanceCountGraph <- renderPlotly({
 
   distTornadoesCountE <- getDistanceE()
+  colnames(distTornadoesCountE)<-c("Distance","End Count")
+  
   distTornadoesCountS <- getDistanceS()
+  colnames(distTornadoesCountS)<-c("Distance","Start Count")
+  
+  total <- merge(distTornadoesCountE,distTornadoesCountS,by="Distance")
+  
+  total <- total[order(total$Distance),] 
+  #omit unknowns
+  n<-dim(chosen)[1]
+  chosen<-chosen[1:(n-1),]
+  
+  total[is.na(total)] <- 0
+  
+  units <- getUnitsText()
     
-    s <- seq(1, 322, by = 1)
-    plot_ly(distTornadoesCountE, x = ~Var1, y = ~Freq, type = 'scatter', name = 'End', mode = 'lines') %>%
-      add_trace(distTornadoesCountS, x= distTornadoesCountE$Var1, y = ~distTornadoesCountS$Freq, name = 'Start', mode = 'lines') %>%
-      layout(font = list(size=30), xaxis = list(title = "Distance (miles)", autotick = T, tickangle = 0, dtick = 1, titlefont=list(size=25), tickfont=list(size=20)),
+    plot_ly(total, x = ~Distance, y = ~`End Count`, type = 'scatter', name = 'End', mode = 'lines') %>%
+       add_trace(y = ~`Start Count`, name = 'Start', mode = 'lines') %>%
+      layout(font = list(size=30), xaxis = list(title = paste("Distance (", units,")", sep=" "), autotick = T, tickangle = 0, titlefont=list(size=25), tickfont=list(size=20)),
              yaxis = list(title = "# of Tornadoes", titlefont=list(size=30), tickfont=list(size=20)),
              margin = list(l = 100, b = 100),
              barmode = 'group')

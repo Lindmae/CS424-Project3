@@ -140,16 +140,13 @@ ui <- dashboardPage(
                 tabBox(
                   #title = "First tabBox",
                   # The id lets us use input$tabset1 on the server to find the current tab
-                  id = "tabset9", height = "850px",
-                  tabPanel("Without", plotlyOutput("countyGraphWithout", height = 800)),
-                  tabPanel("With", plotlyOutput("countyGraph", height = 800)),
+                  id = "tabset10", height = "800px",
+                  tabPanel("Graph", div(DT::dataTableOutput("eDistanceTable", height = 800), style = "font-size: 200%")),
+                  tabPanel("Table", div(plotlyOutput("distanceCountGraph", height = 800), style = "font-size: 200%")),
                   width = 12
-                ),
-                box(status = "primary", solidHeader = TRUE, width = 12,
-                    div(DT::dataTableOutput("eDistanceTable", height = 800), style = "font-size: 200%"),
-                    div(plotlyOutput("distanceCountGraph", height = 800), style = "font-size: 200%")
-                    
-                     )
+                )
+                
+                
                 )
               
       ),
@@ -339,9 +336,18 @@ ui <- dashboardPage(
               box(title = "Losses", status = "primary", solidHeader = TRUE, width = 3, height = "1080px",
                   leafletOutput("mapLossByTornadoes", height = "928px") %>% withSpinner(color="#0dc5c1")
               ),
-              box(title = "Data Table", status = "primary", solidHeader = TRUE, width = 12,
+              box(title = "Data Table", status = "primary", solidHeader = TRUE, width = 6,
                   div(DT::dataTableOutput("countyDataTable", height = 600) %>% withSpinner(color="#0dc5c1"))
+              ),
+              tabBox(
+                #title = "First tabBox",
+                # The id lets us use input$tabset1 on the server to find the current tab
+                id = "tabset9", height = "880px",
+                tabPanel("Without", plotlyOutput("countyGraphWithout", height = 800) %>% withSpinner(color="#0dc5c1")),
+                tabPanel("With", plotlyOutput("countyGraph", height = 800) %>% withSpinner(color="#0dc5c1")), 
+                width = 6
               )
+              
             )
     ),
     tabItem(tabName = "stateAnalysis",
