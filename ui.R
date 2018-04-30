@@ -34,9 +34,9 @@ ui <- dashboardPage(
   dashboardSidebar(
     sidebarMenu(
 
-      menuItem("Map", icon = icon("map", lib = "font-awesome"), tabName = "bart"),
-      
       menuItem("Illinois Analysis", icon = icon("search", lib = "font-awesome"), tabName = "vijay"),
+      
+      menuItem("Map", icon = icon("map", lib = "font-awesome"), tabName = "bart"),
       
       menuItem("County Analysis", icon = icon("compass", lib = "font-awesome"), tabName = "countyAnalysis"),
       

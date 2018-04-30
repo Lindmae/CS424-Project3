@@ -821,14 +821,18 @@ output$hourlyGraph <- renderPlotly({
   output$yearlyGraph <- renderPlotly({
 
     ggplot(yearlyTornadoes, aes(x = Year, y = Count ,fill = Magnitude)) +
-      ggtitle("Yearly Tornado Count by Magnitude") + geom_bar(stat = "identity", position = "stack")
+      ggtitle("Yearly Tornado Count by Magnitude") + geom_bar(stat = "identity", position = "stack") +
+      scale_x_continuous(breaks=c(1950:2016), labels=c(1950:2016),limits=c(1950,2016)) +
+      theme(text = element_text(size=20)) 
 
   })
 
   output$yearlyGraphPer <- renderPlotly({
     
     ggplot(yearlyTornadoesPercent, aes(x = Year, y = Percent ,fill = Magnitude)) +
-      ggtitle("Yearly Tornado Count by Magnitude") + geom_bar(stat = "identity", position = "stack") 
+      ggtitle("Yearly Tornado Count by Magnitude") + geom_bar(stat = "identity", position = "stack") +
+      scale_x_continuous(breaks=c(1950:2016), labels=c(1950:2016),limits=c(1950,2016)) +
+      theme(text = element_text(size=20)) 
 
     
   })
