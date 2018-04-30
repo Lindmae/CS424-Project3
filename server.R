@@ -297,6 +297,19 @@ server <- function(input, output,session) {
 
     chosen
   })
+  
+  getUnitsTable <- reactive({
+    
+    if(!input$"metric"){
+      chosen <- eDistanceDataKM
+    }
+    else{
+      chosen <- eDistanceData
+    }
+    
+    
+    chosen
+  })
 
   getDistanceE<- reactive({
     
@@ -649,7 +662,7 @@ output$totalTornadoes <- renderDataTable(totalTornadoes, #extensions = 'Scroller
                                               )
   )
 
-  output$eDistanceTable<- renderDataTable(eDistanceData, extensions = 'Scroller',
+  output$eDistanceTable<- renderDataTable(getUnitsTable(), extensions = 'Scroller',
                                                rownames = FALSE, options = list(
                                                  deferRender = TRUE,
                                                  scrollY = 800,
